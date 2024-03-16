@@ -1,6 +1,4 @@
 ﻿using FamilyFueds;
-using System;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
 
@@ -54,11 +52,14 @@ public class Person
     public int followed = -1;
 
     public bool isInjured => m_emotion == Emotion.Injured;
-
     public bool isEmotional => m_emotion != Emotion.None;
     public bool isAngry => m_emotion == Emotion.Angry;
     public bool isBaby => m_emotion == Emotion.Baby;
     public bool isDead => m_emotion == Emotion.Angel || m_emotion == Emotion.Devil;
+
+    public string fullname => name + " " + surname;
+    public int age => (DateTime.Now - dob).Minutes;
+    public void ChangeVolocity() => volocity = new Point(RandomGenerator.Int(2, 1, true), RandomGenerator.Int(2, 1, true));
 
     public bool follow
     {
@@ -72,6 +73,46 @@ public class Person
         }
     }
 
+    public bool recovered
+    {
+        get
+        {
+            if (!m_recovered) m_recovered = m_emotional - (DateTime.Now - m_recoverTime).Seconds < 0;
+            if (m_recovered && ignore == -2) ignore = -1;
+            return m_recovered;
+        }
+        set
+        {
+            m_recovered = value;
+            if (!m_recovered) m_recoverTime = DateTime.Now;
+            if (value) follow = false;
+        }
+    }
+
+    public bool idea
+    {
+        get
+        {
+            if (m_thinking) m_thinking = m_intellegence - (DateTime.Now - m_brainActivity).Seconds > 0;
+            return !m_thinking;
+        }
+        set
+        {
+            m_thinking = value;
+            if (m_thinking) m_brainActivity = DateTime.Now;
+        }
+    }
+
+    public int life
+    {
+        get => m_life;
+        set
+        {
+            m_life = value;
+            if (m_life < 1) Died();
+        }
+    }
+
     public Emotion emotion
     {
         get => m_emotion;
@@ -81,7 +122,6 @@ public class Person
             recovered = true;
             m_emotional = 5;
             m_emotion = value;
-            if (follow && !isAngry) follow = false;
 
             switch (m_emotion)
             {
@@ -121,16 +161,6 @@ public class Person
                     break;
             }
             if (isEmotional) recovered = false;
-        }
-    }
-
-    public int life
-    {
-        get => m_life;
-        set
-        {
-            m_life = value;
-            if (m_life < 1) Died();
         }
     }
 
@@ -199,41 +229,6 @@ public class Person
         idea = true;
     }
 
-    public string fullname => name + " " + surname;
-    public int age => (DateTime.Now - dob).Minutes;
-    public bool recovered
-    {
-        get
-        {
-            if (!m_recovered) m_recovered = m_emotional - (DateTime.Now - m_recoverTime).Seconds < 0;
-            if (m_recovered && ignore == -2) ignore = -1;
-            return m_recovered;
-        }
-        set
-        {
-            m_recovered = value;
-            if (!m_recovered) m_recoverTime = DateTime.Now;
-            if (value) follow = false;
-        }
-    }
-
-    public bool idea
-    {
-        get
-        {
-            if (m_thinking) m_thinking = m_intellegence - (DateTime.Now - m_brainActivity).Seconds > 0;
-            return !m_thinking;
-        }
-        set
-        {
-            m_thinking = value;
-            if (m_thinking) m_brainActivity = DateTime.Now;
-        }
-    }
-
-    public void ChangeVolocity() => volocity = new Point(RandomGenerator.Int(2, 1, true), RandomGenerator.Int(2, 1, true));
-
-
     public bool Marry(Person person)
     {
         if (isEmotional || person.isEmotional || isInjured || person.isInjured ||
@@ -255,14 +250,26 @@ public class Person
         return true;
     }
 
-    public void FamilyEmotional(Emotion familyEmotion, bool excludeAllEmotions = false)
+    public void FamilyEmotional(Emotion familyEmotion, bool excludeAllEmotions = false, int familyId = -1)
     {
+        bool retribution = familyId != -1;
+        if (!retribution) familyId = family;
+
         List<Person> mob;
 
-        if (excludeAllEmotions) mob = Program.family.FindAll(x => x.family == family && !isEmotional);
-        else mob = Program.family.FindAll(x => x.family == family && !x.isDead && !x.isInjured && !x.isBaby);
+        if (excludeAllEmotions) mob = Program.family.FindAll(x => x.family == familyId && !isEmotional);
+        else mob = Program.family.FindAll(x => x.family == familyId && !x.isDead && !x.isInjured && !x.isBaby);
 
-        foreach (Person person in mob) emotion = familyEmotion;
+        foreach (Person person in mob)
+        {
+            person.emotion = familyEmotion;
+
+            if (retribution)
+            {
+                person.lookat = id;
+                person.follow = true;
+            }
+        }
     }
 
     public void Update()
@@ -289,7 +296,7 @@ public class Person
                 person.life = -1;
                 emotion = Emotion.Sad;
                 m_killer = true;
-                FamilyAttack(id, person.id, person.family);
+                FamilyEmotional(Emotion.Angry, false, person.family);
             }
             else
             {
@@ -309,21 +316,9 @@ public class Person
         }
     }
 
-    public void FamilyAttack(int killer, int id, int family)
-    {
-        List<Person> mob = Program.family.FindAll(x => x.family == family && !x.isDead && !x.isInjured && !x.isBaby);
-
-        foreach (Person person in mob)
-        {
-            person.emotion = Emotion.Angry;
-            person.lookat = killer;
-            person.follow = true;
-        }
-    }
-
     private void Recovered()
     {
-        emotion = (m_emotion == Emotion.Baby) ? Emotion.Happy: Emotion.None;
+        emotion = isBaby ? Emotion.Happy: Emotion.None;
     }
 
     private void Idea()

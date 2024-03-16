@@ -1,5 +1,4 @@
 ﻿using Microsoft.Win32;
-using System.Text.Json.Nodes;
 
 namespace FamilyFueds
 {
@@ -14,7 +13,7 @@ namespace FamilyFueds
 
         private void SaveSettings()
         {
-            RegistryKey key = Registry.CurrentUser.CreateSubKey("SOFTWARE\\FamilyFeuds");
+            RegistryKey key = Registry.CurrentUser.CreateSubKey(Program.WIN_REG_PATH);
             string listOfNames = "";
             foreach (string name in listFamilyNames.Items) listOfNames += name+".";
             key.SetValue("FamilyNames", listOfNames);

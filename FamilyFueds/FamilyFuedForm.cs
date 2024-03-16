@@ -227,9 +227,9 @@ namespace FamilyFueds
 
                     graphics.DrawBezier(new Pen(Brushes.LightBlue), person.fatherLine[0], person.fatherLine[1], person.fatherLine[2], person.fatherLine[3]);
                 }
-
-                DrawArrow(person);
             }
+
+            DrawArrow(person);
         }
 
         public void DrawArrow(Person person, bool clear = false)
@@ -336,10 +336,10 @@ namespace FamilyFueds
                 Debug.Print(person.name + " got married to " + collider.name);
                 person.emotion = Person.Emotion.Love;
                 collider.emotion = Person.Emotion.Love;
-                
-                person.FamilyEmotional(Person.Emotion.Party, true);
 
                 Program.family.Add(new Person(person));
+
+                person.FamilyEmotional(Person.Emotion.Party, true);
             }
             else person.Fight(collider);
         }

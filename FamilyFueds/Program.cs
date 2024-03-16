@@ -1,16 +1,13 @@
 using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
-using System.Xml.Linq;
 
 namespace FamilyFueds
 {
     internal static class Program
     {
+        // Family Feud Global Constants
+        public const string WIN_REG_PATH = "SOFTWARE\\FamilyFeuds";
+
+        // MessageBox Title
         public static string messageTitle = "Family Feuds";
 
         // Family Feud Global Settings
@@ -45,8 +42,6 @@ namespace FamilyFueds
         [STAThread]
         static void Main(string[] args)
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
             if (args.Length > 0)
@@ -75,9 +70,13 @@ namespace FamilyFueds
             else Configure();   // No arguments found
         }
 
+        /// <summary>
+        /// The settings are retrieved from the Windows registary at path specified by the gobal
+        /// constant <see cref="=WIN_REG_PATH"/>
+        /// </summary>
         static void LoadSettings()
         {
-            RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\FamilyFeuds");
+            RegistryKey key = Registry.CurrentUser.OpenSubKey(WIN_REG_PATH);
 
             if (key != null)
             {
@@ -97,14 +96,26 @@ namespace FamilyFueds
             }
         }
 
+        /// <summary>
+        /// Run in configuration mode allows customization of the FamilyFeud screen saver such as
+        /// having own family and friends appear on the screen.
+        /// </summary>
         static void Configure()
         {
+#if DEBUG 
+            Run();
+            return;
+#endif
             configMode = true;
             previewMode = false;
             LoadSettings();
             Application.Run(new FamilyFeudSettings());
         }
 
+        /// <summary>
+        /// Run in preview mode allows someone to preview FamilyFeuds screen saver before actually 
+        /// changing the windows screen saver.
+        /// </summary>
         static void Preview(string argument)
         {
             previewMode = true;
@@ -121,6 +132,10 @@ namespace FamilyFueds
             Application.Run(new FamilyFeudsForm(previewWndHandle));
         }
 
+        /// <summary>
+        /// Run the FamilyFeuds screen saver.  This function gets called automatically by Windows
+        /// when it activates the screen saver.
+        /// </summary>
         static void Run()
         {
             previewMode = false;
