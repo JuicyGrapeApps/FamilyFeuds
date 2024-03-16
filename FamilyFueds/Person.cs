@@ -19,14 +19,15 @@ using System.Diagnostics;
 
 /// <summary>
 /// This class is the bot representation of a person on screen it stores their details such as date of birth,
-/// emotional state, intellegence or family ties it also calculates things like a persons age, movement even
-/// how long it takes them to have an idea or recover from emotional dammage.
+/// emotional state, intellegence or family ties it also calculates things like a person's age, movement and
+/// even how long it takes to have an idea or recuperate from emotional damage.
 /// </summary>
 public class Person
 {
     public delegate void CollisionEvent(Person person, Person collider);
     public static event CollisionEvent Collision;
 
+    // Emotional states
     public enum Emotion
     {
         None,
@@ -59,7 +60,7 @@ public class Person
     public Point[] motherLine = new Point[4];
     public Point[] fatherLine = new Point[4];
     private int m_age;
-    private int m_life = 5;
+    private int m_energy = 5;
     private Emotion m_emotion;
     private DateTime m_recoverTime;
     private DateTime m_brainActivity;
@@ -71,15 +72,20 @@ public class Person
     private bool m_follow = false;
     public int followed = -1;
 
+    // Boolean repesentations of emotional states
     public bool isInjured => m_emotion == Emotion.Injured;
-    public bool isEmotional => m_emotion != Emotion.None;
+    public bool isEmotional => m_emotion != Emotion.None && 
+                               m_emotion != Emotion.Happy &&
+                               m_emotion != Emotion.Party;
     public bool isAngry => m_emotion == Emotion.Angry;
     public bool isBaby => m_emotion == Emotion.Baby;
-    public bool isDead => m_emotion == Emotion.Angel || m_emotion == Emotion.Devil;
+    public bool isDead => m_emotion == Emotion.Angel ||
+                          m_emotion == Emotion.Devil;
 
+    // Randomize volocity changes direction and speed of the bot on screen.
+    public void ChangeVolocity() => volocity = new Point(RandomGenerator.Int(2, 1, true), RandomGenerator.Int(2, 1, true));
     public string fullname => name + " " + surname;
     public int age => (DateTime.Now - dob).Minutes;
-    public void ChangeVolocity() => volocity = new Point(RandomGenerator.Int(2, 1, true), RandomGenerator.Int(2, 1, true));
 
     public bool follow
     {
@@ -93,6 +99,7 @@ public class Person
         }
     }
 
+    // Used to calculate how long it takes in seconds to recover from emotional damage
     public bool recovered
     {
         get
@@ -109,6 +116,7 @@ public class Person
         }
     }
 
+    // Used to calculate how long it takes in seconds for an idea to occure
     public bool idea
     {
         get
@@ -123,19 +131,18 @@ public class Person
         }
     }
 
-    public int life
+    // Energy of the person a person will expire if energy reaches zero.
+    public int energy
     {
-        get => m_life;
+        get => m_energy;
         set
         {
-            m_life = value;
-            if (m_life < 1) Died();
+            m_energy = value;
+            if (m_energy < 1) Died();
         }
     }
 
-    /// <summary>
-    /// Change a persons emotional state.
-    /// </summary>
+    // Change a persons emotional state.
     public Emotion emotion
     {
         get => m_emotion;
@@ -187,6 +194,7 @@ public class Person
         }
     }
 
+    // Constructor used for a custom person
     public Person(string name, string surname, bool gender, int family)
     {
         id = Program.NumberOfPeople;
@@ -207,6 +215,7 @@ public class Person
         idea = true;
     }
 
+    // Constructor used for a default person
     public Person(Person person = null)
     {
         id = Program.NumberOfPeople;
@@ -252,6 +261,8 @@ public class Person
         idea = true;
     }
 
+    // Called after a collition event, this function preforms a marrage between the people who met depending
+    // on certain criteria.
     public bool Marry(Person person)
     {
         if (isEmotional || person.isEmotional || isInjured || person.isInjured ||
@@ -273,6 +284,7 @@ public class Person
         return true;
     }
 
+    // Change entire families emotional state and sets any reaction to the emotion.
     public void FamilyEmotional(Emotion familyEmotion, bool excludeAllEmotions = false, int familyId = -1)
     {
         bool retribution = familyId != -1;
@@ -295,6 +307,7 @@ public class Person
         }
     }
 
+    // Called every tick count of the Execute timer on the FamiltFeudForm form.
     public void Update()
     {
         if (isDead) return;
@@ -307,6 +320,8 @@ public class Person
         if (m_thinking && idea) Idea();
     }
 
+    // Called after a collition event, this function preforms a argument between the people who met depending
+    // on certain criteria.
     public void Fight(Person person)
     {
         if (isDead || isInjured || person.isBaby || person.family == family) return;
@@ -314,16 +329,16 @@ public class Person
         if (lookat == person.id) follow = false;
 
         if (person.gender == gender) {
-            if (person.life == 1)
+            if (person.energy == 1)
             {
-                person.life = -1;
+                person.energy = -1;
                 emotion = Emotion.Sad;
                 m_killer = true;
                 FamilyEmotional(Emotion.Angry, false, person.family);
             }
             else
             {
-                person.life--;
+                person.energy--;
                 person.emotion = Emotion.Injured;
             }
         }
@@ -339,11 +354,14 @@ public class Person
         }
     }
 
+    // Called when a person is over their emotion.
     private void Recovered()
     {
         emotion = isBaby ? Emotion.Happy: Emotion.None;
     }
 
+    // Called every time a person has an idea, idea's occure after the person has been thinking,
+    // the amount of time it takes in seconds for a person to think depends on their intelligence.
     private void Idea()
     {
         Debug.Print(name + " had an idea!");
@@ -353,6 +371,7 @@ public class Person
         idea = true;
     }
 
+    // Moves a bot on screen according to it's volocity.
     public void Move()
     {
         if (isInjured || ignore == -4) return;
@@ -373,17 +392,20 @@ public class Person
         else if (location.Y < -50 || location.Y > Program.MaxHeight + 100) ignore = -4;
     }
 
+    // Called on a persons birthday, the time factor is one year is equivalent to one minute.
     private void Birthday()
     {
         Debug.Print("It's " + fullname + " " + (m_age+1) + " birthday!");
         if (m_age == 0) ignore = -2;
-        else if (m_age == 5) { life--; if (!isEmotional) emotion = Emotion.Party; }
-        else if (m_age == 10) { life--; if (!isEmotional) emotion = Emotion.Party; }
-        else if (m_age == 15) { life--; if (!isEmotional) emotion = Emotion.Party; }
-        else if (m_age == 20) { life--; if (!isEmotional) emotion = Emotion.Party; }
-        else if (m_age == 25) life--;
+        else if (m_age == 5) { energy--; if (!isEmotional) emotion = Emotion.Party; }
+        else if (m_age == 10) { energy--; if (!isEmotional) emotion = Emotion.Party; }
+        else if (m_age == 15) { energy--; if (!isEmotional) emotion = Emotion.Party; }
+        else if (m_age == 20) { energy--; if (!isEmotional) emotion = Emotion.Party; }
+        else if (m_age == 25) energy--;
     }
 
+    // Called when a person expires, factors that could cause this include old age or injuries sustained
+    // during an argument.
     private void Died()
     {
         volocity.X = 0;
@@ -406,9 +428,10 @@ public class Person
         mother = -1;
         father = -1;
 
-        if (life == 0) FamilyEmotional(Emotion.Sad);
+        if (energy == 0) FamilyEmotional(Emotion.Sad);
     }
 
+    // Check for contact with screen bounderies
     private void Contact()
     {
         if (location.X < 0) { location.X = 0; volocity.X = 1; }
@@ -417,6 +440,7 @@ public class Person
         if (location.Y > Program.MaxHeight) { location.Y = Program.MaxHeight; volocity.Y = -1; }
     }
 
+    // Check for contact with other bots.
     public void Contact(Person person)
     {
         if (person.id != id && !Is.AnyEqual(ignore, person.id, person.ignore, id) && !isDead && !person.isDead &&
