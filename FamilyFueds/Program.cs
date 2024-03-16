@@ -102,10 +102,6 @@ namespace FamilyFueds
         /// </summary>
         static void Configure()
         {
-#if DEBUG 
-            Run();
-            return;
-#endif
             configMode = true;
             previewMode = false;
             LoadSettings();
