@@ -1,12 +1,20 @@
-using System;
+/*
+ * Copyright (c) 2024 JuicyGrape Apps.
+ *
+ * Licensed under the MIT License, (the "License");
+ * you may not use any file by JuicyGrape Apps except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.juicygrapeapps.com/terms
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 using System.Diagnostics;
-using System.Drawing.Printing;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Media;
 using System.Runtime.InteropServices;
-using System.Xml.Linq;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace FamilyFueds
 {
@@ -100,7 +108,7 @@ namespace FamilyFueds
 
         private void FamilyFeudsForm_MouseMove(object sender, MouseEventArgs e)
         {
-            if (Program.previewMode) return;
+            if (Program.Mode == Program.ExecuteMode.Preview) return;
 
             if (!mouseLocation.IsEmpty)
             {
@@ -116,19 +124,19 @@ namespace FamilyFueds
 
         private void FamilyFeudsForm_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (Program.previewMode) return;
+            if (Program.Mode == Program.ExecuteMode.Preview) return;
             FamilyFeudsForm_Unload();
         }
 
         private void FamilyFeudsForm_Click(object sender, EventArgs e)
         {
-            if (Program.previewMode) return;
+            if (Program.Mode == Program.ExecuteMode.Preview) return;
             FamilyFeudsForm_Unload();
         }
 
         private void FamilyFeudsForm_MouseClick(object sender, MouseEventArgs e)
         {
-            if (Program.previewMode) return;
+            if (Program.Mode == Program.ExecuteMode.Preview) return;
             FamilyFeudsForm_Unload();
         }
 

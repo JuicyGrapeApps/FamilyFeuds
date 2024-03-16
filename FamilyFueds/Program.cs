@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2024 JuicyGrape Apps.
+ *
+ * Licensed under the MIT License, (the "License");
+ * you may not use any file by JuicyGrape Apps except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.juicygrapeapps.com/terms
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 using Microsoft.Win32;
 
 namespace FamilyFueds
@@ -11,16 +26,20 @@ namespace FamilyFueds
         public static string messageTitle = "Family Feuds";
 
         // Family Feud Global Settings
-        public static string ComputerName = "";
-        public static string PersonName = "";
-        public static int NumberOfPeople = 0;
-        public static bool previewMode = false;
-        public static bool configMode = false;
-        public static int MaxHeight;
+        public static int MaxHeight;  // Screen dimensions.
         public static int MaxWidth;
-        public static List<Person> family = new List<Person>();
-        public static List<string> names = new List<string>();
-        public static List<string> surnames = new List<string>();
+        public static int NumberOfPeople = 0;                     // Number of bots on screen.  
+        public static List<Person> family = new List<Person>();   // FamilyFeuds bot data.
+        public static List<string> names = new List<string>();    // Custom family names from windows registary.
+        public static List<string> surnames = new List<string>(); // Used to generate a custom family id.
+        public static ExecuteMode Mode;
+
+        public enum ExecuteMode
+        {
+            FullScreen,
+            Preview,
+            Configure
+        }
 
         /// <summary>
         ///  Retrive the unique family id or create one if family has none.
@@ -43,31 +62,35 @@ namespace FamilyFueds
         static void Main(string[] args)
         {
             ApplicationConfiguration.Initialize();
+            LoadSettings();
 
             if (args.Length > 0)
             {
-                string firstArgument = args[0].ToLower().Trim();
-                string? secondArgument = null;
+                string arg1 = args[0].ToLower().Trim();
+                string arg2 = "";
 
                 // Handle cases where arguments are separated by colon. example: /c:[attribute] or /P:[attribute]
-                if (firstArgument.Length > 2)
+                if (arg1.Length > 2)
                 {
-                    secondArgument = firstArgument.Substring(3).Trim();
-                    firstArgument = firstArgument.Substring(0, 2);
-                }
-                else if (args.Length > 1)
-                    secondArgument = args[1];
+                    arg2 = arg1.Substring(3).Trim();
+                    arg1 = arg1.Substring(0, 2);
+                } else if (args.Length > 1) 
+                    arg2 = args[1];
 
-                if (firstArgument == "/c") Configure();  // Configuration mode
-                else if (firstArgument == "/p") Preview(secondArgument);     // Preview mode
-                else if (firstArgument == "/s") Run();     // Full-screen mode
-                else    // Undefined argument
+                switch (arg1)
                 {
-                    MessageBox.Show("Command line argument \"" + firstArgument +"\" is not valid.",
-                        messageTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    case "/c": Configure(); break;    // Configuration mode
+                    case "/p": Preview(arg2); break;  // Preview mode
+                    case "/s": Run(); break;          // Full-screen mode
+                    default:                          // Undefined argument
+                        {
+                        MessageBox.Show("Command line argument \"" + arg1 + "\" is not valid.",
+                            messageTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    }
+                    break;
                 }
-            }
-            else Configure();   // No arguments found
+            } else 
+                Configure(); // No arguments found
         }
 
         /// <summary>
@@ -102,9 +125,7 @@ namespace FamilyFueds
         /// </summary>
         static void Configure()
         {
-            configMode = true;
-            previewMode = false;
-            LoadSettings();
+            Mode = ExecuteMode.Configure;
             Application.Run(new FamilyFeudSettings());
         }
 
@@ -114,35 +135,28 @@ namespace FamilyFueds
         /// </summary>
         static void Preview(string argument)
         {
-            previewMode = true;
-            configMode = false;
-
             if (argument == null)
             {
                 MessageBox.Show("Expected window handle was not provided.",
                     messageTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
-            LoadSettings();
+            Mode = ExecuteMode.Preview;
             IntPtr previewWndHandle = new IntPtr(long.Parse(argument));
             Application.Run(new FamilyFeudsForm(previewWndHandle));
         }
 
         /// <summary>
-        /// Run the FamilyFeuds screen saver.  This function gets called automatically by Windows
-        /// when it activates the screen saver.
+        /// Run in fullscreen mode the FamilyFeuds screen saver.  This function gets called automatically by 
+        /// Windows when it activates the screen saver.
         /// </summary>
         static void Run()
         {
-            previewMode = false;
-            configMode = false;
-            LoadSettings();
+            Mode = ExecuteMode.FullScreen;
 
             foreach (Screen screen in Screen.AllScreens)
-            {
-                FamilyFeudsForm screensaver = new FamilyFeudsForm(screen.Bounds);
-                screensaver.Show();
-            }
+                new FamilyFeudsForm(screen.Bounds).Show();
+
             Application.Run();
         }
     }

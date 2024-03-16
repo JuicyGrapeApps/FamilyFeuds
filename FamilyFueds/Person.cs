@@ -1,7 +1,27 @@
-﻿using FamilyFueds;
+﻿/*
+ * Copyright (c) 2024 JuicyGrape Apps.
+ *
+ * Licensed under the MIT License, (the "License");
+ * you may not use any file by JuicyGrape Apps except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.juicygrapeapps.com/terms
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+using FamilyFueds;
 using System.Diagnostics;
 
 
+/// <summary>
+/// This class is the bot representation of a person on screen it stores their details such as date of birth,
+/// emotional state, intellegence or family ties it also calculates things like a persons age, movement even
+/// how long it takes them to have an idea or recover from emotional dammage.
+/// </summary>
 public class Person
 {
     public delegate void CollisionEvent(Person person, Person collider);
@@ -113,6 +133,9 @@ public class Person
         }
     }
 
+    /// <summary>
+    /// Change a persons emotional state.
+    /// </summary>
     public Emotion emotion
     {
         get => m_emotion;
