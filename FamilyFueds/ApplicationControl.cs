@@ -23,6 +23,7 @@ namespace JuicyGrapeApps.FamilyFueds
         public const string WIN_REG_PATH = "SOFTWARE\\FamilyFeuds";
         public const string REG_KEY_NAMES = "FamilyNames";
         public const string REG_KEY_DEFAULT = "DefaultNames";
+        public const int MAX_BOT_COUNT = 1000;
         public const bool DEBUG_MODE = false;
 
         // MessageBox Title
@@ -38,6 +39,7 @@ namespace JuicyGrapeApps.FamilyFueds
         public static List<string> surnames = new List<string>(); // Used to generate a custom family id.
         public static ExecuteMode Mode;
         public static EventManager Events = new EventManager();
+        private static BotManager Bots = new BotManager();
 
         public enum ExecuteMode
         {
@@ -142,6 +144,7 @@ namespace JuicyGrapeApps.FamilyFueds
         /// </summary>
         public static void Shutdown()
         {
+            Bots.Dispose();
             Application.Exit();
         }
     }

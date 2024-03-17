@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -81,7 +82,8 @@ namespace JuicyGrapeApps.FamilyFueds
 
             graphics = CreateGraphics();
 
-            // Create custom people
+            // Create custom bots by invoking Birth event which is subscribed
+            // to by the OnCreate in the BotManager.
             foreach (string fullname in ApplicationControl.names)
             {
                 string name = fullname;
@@ -94,15 +96,17 @@ namespace JuicyGrapeApps.FamilyFueds
                 {
                     string forename = name.Substring(0, idx);
                     string surname = name.Substring(idx + 1);
-                    ApplicationControl.family.Add(new Person(forename, surname, gender, ApplicationControl.familyIndex(surname)));
+
+                    ApplicationControl.Events.Invoke(EventManager.Event.Birth, new Person(forename, surname, gender, ApplicationControl.familyIndex(surname)));
                 }
             }
 
             int numberOfPeople = ApplicationControl.NumberOfPeople;
 
-            // Create default people
+            // Create default bots by invoking Birth event which is subscribed
+            // to by the OnCreate in the BotManager.
             for (int i = numberOfPeople; i < numberOfPeople + ApplicationControl.MaxDefaultNumber; i++)
-                ApplicationControl.family.Add(new Person());
+                ApplicationControl.Events.Invoke(EventManager.Event.Birth, new Person());
 
             ApplicationControl.Events.Collision += OnCollision;
         }
@@ -167,7 +171,7 @@ namespace JuicyGrapeApps.FamilyFueds
                     for (int j = 0; j < ApplicationControl.NumberOfPeople; j++) person.Contact(ApplicationControl.family[j]);
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 if (ApplicationControl.DEBUG_MODE) Debug.Print("Exception: "+ex.Message);
             }
@@ -366,7 +370,8 @@ namespace JuicyGrapeApps.FamilyFueds
                 person.emotion = Person.Emotion.Love;
                 collider.emotion = Person.Emotion.Love;
 
-                ApplicationControl.family.Add(new Person(person));
+                // BotManager has subscribed to birth event see OnCreate method of BotManager. 
+                ApplicationControl.Events.Invoke(EventManager.Event.Birth, new Person(person));
 
                 person.FamilyEmotional(Person.Emotion.Party, true);
             }
@@ -383,18 +388,18 @@ namespace JuicyGrapeApps.FamilyFueds
             // 
             this.Execute.Enabled = true;
             this.Execute.Interval = 12;
-            this.Execute.Tick += new System.EventHandler(this.Execute_Tick);
+            this.Execute.Tick += new EventHandler(this.Execute_Tick);
             // 
             // FamilyFeudsForm
             // 
-            this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(300, 300);
-            this.Font = new System.Drawing.Font("Segoe Print", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.BackColor = Color.Black;
+            this.ClientSize = new Size(300, 300);
+            this.Font = new Font("Segoe Print", 10.2F, FontStyle.Bold, GraphicsUnit.Point);
+            this.FormBorderStyle = FormBorderStyle.None;
             this.Name = "FamilyFeudsForm";
-            this.Load += new System.EventHandler(this.FamilyFeudsForm_Load);
-            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.FamilyFeudsForm_MouseClick);
-            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FamilyFeudsForm_MouseMove);
+            this.Load += new EventHandler(this.FamilyFeudsForm_Load);
+            this.MouseClick += new MouseEventHandler(this.FamilyFeudsForm_MouseClick);
+            this.MouseMove += new MouseEventHandler(this.FamilyFeudsForm_MouseMove);
             this.ResumeLayout(false);
 
         }

@@ -27,6 +27,7 @@ namespace JuicyGrapeApps.FamilyFueds
         public event CollisionEventHandler Argument;
         public event CollisionEventHandler Marrage;
         public event FamilyEventHandler Death;
+        public event FamilyEventHandler Birth;
         public event PersonEventHandler Birthday;
         public event EmotionEventHandler Emotion;
         public event PersonEventHandler Idea;
@@ -36,6 +37,7 @@ namespace JuicyGrapeApps.FamilyFueds
             Collision,
             Argument,
             Marrage,
+            Birth,
             Death,
             Birthday,
             Emotion,
@@ -52,6 +54,7 @@ namespace JuicyGrapeApps.FamilyFueds
                 case Event.Collision: Collision?.Invoke(person, collider); break;
                 case Event.Argument: Argument?.Invoke(person, collider); break;
                 case Event.Marrage: Marrage?.Invoke(person, collider); break;
+                case Event.Birth: Birth?.Invoke(person); break;
                 case Event.Death: Death?.Invoke(person); break;
                 case Event.Birthday: Birthday?.Invoke(person); break;
                 case Event.Emotion: Emotion?.Invoke(person, feeling); break;
