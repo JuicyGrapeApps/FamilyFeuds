@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 using System.Diagnostics;
+using System.Drawing;
 using System.Runtime.InteropServices;
 
 namespace JuicyGrapeApps.FamilyFueds
@@ -146,6 +147,7 @@ namespace JuicyGrapeApps.FamilyFueds
         {
             SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
             ApplicationControl.Events.Collision -= OnCollision;
+            graphics.Dispose();
             ApplicationControl.Shutdown();
         }
 
@@ -183,14 +185,17 @@ namespace JuicyGrapeApps.FamilyFueds
 
             graphics.FillRectangle(Brushes.Black, new Rectangle(person.location, new Size(200, 50)));
 
-            if (person.mother > -1)
-                graphics.DrawBezier(new Pen(Brushes.Black), person.motherLine[0], person.motherLine[1], person.motherLine[2], person.motherLine[3]);
+            using (Pen pen = new Pen(Brushes.Black))
+            {
+                if (person.mother > -1)
+                    graphics.DrawBezier(pen, person.motherLine[0], person.motherLine[1], person.motherLine[2], person.motherLine[3]);
 
-            if (person.father > -1)
-                graphics.DrawBezier(new Pen(Brushes.Black), person.fatherLine[0], person.fatherLine[1], person.fatherLine[2], person.fatherLine[3]);
+                if (person.father > -1)
+                    graphics.DrawBezier(pen, person.fatherLine[0], person.fatherLine[1], person.fatherLine[2], person.fatherLine[3]);
+            }
 
             DrawArrow(person, true);
-
+            
             person.Move();
 
             Point point = person.location;
@@ -221,7 +226,8 @@ namespace JuicyGrapeApps.FamilyFueds
                     person.motherLine[2].X = person.motherLine[3].X - x;
                     person.motherLine[2].Y = person.motherLine[3].Y - y;
 
-                    graphics.DrawBezier(new Pen(Brushes.Pink), person.motherLine[0], person.motherLine[1], person.motherLine[2], person.motherLine[3]);
+                    using (Pen pen = new Pen(Brushes.Pink))
+                        graphics.DrawBezier(pen, person.motherLine[0], person.motherLine[1], person.motherLine[2], person.motherLine[3]);
                 }
             }
 
@@ -246,7 +252,8 @@ namespace JuicyGrapeApps.FamilyFueds
                     person.fatherLine[2].X = person.fatherLine[3].X - x;
                     person.fatherLine[2].Y = person.fatherLine[3].Y - y;
 
-                    graphics.DrawBezier(new Pen(Brushes.LightBlue), person.fatherLine[0], person.fatherLine[1], person.fatherLine[2], person.fatherLine[3]);
+                    using (Pen pen = new Pen(Brushes.LightBlue))
+                        graphics.DrawBezier(pen, person.fatherLine[0], person.fatherLine[1], person.fatherLine[2], person.fatherLine[3]);
                 }
             }
 
@@ -264,76 +271,69 @@ namespace JuicyGrapeApps.FamilyFueds
 
             Person target = ApplicationControl.family[(person.followed > -1) ? person.followed: person.lookat];
 
-            Double scale = 10;
-            Pen pen;
-            if (clear)
+            Double scale = clear ? 11: 10;
+
+            using (Pen pen = clear ? new Pen(Brushes.Black, 3.0f) : new Pen(Brushes.NavajoWhite, 1.0f))
             {
-                scale = 11;
-                pen = new Pen(Brushes.Black, 3.0f);
+                Point center = new Point(person.location.X, person.location.Y);
+
+                double v = center.X - target.location.X;
+                double h = target.location.Y - center.Y;
+
+                Double t1 = Math.Atan2(v, h) - 99.75;
+                Double x1 = (Math.Cos(t1) - Math.Sin(t1)) * scale;
+                Double y1 = (Math.Sin(t1) + Math.Cos(t1)) * scale;
+
+                graphics.DrawLine
+                (
+                    pen,
+                    (Single)center.X,
+                    (Single)center.Y,
+                    (Single)(center.X + x1),
+                    (Single)(center.Y + y1)
+                );
+
+                Double t2 = t1 - 90;
+                Double x2 = (Math.Cos(t2) - Math.Sin(t2)) * scale;
+                Double y2 = (Math.Sin(t2) + Math.Cos(t2)) * scale;
+
+                Double t3 = t1 + 90;
+                Double x3 = (Math.Cos(t3) - Math.Sin(t3)) * scale;
+                Double y3 = (Math.Sin(t3) + Math.Cos(t3)) * scale;
+
+                graphics.DrawLine
+                (
+                    pen,
+                    (Single)center.X,
+                    (Single)center.Y,
+                    (Single)(center.X + x2),
+                    (Single)(center.Y + y2)
+                );
+                graphics.DrawLine
+                (
+                    pen,
+                    (Single)center.X,
+                    (Single)center.Y,
+                    (Single)(center.X + x3),
+                    (Single)(center.Y + y3)
+                );
+                graphics.DrawLine
+                (
+                    pen,
+                    (Single)(center.X + x1),
+                    (Single)(center.Y + y1),
+                    (Single)(center.X + x2),
+                    (Single)(center.Y + y2)
+                );
+                graphics.DrawLine
+                (
+                    pen,
+                    (Single)(center.X + x1),
+                    (Single)(center.Y + y1),
+                    (Single)(center.X + x3),
+                    (Single)(center.Y + y3)
+                );
             }
-            else
-            {
-                pen = new Pen(Brushes.NavajoWhite, 1.0f);
-            }
-
-            Point center = new Point(person.location.X, person.location.Y);
-
-            double v = center.X - target.location.X;
-            double h = target.location.Y - center.Y;
-
-            Double t1 = Math.Atan2(v, h) - 99.75;
-            Double x1 = (Math.Cos(t1) - Math.Sin(t1)) * scale;
-            Double y1 = (Math.Sin(t1) + Math.Cos(t1)) * scale;
-
-            graphics.DrawLine
-            (
-                pen,
-                (Single) center.X,
-                (Single) center.Y,
-                (Single)(center.X + x1),
-                (Single)(center.Y + y1)
-            );
-
-            Double t2 = t1 - 90;
-            Double x2 = (Math.Cos(t2) - Math.Sin(t2)) * scale;
-            Double y2 = (Math.Sin(t2) + Math.Cos(t2)) * scale;
-
-            Double t3 = t1 + 90;
-            Double x3 = (Math.Cos(t3) - Math.Sin(t3)) * scale;
-            Double y3 = (Math.Sin(t3) + Math.Cos(t3)) * scale;
-
-            graphics.DrawLine
-            (
-                pen,
-                (Single) center.X,
-                (Single) center.Y,
-                (Single)(center.X + x2),
-                (Single)(center.Y + y2)
-            );
-            graphics.DrawLine
-            (
-                pen,
-                (Single) center.X,
-                (Single) center.Y,
-                (Single)(center.X + x3),
-                (Single)(center.Y + y3)
-            );
-            graphics.DrawLine
-            (
-                pen,
-                (Single)(center.X + x1),
-                (Single)(center.Y + y1),
-                (Single)(center.X + x2),
-                (Single)(center.Y + y2)
-            );
-            graphics.DrawLine
-            (
-                pen,
-                (Single)(center.X + x1),
-                (Single)(center.Y + y1),
-                (Single)(center.X + x3),
-                (Single)(center.Y + y3)
-            );
 
             if (clear)
             {
@@ -389,7 +389,7 @@ namespace JuicyGrapeApps.FamilyFueds
             // 
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(300, 300);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.Font = new System.Drawing.Font("Segoe Print", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FamilyFeudsForm";
             this.Load += new System.EventHandler(this.FamilyFeudsForm_Load);

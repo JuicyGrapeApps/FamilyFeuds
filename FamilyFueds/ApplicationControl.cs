@@ -23,7 +23,7 @@ namespace JuicyGrapeApps.FamilyFueds
         public const string WIN_REG_PATH = "SOFTWARE\\FamilyFeuds";
         public const string REG_KEY_NAMES = "FamilyNames";
         public const string REG_KEY_DEFAULT = "DefaultNames";
-        public const bool DEBUG_MODE = false;
+        public const bool DEBUG_MODE = true;
 
         // MessageBox Title
         public static string messageTitle = "Family Feuds";
