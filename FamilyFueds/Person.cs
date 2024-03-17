@@ -284,7 +284,8 @@ public class Person
     public bool Marry(Person person)
     {
         if (isEmotional || person.isEmotional || isInjured || person.isInjured ||
-            person.family == family || person.gender == gender || married + person.married != -2) return !isEmotional && !person.isEmotional && married == person.id;
+            person.mother == id || person.father == id || person.family == family ||
+            person.gender == gender || married + person.married != -2) return !isEmotional && !person.isEmotional && married == person.id;
 
         married = person.id;
         person.married = id;
@@ -352,11 +353,12 @@ public class Person
     /// <param name="person"></param>
     public void Fight(Person person)
     {
-        if (isDead || isInjured || person.isBaby || person.family == family) return;
-
         if (lookat == person.id) follow = false;
 
-        if (person.gender == gender) {
+        if (isDead || isInjured || person.isBaby || person.family == family ||
+            person.mother == id || person.father == id) return;
+
+        if (person.gender == gender || person.isAngry) {
             if (person.energy == 1)
             {
                 person.energy = -1;
