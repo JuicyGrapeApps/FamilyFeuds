@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using FamilyFueds;
+using JuicyGrapeApps.FamilyFueds;
 
 public static class RandomGenerator
 {
@@ -33,7 +33,7 @@ public static class RandomGenerator
     /// Random location generator this function returns random point on the screen.
     /// </summary>
     /// <returns>Point (Screen Location)</returns>
-    public static Point Location => new Point(rnd.Next(Program.MaxHeight + 1), rnd.Next(Program.MaxWidth + 1));
+    public static Point Location => new Point(rnd.Next(ApplicationControl.MaxHeight + 1), rnd.Next(ApplicationControl.MaxWidth + 1));
 
     /// <summary>
     /// Random integer generator this function returns a random signed or unsigned integer value upto the maximum

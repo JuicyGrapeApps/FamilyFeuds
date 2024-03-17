@@ -15,7 +15,7 @@
  */
 using Microsoft.Win32;
 
-namespace FamilyFueds
+namespace JuicyGrapeApps.FamilyFueds
 {
     public partial class FamilyFeudSettings : Form
     {
@@ -23,12 +23,12 @@ namespace FamilyFueds
         {
             InitializeComponent();
 
-            foreach (string name in Program.names) listFamilyNames.Items.Add(name);
+            foreach (string name in ApplicationControl.names) listFamilyNames.Items.Add(name);
         }
 
         private void SaveSettings()
         {
-            RegistryKey key = Registry.CurrentUser.CreateSubKey(Program.WIN_REG_PATH);
+            RegistryKey key = Registry.CurrentUser.CreateSubKey(ApplicationControl.WIN_REG_PATH);
             string listOfNames = "";
             foreach (string name in listFamilyNames.Items) listOfNames += name+".";
             key.SetValue("FamilyNames", listOfNames);
@@ -65,7 +65,7 @@ namespace FamilyFueds
             if (empty)
             {
                 MessageBox.Show("Missing details need both the forename and surname.",
-                    Program.messageTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ApplicationControl.messageTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             return !empty;
         }
@@ -75,7 +75,7 @@ namespace FamilyFueds
             if (listFamilyNames.SelectedIndex == -1)
             {
                 MessageBox.Show("Select a name from the list first.",
-                Program.messageTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ApplicationControl.messageTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else listFamilyNames.Items.RemoveAt(listFamilyNames.SelectedIndex);
         }

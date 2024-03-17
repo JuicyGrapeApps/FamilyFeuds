@@ -1,4 +1,4 @@
-﻿namespace FamilyFueds
+﻿namespace JuicyGrapeApps.FamilyFueds
 {
     partial class FamilyFeudSettings
     {

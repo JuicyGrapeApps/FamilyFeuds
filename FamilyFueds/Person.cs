@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using FamilyFueds;
+using JuicyGrapeApps.FamilyFueds;
 using System.Diagnostics;
 
 
@@ -24,9 +24,6 @@ using System.Diagnostics;
 /// </summary>
 public class Person
 {
-    public delegate void CollisionEvent(Person person, Person collider);
-    public static event CollisionEvent Collision;
-
     // Emotional states
     public enum Emotion
     {
@@ -99,7 +96,9 @@ public class Person
         }
     }
 
-    // Used to calculate how long it takes in seconds to recover from emotional damage
+    /// <summary>
+    /// Used to calculate how long it takes in seconds to recover from emotional damage
+    /// </summary>
     public bool recovered
     {
         get
@@ -116,7 +115,9 @@ public class Person
         }
     }
 
-    // Used to calculate how long it takes in seconds for an idea to occure
+    /// <summary>
+    /// Used to calculate how long it takes in seconds for an idea to occure
+    /// </summary>
     public bool idea
     {
         get
@@ -131,7 +132,9 @@ public class Person
         }
     }
 
-    // Energy of the person a person will expire if energy reaches zero.
+    /// <summary>
+    /// Energy of the person a person will expire if energy reaches zero.
+    /// </summary>
     public int energy
     {
         get => m_energy;
@@ -142,7 +145,9 @@ public class Person
         }
     }
 
-    // Change a persons emotional state.
+    /// <summary>
+    /// Change a persons emotional state.
+    /// </summary>
     public Emotion emotion
     {
         get => m_emotion;
@@ -194,11 +199,17 @@ public class Person
         }
     }
 
-    // Constructor used for a custom person
+    /// <summary>
+    /// Constructor used for a custom person
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="surname"></param>
+    /// <param name="gender"></param>
+    /// <param name="family"></param>
     public Person(string name, string surname, bool gender, int family)
     {
-        id = Program.NumberOfPeople;
-        Program.NumberOfPeople++;
+        id = ApplicationControl.NumberOfPeople;
+        ApplicationControl.NumberOfPeople++;
 
         this.gender = gender;
         this.name = name;
@@ -215,11 +226,14 @@ public class Person
         idea = true;
     }
 
-    // Constructor used for a default person
+    /// <summary>
+    /// Constructor used for a default person
+    /// </summary>
+    /// <param name="person"></param>
     public Person(Person person = null)
     {
-        id = Program.NumberOfPeople;
-        Program.NumberOfPeople++;
+        id = ApplicationControl.NumberOfPeople;
+        ApplicationControl.NumberOfPeople++;
         gender = RandomGenerator.Gender;
         name = RandomGenerator.Forename(gender);
         dob = DateTime.Now;
@@ -247,11 +261,11 @@ public class Person
                 father = person.married;
             }
 
-            location = Program.family[mother].location;
+            location = ApplicationControl.family[mother].location;
 
             emotion = Emotion.Baby;
 
-            Debug.Print(Program.family[mother].fullname + " gave birth to " + fullname);
+            if (ApplicationControl.DEBUG_MODE) Debug.Print(ApplicationControl.family[mother].fullname + " gave birth to " + fullname);
 
             Birthday();
         }
@@ -261,8 +275,12 @@ public class Person
         idea = true;
     }
 
-    // Called after a collition event, this function preforms a marrage between the people who met depending
-    // on certain criteria.
+    /// <summary>
+    /// Called after a collition event, this function preforms a marrage between the people who met depending
+    /// on certain criteria.
+    /// </summary>
+    /// <param name="person"></param>
+    /// <returns></returns>
     public bool Marry(Person person)
     {
         if (isEmotional || person.isEmotional || isInjured || person.isInjured ||
@@ -284,7 +302,12 @@ public class Person
         return true;
     }
 
-    // Change entire families emotional state and sets any reaction to the emotion.
+    /// <summary>
+    /// Change entire families emotional state and sets any reaction to the emotion.
+    /// </summary>
+    /// <param name="familyEmotion"></param>
+    /// <param name="excludeAllEmotions"></param>
+    /// <param name="familyId"></param>
     public void FamilyEmotional(Emotion familyEmotion, bool excludeAllEmotions = false, int familyId = -1)
     {
         bool retribution = familyId != -1;
@@ -292,8 +315,8 @@ public class Person
 
         List<Person> mob;
 
-        if (excludeAllEmotions) mob = Program.family.FindAll(x => x.family == familyId && !isEmotional);
-        else mob = Program.family.FindAll(x => x.family == familyId && !x.isDead && !x.isInjured && !x.isBaby);
+        if (excludeAllEmotions) mob = ApplicationControl.family.FindAll(x => x.family == familyId && !isEmotional);
+        else mob = ApplicationControl.family.FindAll(x => x.family == familyId && !x.isDead && !x.isInjured && !x.isBaby);
 
         foreach (Person person in mob)
         {
@@ -307,7 +330,9 @@ public class Person
         }
     }
 
-    // Called every tick count of the Execute timer on the FamiltFeudForm form.
+    /// <summary>
+    /// Called on every screen update <see cref="FamilyFeudsForm.Update(Person)"/>
+    /// </summary>
     public void Update()
     {
         if (isDead) return;
@@ -320,8 +345,11 @@ public class Person
         if (m_thinking && idea) Idea();
     }
 
-    // Called after a collition event, this function preforms a argument between the people who met depending
-    // on certain criteria.
+    /// <summary>
+    /// Called after a collition event, this function preforms a argument between the people who met depending
+    /// on certain criteria.
+    /// </summary>
+    /// <param name="person"></param>
     public void Fight(Person person)
     {
         if (isDead || isInjured || person.isBaby || person.family == family) return;
@@ -344,7 +372,7 @@ public class Person
         }
         else if (person.married > -1)
         {
-            Person spouse = Program.family[person.married];
+            Person spouse = ApplicationControl.family[person.married];
             if (!spouse.isInjured)
             {
                 spouse.emotion = Emotion.Jealous;
@@ -354,31 +382,37 @@ public class Person
         }
     }
 
-    // Called when a person is over their emotion.
+    /// <summary>
+    /// Called when a person is over their emotion.
+    /// </summary>
     private void Recovered()
     {
         emotion = isBaby ? Emotion.Happy: Emotion.None;
     }
 
-    // Called every time a person has an idea, idea's occure after the person has been thinking,
-    // the amount of time it takes in seconds for a person to think depends on their intelligence.
+    /// <summary>
+    /// Called every time a person has an idea, idea's occure after the person has been thinking,
+    /// the amount of time it takes in seconds for a person to think depends on their intelligence.
+    /// </summary>
     private void Idea()
     {
-        Debug.Print(name + " had an idea!");
+        if (ApplicationControl.DEBUG_MODE) Debug.Print(name + " had an idea!");
         if (isDead) return;
         else if (!isEmotional) ChangeVolocity();
         m_intellegence = RandomGenerator.Int(20, 5);
         idea = true;
     }
 
-    // Moves a bot on screen according to it's volocity.
+    /// <summary>
+    /// Moves a bot on screen according to it's volocity.
+    /// </summary>
     public void Move()
     {
         if (isInjured || ignore == -4) return;
 
         if (follow)
         {
-            Person person = Program.family[lookat];
+            Person person = ApplicationControl.family[lookat];
             if (location.X < person.location.X) volocity.X = 2;
             if (location.X > person.location.X) volocity.X = -2;
             if (location.Y < person.location.Y) volocity.Y = 2;
@@ -389,13 +423,15 @@ public class Person
         location.Y += volocity.Y;
 
         if (ignore != -3) Contact();
-        else if (location.Y < -50 || location.Y > Program.MaxHeight + 100) ignore = -4;
+        else if (location.Y < -50 || location.Y > ApplicationControl.MaxHeight + 100) ignore = -4;
     }
 
-    // Called on a persons birthday, the time factor is one year is equivalent to one minute.
+    /// <summary>
+    /// Called on a persons birthday, the time factor is one year is equivalent to one minute.
+    /// </summary>
     private void Birthday()
     {
-        Debug.Print("It's " + fullname + " " + (m_age+1) + " birthday!");
+        if (ApplicationControl.DEBUG_MODE) Debug.Print("It's " + fullname + " " + (m_age+1) + " birthday!");
         if (m_age == 0) ignore = -2;
         else if (m_age == 5) { energy--; if (!isEmotional) emotion = Emotion.Party; }
         else if (m_age == 10) { energy--; if (!isEmotional) emotion = Emotion.Party; }
@@ -404,8 +440,10 @@ public class Person
         else if (m_age == 25) energy--;
     }
 
-    // Called when a person expires, factors that could cause this include old age or injuries sustained
-    // during an argument.
+    /// <summary>
+    /// Called when a person expires, factors that could cause this include old age or injuries sustained
+    /// during an argument.
+    /// </summary>
     private void Died()
     {
         volocity.X = 0;
@@ -423,7 +461,7 @@ public class Person
 
         ignore = -3;
 
-        if (married > -1) Program.family[married].married = -1;
+        if (married > -1) ApplicationControl.family[married].married = -1;
         married = -1;
         mother = -1;
         father = -1;
@@ -431,16 +469,27 @@ public class Person
         if (energy == 0) FamilyEmotional(Emotion.Sad);
     }
 
-    // Check for contact with screen bounderies
+    /// <summary>
+    /// Check for contact with screen bounderies
+    /// 
+    /// <remarks>
+    /// If event ever needed for screen collition use following:
+    /// Send: A byte using 0 << bit, set the bits for each screen contact.
+    /// Receive: The byte and decode with bool hasBit = (byte & (1 << bit)) != 0;
+    /// </summary>
     private void Contact()
     {
-        if (location.X < 0) { location.X = 0; volocity.X = 1; }
-        if (location.Y < 0) { location.Y = 0; volocity.Y = 1; }
-        if (location.X > Program.MaxWidth) { location.X = Program.MaxWidth; volocity.X = -1; }
-        if (location.Y > Program.MaxHeight) { location.Y = Program.MaxHeight; volocity.Y = -1; }
+        byte impact = 0;
+        if (location.X < 0) { location.X = 0; volocity.X = 1; impact = 1 << 1; }
+        if (location.Y < 0) { location.Y = 0; volocity.Y = 1; impact = 1 << 2; }
+        if (location.X > ApplicationControl.MaxWidth) { location.X = ApplicationControl.MaxWidth; volocity.X = -1; impact = 1 << 3; }
+        if (location.Y > ApplicationControl.MaxHeight) { location.Y = ApplicationControl.MaxHeight; volocity.Y = -1; impact = 1 << 4; }
     }
 
-    // Check for contact with other bots.
+    /// <summary>
+    /// Check for contact with other bots.
+    /// </summary>
+    /// <param name="person"></param>
     public void Contact(Person person)
     {
         if (person.id != id && !Is.AnyEqual(ignore, person.id, person.ignore, id) && !isDead && !person.isDead &&
@@ -450,7 +499,7 @@ public class Person
             Is.Between(person.location.Y + 50, location.Y, location.Y + 50)))
         {
             ignore = person.id;
-            Collision?.Invoke(this, person);
+            ApplicationControl.Events.Invoke(EventManager.Event.Collision, this, person);
         }
         else if (ignore > -1 && Is.AnyEqual(ignore, person.id, person.ignore, id)) ignore = -1;
     }

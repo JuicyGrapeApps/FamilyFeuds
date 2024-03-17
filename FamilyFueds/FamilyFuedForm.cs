@@ -16,7 +16,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace FamilyFueds
+namespace JuicyGrapeApps.FamilyFueds
 {
     public partial class FamilyFeudsForm : Form
     {
@@ -54,8 +54,8 @@ namespace FamilyFueds
             GetClientRect(PreviewWndHandle, out Rectangle ParentRect);
 
             Size = ParentRect.Size;
-            Program.MaxHeight = Size.Height;
-            Program.MaxWidth = Size.Width;
+            ApplicationControl.MaxHeight = Size.Height;
+            ApplicationControl.MaxWidth = Size.Width;
             Location = new Point(0, 0);
         }
 
@@ -68,8 +68,8 @@ namespace FamilyFueds
             Bounds = bounds;
 
             Size = Bounds.Size;
-            Program.MaxHeight = Size.Height - 50;
-            Program.MaxWidth = Size.Width - 200;
+            ApplicationControl.MaxHeight = Size.Height - 50;
+            ApplicationControl.MaxWidth = Size.Width - 200;
             Location = new Point(0, 0);
         }
 
@@ -80,7 +80,7 @@ namespace FamilyFueds
 
             graphics = CreateGraphics();
 
-            foreach (string fullname in Program.names)
+            foreach (string fullname in ApplicationControl.names)
             {
                 string name = fullname;
                 bool gender = name.Contains("(M)");
@@ -92,30 +92,30 @@ namespace FamilyFueds
                 {
                     string forename = name.Substring(0, idx);
                     string surname = name.Substring(idx + 1);
-                    Program.family.Add(new Person(forename, surname, gender, Program.familyIndex(surname)));
+                    ApplicationControl.family.Add(new Person(forename, surname, gender, ApplicationControl.familyIndex(surname)));
                 }
             }
 
-            int numberOfPeople = Program.NumberOfPeople;
+            int numberOfPeople = ApplicationControl.NumberOfPeople;
 
             for (int i = numberOfPeople; i < numberOfPeople + 10; i++)
-                Program.family.Add(new Person());
+                ApplicationControl.family.Add(new Person());
 
-            Person.Collision += OnCollision;
+            ApplicationControl.Events.Collision += OnCollision;
         }
 
         private Point mouseLocation;
 
         private void FamilyFeudsForm_MouseMove(object sender, MouseEventArgs e)
         {
-            if (Program.Mode == Program.ExecuteMode.Preview) return;
+            if (ApplicationControl.Mode == ApplicationControl.ExecuteMode.Preview) return;
 
             if (!mouseLocation.IsEmpty)
             {
                 // Terminate if mouse is moved a significant distance
                 if (Math.Abs(mouseLocation.X - e.X) > 5 ||
                     Math.Abs(mouseLocation.Y - e.Y) > 5)
-                    Application.Exit();
+                    ApplicationControl.Shutdown();
             }
 
             // Update current mouse location
@@ -124,46 +124,57 @@ namespace FamilyFueds
 
         private void FamilyFeudsForm_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (Program.Mode == Program.ExecuteMode.Preview) return;
+            if (ApplicationControl.Mode == ApplicationControl.ExecuteMode.Preview) return;
             FamilyFeudsForm_Unload();
         }
 
         private void FamilyFeudsForm_Click(object sender, EventArgs e)
         {
-            if (Program.Mode == Program.ExecuteMode.Preview) return;
+            if (ApplicationControl.Mode == ApplicationControl.ExecuteMode.Preview) return;
             FamilyFeudsForm_Unload();
         }
 
         private void FamilyFeudsForm_MouseClick(object sender, MouseEventArgs e)
         {
-            if (Program.Mode == Program.ExecuteMode.Preview) return;
+            if (ApplicationControl.Mode == ApplicationControl.ExecuteMode.Preview) return;
             FamilyFeudsForm_Unload();
         }
 
         private void FamilyFeudsForm_Unload()
         {
             SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
-            Person.Collision -= OnCollision;
-            Application.Exit();
+            ApplicationControl.Events.Collision -= OnCollision;
+            ApplicationControl.Shutdown();
         }
 
+        /// <summary>
+        /// Called by the Execute timer on the FamiltFeudForm form.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Execute_Tick(object sender, EventArgs e)
         {
             try
             {
-                for (int i = 0; i < Program.NumberOfPeople; i++)
+                for (int i = 0; i < ApplicationControl.NumberOfPeople; i++)
                 {
-                    Person person = Program.family[i];
+                    Person person = ApplicationControl.family[i];
                     Update(person);
-                    for (int j = 0; j < Program.NumberOfPeople; j++) person.Contact(Program.family[j]);
+                    for (int j = 0; j < ApplicationControl.NumberOfPeople; j++) person.Contact(ApplicationControl.family[j]);
                 }
             }
             catch (System.Exception ex)
             {
-                Debug.Print("Exception: "+ex.Message);
+                if (ApplicationControl.DEBUG_MODE) Debug.Print("Exception: "+ex.Message);
             }
         }
 
+        /// <summary>
+        /// Called every tick count of the Execute timer on the FamiltFeudForm form. This
+        /// function clears and paints all the graphics on screen.
+        /// <see cref="Execute_Tick(object, EventArgs)"/>
+        /// </summary>
+        /// <param name="person"></param>
         private void Update(Person person)
         {
             person.Update();
@@ -189,14 +200,14 @@ namespace FamilyFueds
 
             if (person.mother > -1)
             {
-                if (Program.family[person.mother].isDead) person.mother = -1;
+                if (ApplicationControl.family[person.mother].isDead) person.mother = -1;
                 else
                 {
                     int offset = 40;
                     person.motherLine[0] = person.location;
                     person.motherLine[0].X += offset;
                     person.motherLine[0].Y += offset;
-                    person.motherLine[3] = Program.family[person.mother].location;
+                    person.motherLine[3] = ApplicationControl.family[person.mother].location;
                     person.motherLine[3].X += offset;
                     person.motherLine[3].Y += offset;
                     int x = (person.motherLine[3].X - person.motherLine[0].X) / 4;
@@ -214,14 +225,14 @@ namespace FamilyFueds
 
             if (person.father > -1)
             {
-                if (Program.family[person.father].isDead) person.father = -1;
+                if (ApplicationControl.family[person.father].isDead) person.father = -1;
                 else
                 {
                     int offset = 40;
                     person.fatherLine[0] = person.location;
                     person.fatherLine[0].X += offset;
                     person.fatherLine[0].Y += offset;
-                    person.fatherLine[3] = Program.family[person.father].location;
+                    person.fatherLine[3] = ApplicationControl.family[person.father].location;
                     person.fatherLine[3].X += offset;
                     person.fatherLine[3].Y += offset;
                     int x = (person.fatherLine[3].X - person.fatherLine[0].X) / 4;
@@ -240,11 +251,16 @@ namespace FamilyFueds
             DrawArrow(person);
         }
 
+        /// <summary>
+        /// Draws the arrow that points to the person who's being looked at.
+        /// </summary>
+        /// <param name="person"></param>
+        /// <param name="clear"></param>
         public void DrawArrow(Person person, bool clear = false)
         {
             if (person.lookat+person.followed == -2) return;
 
-            Person target = Program.family[(person.followed > -1) ? person.followed: person.lookat];
+            Person target = ApplicationControl.family[(person.followed > -1) ? person.followed: person.lookat];
 
             Double scale = 10;
             Pen pen;
@@ -325,11 +341,14 @@ namespace FamilyFueds
             }
         }
 
-
+        /// <summary>
+        /// Collision event handler.
+        /// </summary>
+        /// <param name="person"></param>
+        /// <param name="collider"></param>
         private void OnCollision(Person person, Person collider)
         {
-            Debug.Print(person.fullname + " bumped into " + collider.fullname);
-
+            if (ApplicationControl.DEBUG_MODE) Debug.Print(person.fullname + " bumped into " + collider.fullname);
             
             person.volocity.X = (person.location.X < collider.location.X) ? -1: 1;
             person.volocity.Y = (person.location.Y < collider.location.Y) ? -1 :1;
@@ -341,11 +360,11 @@ namespace FamilyFueds
 
             if (person.Marry(collider))
             {
-                Debug.Print(person.name + " got married to " + collider.name);
+                if (ApplicationControl.DEBUG_MODE) Debug.Print(person.name + " got married to " + collider.name);
                 person.emotion = Person.Emotion.Love;
                 collider.emotion = Person.Emotion.Love;
 
-                Program.family.Add(new Person(person));
+                ApplicationControl.family.Add(new Person(person));
 
                 person.FamilyEmotional(Person.Emotion.Party, true);
             }
