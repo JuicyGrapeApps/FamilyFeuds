@@ -21,7 +21,8 @@ namespace JuicyGrapeApps.FamilyFueds
 		public BotManager()
 		{
 			ApplicationControl.Events.Birth += OnCreateBot;
-		}
+            ApplicationControl.Events.Garbage += Dispose;
+        }
 
 		/// <summary>
 		/// Handles the Birth event to create a new bot. 
@@ -39,8 +40,9 @@ namespace JuicyGrapeApps.FamilyFueds
         /// <param name="person"></param>
         public void Dispose()
 		{
+            ApplicationControl.Events.Garbage -= Dispose;
             ApplicationControl.Events.Birth -= OnCreateBot;
         }
 
-	}
+    }
 }

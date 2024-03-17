@@ -187,7 +187,8 @@ namespace JuicyGrapeApps.FamilyFueds
         {
             person.Update();
 
-            graphics.FillRectangle(Brushes.Black, new Rectangle(person.location, new Size(200, 50)));
+            graphics.FillRectangle(Brushes.Black, person.bounds);
+            graphics.FillRectangle(Brushes.Black, new Rectangle(person.location, new Size(50, 50)));
 
             using (Pen pen = new Pen(Brushes.Black))
             {
@@ -206,8 +207,15 @@ namespace JuicyGrapeApps.FamilyFueds
             point.X += 55;
             point.Y += 18;
 
+            RectangleF personalSpace = new RectangleF(point, new Size(300, 30));
+            StringFormat format = new StringFormat();
+            format.SetMeasurableCharacterRanges(new[] { new CharacterRange(0, person.fullname.Length) });
+
             graphics.DrawImage(person.image, new Rectangle(person.location, new Size(50, 50)));
-            graphics.DrawString(person.fullname, Font, Brushes.WhiteSmoke, new RectangleF(point, new Size(150, 30)));
+            graphics.DrawString(person.fullname, Font, Brushes.WhiteSmoke, personalSpace, format);
+
+            person.bounds = graphics.MeasureCharacterRanges(person.fullname, Font, personalSpace, format)[0].GetBounds(graphics);
+            person.bounds.Width += 5;
 
             if (person.mother > -1)
             {

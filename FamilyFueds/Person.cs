@@ -22,7 +22,7 @@ using System.Diagnostics;
 /// emotional state, intellegence or family ties it also calculates things like a person's age, movement and
 /// even how long it takes to have an idea or recuperate from emotional damage.
 /// </summary>
-public class Person
+public class Person : IDisposable
 {
     // Emotional states
     public enum Emotion
@@ -68,6 +68,7 @@ public class Person
     private bool m_killer = false;
     private bool m_follow = false;
     public int followed = -1;
+    public RectangleF bounds = new();
 
     // Boolean repesentations of emotional states
     public bool isInjured => m_emotion == Emotion.Injured;
@@ -208,6 +209,8 @@ public class Person
     /// <param name="family"></param>
     public Person(string name, string surname, bool gender, int family)
     {
+        ApplicationControl.Events.Garbage += Dispose;
+
         id = ApplicationControl.NumberOfPeople;
         ApplicationControl.NumberOfPeople++;
 
@@ -232,6 +235,8 @@ public class Person
     /// <param name="person"></param>
     public Person(Person person = null)
     {
+        ApplicationControl.Events.Garbage += Dispose;
+
         id = ApplicationControl.NumberOfPeople;
         ApplicationControl.NumberOfPeople++;
         gender = RandomGenerator.Gender;
@@ -504,5 +509,11 @@ public class Person
             ApplicationControl.Events.Invoke(EventManager.Event.Collision, this, person);
         }
         else if (ignore > -1 && Is.AnyEqual(ignore, person.id, person.ignore, id)) ignore = -1;
+    }
+
+    public void Dispose()
+    {
+        ApplicationControl.Events.Garbage -= Dispose;
+        image.Dispose();
     }
 }

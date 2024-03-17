@@ -22,6 +22,7 @@ namespace JuicyGrapeApps.FamilyFueds
         public delegate void PersonEventHandler(Person person);
         public delegate void EmotionEventHandler(Person person, bool feeling);
         public delegate void FamilyEventHandler(Person person);
+        public delegate void GarbageEventHandler();
 
         public event CollisionEventHandler Collision;
         public event CollisionEventHandler Argument;
@@ -31,6 +32,7 @@ namespace JuicyGrapeApps.FamilyFueds
         public event PersonEventHandler Birthday;
         public event EmotionEventHandler Emotion;
         public event PersonEventHandler Idea;
+        public event GarbageEventHandler Garbage;
 
         public enum Event
         {
@@ -61,5 +63,7 @@ namespace JuicyGrapeApps.FamilyFueds
                 case Event.Idea: Idea?.Invoke(person); break;
             }
         }
+
+        public void Dispose() => Garbage?.Invoke();
     }
 }

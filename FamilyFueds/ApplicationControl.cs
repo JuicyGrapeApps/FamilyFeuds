@@ -144,7 +144,7 @@ namespace JuicyGrapeApps.FamilyFueds
         /// </summary>
         public static void Shutdown()
         {
-            Bots.Dispose();
+            Events.Dispose();
             Application.Exit();
         }
     }
