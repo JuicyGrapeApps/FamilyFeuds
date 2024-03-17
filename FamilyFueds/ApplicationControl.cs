@@ -20,7 +20,7 @@ namespace JuicyGrapeApps.FamilyFueds
         public static List<string> names = new List<string>();    // Custom family names from windows registary.
         public static List<string> surnames = new List<string>(); // Used to generate a custom family id.
         public static ExecuteMode Mode;
-        public static EventManager Events;
+        public static EventManager Events = new EventManager();
 
         public enum ExecuteMode
         {
@@ -31,7 +31,6 @@ namespace JuicyGrapeApps.FamilyFueds
 
         public static void Initialize()
         {
-            Events = new EventManager();
             LoadSettings();
         }
 

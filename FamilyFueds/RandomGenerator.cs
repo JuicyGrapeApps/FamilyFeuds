@@ -54,23 +54,23 @@ public static class RandomGenerator
         get
         {
             string[] surnames = new string[17];
-            surnames[0] = "Rogers";
+            surnames[0] = "Smith";
             surnames[1] = "Jones";
-            surnames[2] = "Peters";
+            surnames[2] = "Johnson";
             surnames[3] = "Harris";
             surnames[4] = "Baker";
-            surnames[5] = "Smith";
+            surnames[5] = "Green";
             surnames[6] = "Williams";
-            surnames[7] = "Shepard";
-            surnames[8] = "Hills";
-            surnames[9] = "Jacobs";
+            surnames[7] = "Roberts";
+            surnames[8] = "Lewis";
+            surnames[9] = "Phillips";
             surnames[10] = "Booth";
             surnames[11] = "Hicks";
             surnames[12] = "Adams";
-            surnames[13] = "Johnson";
-            surnames[14] = "Adle";
+            surnames[13] = "Richards";
+            surnames[14] = "Edwards";
             surnames[15] = "Weston";
-            surnames[16] = "Samson";
+            surnames[16] = "Evans";
 
             family = rnd.Next(17);
             return surnames[family];
@@ -89,23 +89,23 @@ public static class RandomGenerator
 
         if (male) {
             string[] forename = new string[17];
-            forename[0] = "Mark";
-            forename[1] = "Paul";
-            forename[2] = "John";
-            forename[3] = "James";
+            forename[0] = "John";
+            forename[1] = "Simon";
+            forename[2] = "James";
+            forename[3] = "Peter";
             forename[4] = "Frank";
-            forename[5] = "Peter";
-            forename[6] = "Will";
+            forename[5] = "William";
+            forename[6] = "Tony";
             forename[7] = "Bob";
             forename[8] = "Glen";
             forename[9] = "Kevin";
-            forename[10] = "Rob";
+            forename[10] = "Robert";
             forename[11] = "Steven";
             forename[12] = "Stuwart";
-            forename[13] = "Phil";
-            forename[14] = "Tom";
+            forename[13] = "Philip";
+            forename[14] = "Bill";
             forename[15] = "Graham";
-            forename[16] = "Michel";
+            forename[16] = "Michael";
             name = forename[rnd.Next(17)];
         }
         else
@@ -114,20 +114,20 @@ public static class RandomGenerator
             forename[0] = "Sarah";
             forename[1] = "Jane";
             forename[2] = "Jackie";
-            forename[3] = "Karen";
+            forename[3] = "Sofia";
             forename[4] = "Amy";
-            forename[5] = "Alison";
+            forename[5] = "Alice";
             forename[6] = "Rachel";
-            forename[7] = "Debby";
-            forename[8] = "Kate";
+            forename[7] = "Anna";
+            forename[8] = "Katie";
             forename[9] = "Jill";
-            forename[10] = "Clare";
-            forename[11] = "Helen";
+            forename[10] = "Lucy";
+            forename[11] = "Chloe";
             forename[12] = "Natalie";
-            forename[13] = "Iris";
-            forename[14] = "Paula";
-            forename[15] = "Hillary";
-            forename[16] = "Kathy";
+            forename[13] = "Susan";
+            forename[14] = "Emily";
+            forename[15] = "Hallie";
+            forename[16] = "Rose";
             name = forename[rnd.Next(17)];
         }
         return name;
