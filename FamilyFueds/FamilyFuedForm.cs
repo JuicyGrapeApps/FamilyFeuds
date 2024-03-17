@@ -207,7 +207,7 @@ namespace JuicyGrapeApps.FamilyFueds
             point.Y += 18;
 
             graphics.DrawImage(person.image, new Rectangle(person.location, new Size(50, 50)));
-            graphics.DrawString(person.fullname, Font, Brushes.WhiteSmoke, point);
+            graphics.DrawString(person.fullname, Font, Brushes.WhiteSmoke, new RectangleF(point, new Size(150, 30)));
 
             if (person.mother > -1)
             {
