@@ -41,11 +41,15 @@
             this.buttonCancel = new System.Windows.Forms.Button();
             this.radioMale = new System.Windows.Forms.RadioButton();
             this.radioFemale = new System.Windows.Forms.RadioButton();
+            this.trackbarDefaultPeople = new System.Windows.Forms.TrackBar();
+            this.labelDefaultPeople = new System.Windows.Forms.Label();
+            this.labelDefaultSlider = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.trackbarDefaultPeople)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonOk
             // 
-            this.buttonOk.Location = new System.Drawing.Point(172, 512);
+            this.buttonOk.Location = new System.Drawing.Point(172, 568);
             this.buttonOk.Name = "buttonOk";
             this.buttonOk.Size = new System.Drawing.Size(94, 29);
             this.buttonOk.TabIndex = 4;
@@ -116,7 +120,7 @@
             // 
             // buttonAdd
             // 
-            this.buttonAdd.Location = new System.Drawing.Point(85, 459);
+            this.buttonAdd.Location = new System.Drawing.Point(86, 455);
             this.buttonAdd.Name = "buttonAdd";
             this.buttonAdd.Size = new System.Drawing.Size(94, 29);
             this.buttonAdd.TabIndex = 8;
@@ -126,7 +130,7 @@
             // 
             // buttonRemove
             // 
-            this.buttonRemove.Location = new System.Drawing.Point(185, 459);
+            this.buttonRemove.Location = new System.Drawing.Point(186, 455);
             this.buttonRemove.Name = "buttonRemove";
             this.buttonRemove.Size = new System.Drawing.Size(94, 29);
             this.buttonRemove.TabIndex = 9;
@@ -136,7 +140,7 @@
             // 
             // buttonCancel
             // 
-            this.buttonCancel.Location = new System.Drawing.Point(272, 512);
+            this.buttonCancel.Location = new System.Drawing.Point(272, 568);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(94, 29);
             this.buttonCancel.TabIndex = 10;
@@ -166,11 +170,44 @@
             this.radioFemale.Text = "Female";
             this.radioFemale.UseVisualStyleBackColor = true;
             // 
+            // trackbarDefaultPeople
+            // 
+            this.trackbarDefaultPeople.Location = new System.Drawing.Point(93, 506);
+            this.trackbarDefaultPeople.Maximum = 20;
+            this.trackbarDefaultPeople.Name = "trackbarDefaultPeople";
+            this.trackbarDefaultPeople.Size = new System.Drawing.Size(228, 56);
+            this.trackbarDefaultPeople.TabIndex = 13;
+            this.trackbarDefaultPeople.TickStyle = System.Windows.Forms.TickStyle.Both;
+            this.trackbarDefaultPeople.Value = 10;
+            this.trackbarDefaultPeople.Scroll += new System.EventHandler(this.trackbarDefaultPeople_Scroll);
+            // 
+            // labelDefaultPeople
+            // 
+            this.labelDefaultPeople.AutoSize = true;
+            this.labelDefaultPeople.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.labelDefaultPeople.Location = new System.Drawing.Point(327, 512);
+            this.labelDefaultPeople.Name = "labelDefaultPeople";
+            this.labelDefaultPeople.Size = new System.Drawing.Size(40, 32);
+            this.labelDefaultPeople.TabIndex = 14;
+            this.labelDefaultPeople.Text = "10";
+            // 
+            // labelDefaultSlider
+            // 
+            this.labelDefaultSlider.AutoSize = true;
+            this.labelDefaultSlider.Location = new System.Drawing.Point(33, 521);
+            this.labelDefaultSlider.Name = "labelDefaultSlider";
+            this.labelDefaultSlider.Size = new System.Drawing.Size(58, 20);
+            this.labelDefaultSlider.TabIndex = 15;
+            this.labelDefaultSlider.Text = "Default";
+            // 
             // FamilyFeudSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(378, 559);
+            this.ClientSize = new System.Drawing.Size(378, 609);
+            this.Controls.Add(this.labelDefaultSlider);
+            this.Controls.Add(this.labelDefaultPeople);
+            this.Controls.Add(this.trackbarDefaultPeople);
             this.Controls.Add(this.radioFemale);
             this.Controls.Add(this.radioMale);
             this.Controls.Add(this.buttonCancel);
@@ -189,6 +226,7 @@
             this.MinimizeBox = false;
             this.Name = "FamilyFeudSettings";
             this.Text = "Family Feuds Settings";
+            ((System.ComponentModel.ISupportInitialize)(this.trackbarDefaultPeople)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -208,5 +246,8 @@
         private Button buttonCancel;
         private RadioButton radioMale;
         private RadioButton radioFemale;
+        private TrackBar trackbarDefaultPeople;
+        private Label labelDefaultPeople;
+        private Label labelDefaultSlider;
     }
 }

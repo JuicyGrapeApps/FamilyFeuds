@@ -80,6 +80,7 @@ namespace JuicyGrapeApps.FamilyFueds
 
             graphics = CreateGraphics();
 
+            // Create custom people
             foreach (string fullname in ApplicationControl.names)
             {
                 string name = fullname;
@@ -98,7 +99,8 @@ namespace JuicyGrapeApps.FamilyFueds
 
             int numberOfPeople = ApplicationControl.NumberOfPeople;
 
-            for (int i = numberOfPeople; i < numberOfPeople + 10; i++)
+            // Create default people
+            for (int i = numberOfPeople; i < numberOfPeople + ApplicationControl.MaxDefaultNumber; i++)
                 ApplicationControl.family.Add(new Person());
 
             ApplicationControl.Events.Collision += OnCollision;

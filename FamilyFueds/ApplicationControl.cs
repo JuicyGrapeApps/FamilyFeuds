@@ -6,7 +6,8 @@ namespace JuicyGrapeApps.FamilyFueds
     {
         // Family Feud Global Constants
         public const string WIN_REG_PATH = "SOFTWARE\\FamilyFeuds";
-        public const string REG_KEY = "FamilyNames";
+        public const string REG_KEY_NAMES = "FamilyNames";
+        public const string REG_KEY_DEFAULT = "DefaultNames";
         public const bool DEBUG_MODE = false;
 
         // MessageBox Title
@@ -15,6 +16,7 @@ namespace JuicyGrapeApps.FamilyFueds
         // Family Feud Global Settings
         public static int MaxHeight;  // Screen dimensions.
         public static int MaxWidth;
+        public static int MaxDefaultNumber = 10;
         public static int NumberOfPeople = 0;                     // Number of bots on screen.  
         public static List<Person> family = new List<Person>();   // FamilyFeuds bot data.
         public static List<string> names = new List<string>();    // Custom family names from windows registary.
@@ -27,11 +29,6 @@ namespace JuicyGrapeApps.FamilyFueds
             FullScreen,
             Preview,
             Configure
-        }
-
-        public static void Initialize()
-        {
-            LoadSettings();
         }
 
         /// <summary>
@@ -49,30 +46,37 @@ namespace JuicyGrapeApps.FamilyFueds
         }
 
         /// <summary>
-        /// The settings are retrieved from the Windows registary at path specified by the gobal
-        /// constant <see cref="=WIN_REG_PATH"/>
+        /// Initialise screen saver the settings are retrieved from the Windows registary
+        /// at path specified by the gobal constants <see cref="=WIN_REG_PATH"/> and also
+        /// <see cref="=REG_KEY_NAMES"/> and <see cref="=REG_KEY_DEFAULTS"/>
         /// </summary>
-        private static void LoadSettings()
+        public static void Initialize()
         {
-            RegistryKey key = Registry.CurrentUser.OpenSubKey(WIN_REG_PATH);
-
-            if (key != null)
+            try
             {
-                string familyNames = (string)key.GetValue(REG_KEY);
+                RegistryKey key = Registry.CurrentUser.OpenSubKey(WIN_REG_PATH);
 
-                if (familyNames != null && familyNames.Length > 0)
+                if (key != null)
                 {
-                    int idx = familyNames.IndexOf(".");
-                    do
-                    {
-                        string name = familyNames.Substring(0, idx);
-                        names.Add(name);
-                        familyNames = familyNames.Substring(idx + 1);
-                        idx = familyNames.IndexOf(".");
-                    } while (idx > 0);
+                    string familyNames = (string)key.GetValue(REG_KEY_NAMES);
 
+                    if (familyNames != null && familyNames.Length > 0)
+                    {
+                        int idx = familyNames.IndexOf(".");
+                        do
+                        {
+                            string name = familyNames.Substring(0, idx);
+                            names.Add(name);
+                            familyNames = familyNames.Substring(idx + 1);
+                            idx = familyNames.IndexOf(".");
+                        } while (idx > 0);
+
+                    }
+
+                    string defaultPeople = (string)key.GetValue(REG_KEY_DEFAULT);
+                    MaxDefaultNumber = (defaultPeople == null) ? 10 : int.Parse(defaultPeople);
                 }
-            }
+            } catch { }
         }
 
         /// <summary>

@@ -24,6 +24,9 @@ namespace JuicyGrapeApps.FamilyFueds
             InitializeComponent();
 
             foreach (string name in ApplicationControl.names) listFamilyNames.Items.Add(name);
+
+            trackbarDefaultPeople.Value = ApplicationControl.MaxDefaultNumber;
+            labelDefaultPeople.Text = ApplicationControl.MaxDefaultNumber.ToString();
         }
 
         private void SaveSettings()
@@ -31,7 +34,8 @@ namespace JuicyGrapeApps.FamilyFueds
             RegistryKey key = Registry.CurrentUser.CreateSubKey(ApplicationControl.WIN_REG_PATH);
             string listOfNames = "";
             foreach (string name in listFamilyNames.Items) listOfNames += name+".";
-            key.SetValue("FamilyNames", listOfNames);
+            key.SetValue(ApplicationControl.REG_KEY_NAMES, listOfNames);
+            key.SetValue(ApplicationControl.REG_KEY_DEFAULT, labelDefaultPeople.Text);
         }
 
         private void buttonOk_Click(object sender, EventArgs e)
@@ -78,6 +82,11 @@ namespace JuicyGrapeApps.FamilyFueds
                 ApplicationControl.messageTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else listFamilyNames.Items.RemoveAt(listFamilyNames.SelectedIndex);
+        }
+
+        private void trackbarDefaultPeople_Scroll(object sender, EventArgs e)
+        {
+            labelDefaultPeople.Text = trackbarDefaultPeople.Value.ToString();
         }
     }
 }
