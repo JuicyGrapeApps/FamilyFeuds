@@ -49,7 +49,7 @@ namespace JuicyGrapeApps.FamilyFueds
         }
 
         /// <summary>
-        ///  Find a person by their id.
+        ///  Find a person by id.
         /// </summary>
         public static Person person(int id) => family.Find(x => x.id == id);
 

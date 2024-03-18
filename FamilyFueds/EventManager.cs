@@ -49,21 +49,32 @@ namespace JuicyGrapeApps.FamilyFueds
         public void Invoke(Event events, Person person) => Invoke(events, person, null, false);
         public void Invoke(Event events, Person person, bool feeling) => Invoke(events, person, null, feeling);
 
+        /// <summary>
+        /// Invoke event from the EventManager.
+        /// </summary>
+        /// <param name="events"></param>
+        /// <param name="person"></param>
+        /// <param name="collider"></param>
+        /// <param name="feeling"></param>
         public void Invoke(Event events, Person person, Person? collider, bool feeling = false)
         {
             switch (events) 
             {
-                case Event.Collision: Collision?.Invoke(person, collider); break;
-                case Event.Argument: Argument?.Invoke(person, collider); break;
-                case Event.Marrage: Marrage?.Invoke(person, collider); break;
-                case Event.Birth: Birth?.Invoke(person); break;
-                case Event.Death: Death?.Invoke(person); break;
-                case Event.Birthday: Birthday?.Invoke(person); break;
-                case Event.Emotion: Emotion?.Invoke(person, feeling); break;
-                case Event.Idea: Idea?.Invoke(person); break;
+                case Event.Collision: Collision?.Invoke(person, collider); break; // Handled by FamilyFeudsForm.OnCollition
+                case Event.Argument: Argument?.Invoke(person, collider); break; // Not handled or consumed
+                case Event.Marrage: Marrage?.Invoke(person, collider); break; // Not handled or consumed
+                case Event.Birth: Birth?.Invoke(person); break; // Handled by BotManager.OnCreateBot
+                case Event.Death: Death?.Invoke(person); break; // Handled by BotManager.OnDestroyBot
+                case Event.Birthday: Birthday?.Invoke(person); break; // Not handled or consumed
+                case Event.Emotion: Emotion?.Invoke(person, feeling); break; // Not handled or consumed
+                case Event.Idea: Idea?.Invoke(person); break; // Not handled or consumed
             }
         }
 
+        /// <summary>
+        /// Called on by ApplicationControl.Shutdown, this function invokes the Garbage event which
+        /// all IDisposable objects should be subscribed to so their Dispose method gets called.
+        /// </summary>
         public void Dispose() => Garbage?.Invoke();
     }
 }

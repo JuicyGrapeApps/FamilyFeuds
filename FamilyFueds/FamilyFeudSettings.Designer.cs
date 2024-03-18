@@ -117,6 +117,7 @@
             this.listFamilyNames.Name = "listFamilyNames";
             this.listFamilyNames.Size = new System.Drawing.Size(319, 224);
             this.listFamilyNames.TabIndex = 7;
+            this.listFamilyNames.SelectedIndexChanged += new System.EventHandler(this.listFamilyNames_SelectedIndexChanged);
             // 
             // buttonAdd
             // 
