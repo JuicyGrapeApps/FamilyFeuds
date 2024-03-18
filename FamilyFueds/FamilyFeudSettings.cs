@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 using Microsoft.Win32;
+using System.Globalization;
 using System.Xml.Linq;
 
 namespace JuicyGrapeApps.FamilyFueds
@@ -84,18 +85,17 @@ namespace JuicyGrapeApps.FamilyFueds
         /// <returns></returns>
         private string GetName(bool validation)
         {
-            string name = textForename.Text.Replace(" ", "").ToLower();
+            TextInfo textInfo = CultureInfo.CurrentCulture.TextInfo;
+            string name = textInfo.ToTitleCase(textForename.Text.ToLower());
 
             if (validation && !validate(name, 1)) return "";
 
-            name = name.Substring(0, 1).ToUpper() + name.Substring(1);
-            string surname = textSurname.Text.Replace(" ", "").ToLower();
+            string surname = textInfo.ToTitleCase(textSurname.Text.ToLower());
 
             if (validation && !validate(surname, 2)) return "";
 
-            surname = surname.Substring(0, 1).ToUpper() + surname.Substring(1);
             name = name += " " + surname;
-            name = name.Replace(".", "");
+            name = name.Replace(".", "").Replace("  ", " "); ;
 
             if (validation && !validate(name, 3)) return "";
 
