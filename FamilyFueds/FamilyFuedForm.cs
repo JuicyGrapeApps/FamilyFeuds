@@ -17,6 +17,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace JuicyGrapeApps.FamilyFueds
 {
@@ -204,8 +205,8 @@ namespace JuicyGrapeApps.FamilyFueds
             person.Move();
 
             Point point = person.location;
-            point.X += 55;
-            point.Y += 18;
+            point.X += 56;
+            point.Y += 12;
 
             RectangleF personalSpace = new RectangleF(point, new Size(300, 30));
             StringFormat format = new StringFormat();
@@ -219,14 +220,15 @@ namespace JuicyGrapeApps.FamilyFueds
 
             if (person.mother > -1)
             {
-                if (ApplicationControl.family[person.mother].isDead) person.mother = -1;
+                Person parent = ApplicationControl.person(person.mother);
+                if (parent == null || parent.isDead) person.mother = -1;
                 else
                 {
                     int offset = 40;
                     person.motherLine[0] = person.location;
                     person.motherLine[0].X += offset;
                     person.motherLine[0].Y += offset;
-                    person.motherLine[3] = ApplicationControl.family[person.mother].location;
+                    person.motherLine[3] = parent.location;
                     person.motherLine[3].X += offset;
                     person.motherLine[3].Y += offset;
                     int x = (person.motherLine[3].X - person.motherLine[0].X) / 4;
@@ -245,14 +247,15 @@ namespace JuicyGrapeApps.FamilyFueds
 
             if (person.father > -1)
             {
-                if (ApplicationControl.family[person.father].isDead) person.father = -1;
+                Person parent = ApplicationControl.person(person.father);
+                if (parent == null || parent.isDead) person.father = -1;
                 else
                 {
                     int offset = 40;
                     person.fatherLine[0] = person.location;
                     person.fatherLine[0].X += offset;
                     person.fatherLine[0].Y += offset;
-                    person.fatherLine[3] = ApplicationControl.family[person.father].location;
+                    person.fatherLine[3] = parent.location;
                     person.fatherLine[3].X += offset;
                     person.fatherLine[3].Y += offset;
                     int x = (person.fatherLine[3].X - person.fatherLine[0].X) / 4;
@@ -281,7 +284,14 @@ namespace JuicyGrapeApps.FamilyFueds
         {
             if (person.lookat+person.followed == -2) return;
 
-            Person target = ApplicationControl.family[(person.followed > -1) ? person.followed: person.lookat];
+            Person target = ApplicationControl.person((person.followed > -1) ? person.followed: person.lookat);
+            
+            if (target == null)
+            {
+                person.lookat = -1;
+                person.followed = -1;
+                return;
+            }
 
             Double scale = clear ? 11: 10;
 

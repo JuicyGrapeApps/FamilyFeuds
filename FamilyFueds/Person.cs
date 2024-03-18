@@ -266,11 +266,12 @@ public class Person : IDisposable
                 father = person.married;
             }
 
-            location = ApplicationControl.family[mother].location;
+            person = ApplicationControl.person(mother);
+            if (person != null) location = person.location;
 
             emotion = Emotion.Baby;
 
-            if (ApplicationControl.DEBUG_MODE) Debug.Print(ApplicationControl.family[mother].fullname + " gave birth to " + fullname);
+            if (ApplicationControl.DEBUG_MODE) Debug.Print(person.fullname + " gave birth to " + fullname);
 
             Birthday();
         }
@@ -379,8 +380,9 @@ public class Person : IDisposable
         }
         else if (person.married > -1)
         {
-            Person spouse = ApplicationControl.family[person.married];
-            if (!spouse.isInjured)
+            Person spouse = ApplicationControl.person(person.married);
+            if (spouse == null) person.married = -1;
+            else if (!spouse.isInjured)
             {
                 spouse.emotion = Emotion.Jealous;
                 spouse.lookat = id;
@@ -419,18 +421,26 @@ public class Person : IDisposable
 
         if (follow)
         {
-            Person person = ApplicationControl.family[lookat];
-            if (location.X < person.location.X) volocity.X = 2;
-            if (location.X > person.location.X) volocity.X = -2;
-            if (location.Y < person.location.Y) volocity.Y = 2;
-            if (location.Y > person.location.Y) volocity.Y = -2;
+            Person person = ApplicationControl.person(lookat);
+            if (person == null) follow = false;
+            else
+            {
+                if (location.X < person.location.X) volocity.X = 2;
+                if (location.X > person.location.X) volocity.X = -2;
+                if (location.Y < person.location.Y) volocity.Y = 2;
+                if (location.Y > person.location.Y) volocity.Y = -2;
+            }
         }
 
         location.X += volocity.X;
         location.Y += volocity.Y;
 
         if (ignore != -3) Contact();
-        else if (location.Y < -50 || location.Y > ApplicationControl.MaxHeight + 100) ignore = -4;
+        else if (location.Y < -50 || location.Y > ApplicationControl.MaxHeight + 100)
+        {
+            ignore = -4;
+            ApplicationControl.Events.Invoke(EventManager.Event.Death, this);
+        }
     }
 
     /// <summary>
@@ -468,7 +478,11 @@ public class Person : IDisposable
 
         ignore = -3;
 
-        if (married > -1) ApplicationControl.family[married].married = -1;
+        if (married > -1)
+        {
+            Person person = ApplicationControl.person(married);
+            if (person != null) person.married = -1;
+        }
         married = -1;
         mother = -1;
         father = -1;

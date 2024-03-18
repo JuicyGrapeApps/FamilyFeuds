@@ -49,6 +49,11 @@ namespace JuicyGrapeApps.FamilyFueds
         }
 
         /// <summary>
+        ///  Find a person by their id.
+        /// </summary>
+        public static Person person(int id) => family.Find(x => x.id == id);
+
+        /// <summary>
         ///  Retrive the unique family id or create one if family has none.
         /// </summary>
         public static int familyIndex(string surname)

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+using System.Diagnostics;
+
 namespace JuicyGrapeApps.FamilyFueds
 {
 	public class BotManager : IDisposable
@@ -21,6 +23,7 @@ namespace JuicyGrapeApps.FamilyFueds
 		public BotManager()
 		{
 			ApplicationControl.Events.Birth += OnCreateBot;
+            ApplicationControl.Events.Death += OnDestroyBot;
             ApplicationControl.Events.Garbage += Dispose;
         }
 
@@ -35,6 +38,18 @@ namespace JuicyGrapeApps.FamilyFueds
 		}
 
         /// <summary>
+        /// Handles the Death event to remove a bot. 
+        /// </summary>
+        /// <param name="person"></param>
+        private void OnDestroyBot(Person person)
+        {
+            if (ApplicationControl.DEBUG_MODE) Debug.Print(person.fullname + " has gone to " + (person.location.Y < 0 ? "Heaven": "Hell"));
+            person.Dispose();
+            ApplicationControl.family.Remove(person);
+            ApplicationControl.NumberOfPeople = ApplicationControl.family.Count;
+        }
+
+        /// <summary>
         /// Called on application shutdown. 
         /// </summary>
         /// <param name="person"></param>
@@ -42,7 +57,7 @@ namespace JuicyGrapeApps.FamilyFueds
 		{
             ApplicationControl.Events.Garbage -= Dispose;
             ApplicationControl.Events.Birth -= OnCreateBot;
+            ApplicationControl.Events.Death -= OnDestroyBot;
         }
-
     }
 }
