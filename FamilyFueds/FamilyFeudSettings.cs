@@ -152,7 +152,19 @@ namespace JuicyGrapeApps.FamilyFueds
                 MessageBox.Show("Select a name from the list first.",
                 ApplicationControl.messageTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            else listFamilyNames.Items.RemoveAt(listFamilyNames.SelectedIndex);
+            else
+            {
+                string name = GetName(false) + (radioMale.Checked ? " (M)" : " (F)");
+                bool clear = listFamilyNames.Text.Equals(name);
+
+                listFamilyNames.Items.RemoveAt(listFamilyNames.SelectedIndex);
+
+                if (clear)
+                {
+                    textForename.Text = "";
+                    textSurname.Text = "";
+                }
+            }
         }
 
         private void trackbarDefaultPeople_Scroll(object sender, EventArgs e)
