@@ -188,8 +188,11 @@ namespace JuicyGrapeApps.FamilyFueds
         {
             person.Update();
 
-            graphics.FillRectangle(Brushes.Black, person.bounds);
-            graphics.FillRectangle(Brushes.Black, new Rectangle(person.location, new Size(50, 50)));
+            if (!person.isInjured)
+            {
+                graphics.FillRectangle(Brushes.Black, person.bounds);
+                graphics.DrawImage(person.mask, new Rectangle(person.location, new Size(50, 50)));
+            }
 
             using (Pen pen = new Pen(Brushes.Black))
             {
@@ -216,7 +219,10 @@ namespace JuicyGrapeApps.FamilyFueds
             graphics.DrawString(person.fullname, Font, Brushes.WhiteSmoke, personalSpace, format);
 
             person.bounds = graphics.MeasureCharacterRanges(person.fullname, Font, personalSpace, format)[0].GetBounds(graphics);
+            person.bounds.X -= 1;
             person.bounds.Width += 5;
+
+            if (person.changeMask) person.ChangeMask();
 
             if (person.mother > -1)
             {

@@ -48,6 +48,7 @@ public class Person : IDisposable
     public Point location;
     public Point volocity;
     public Image image;
+    public Image mask;
     public bool gender;
     public int married = -1;
     public int father = -1;
@@ -69,6 +70,7 @@ public class Person : IDisposable
     private bool m_follow = false;
     public int followed = -1;
     public RectangleF bounds = new();
+    public bool changeMask = false;
 
     // Boolean repesentations of emotional states
     public bool isInjured => m_emotion == Emotion.Injured;
@@ -158,6 +160,7 @@ public class Person : IDisposable
             recovered = true;
             m_emotional = 5;
             m_emotion = value;
+            changeMask = true;
 
             switch (m_emotion)
             {
@@ -200,6 +203,32 @@ public class Person : IDisposable
         }
     }
 
+    public void ChangeMask()
+    {
+        switch (m_emotion)
+        {
+            case Emotion.None:
+                mask = gender ? FamilyFueds.Properties.Resources.Mask : FamilyFueds.Properties.Resources.FemaleMask;
+                break;
+            case Emotion.Party:
+                mask = FamilyFueds.Properties.Resources.PartyMask;
+                break;
+            case Emotion.Sad:
+                mask = FamilyFueds.Properties.Resources.SadMask;
+                break;
+            case Emotion.Angel:
+                mask = FamilyFueds.Properties.Resources.AngelMask;
+                break;
+            case Emotion.Devil:
+                mask = FamilyFueds.Properties.Resources.DevilMask;
+                break;
+            default:
+                mask = FamilyFueds.Properties.Resources.Mask;
+                break;
+        }
+        changeMask = false;
+    }
+
     /// <summary>
     /// Constructor used for a custom person
     /// </summary>
@@ -223,6 +252,7 @@ public class Person : IDisposable
 
         location = RandomGenerator.Location;
         emotion = Emotion.None;
+        mask = gender ? FamilyFueds.Properties.Resources.Mask : FamilyFueds.Properties.Resources.FemaleMask;
 
         ChangeVolocity();
         m_intellegence = RandomGenerator.Int(20, 5);
@@ -275,6 +305,7 @@ public class Person : IDisposable
 
             Birthday();
         }
+        mask = FamilyFueds.Properties.Resources.Mask;
 
         ChangeVolocity();
         m_intellegence = RandomGenerator.Int(20, 5);
@@ -529,5 +560,6 @@ public class Person : IDisposable
     {
         ApplicationControl.Events.Garbage -= Dispose;
         image.Dispose();
+        mask.Dispose();
     }
 }
