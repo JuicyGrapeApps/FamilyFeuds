@@ -188,5 +188,10 @@ namespace JuicyGrapeApps.FamilyFueds
                 textSurname.Text = name.Substring(idx + 1);
             }
         }
+
+        private void textForename_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == ' ') textSurname.Select();
+        }
     }
 }

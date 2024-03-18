@@ -73,6 +73,7 @@
             this.textForename.Name = "textForename";
             this.textForename.Size = new System.Drawing.Size(178, 27);
             this.textForename.TabIndex = 0;
+            this.textForename.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textForename_KeyPress);
             // 
             // textSurname
             // 
