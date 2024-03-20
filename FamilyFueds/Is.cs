@@ -17,14 +17,21 @@
 using System;
 
 /// <summary>
-/// Global expressions
+/// Global expression library.
 /// </summary>
 public static class Is
 {
+    /// <summary>
+    /// Returns true if value is between from and to values.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="from"></param>
+    /// <param name="to"></param>
+    /// <returns></returns>
     public static bool Between(int value, int from, int to) => value >= from && value <= to;
 
     /// <summary>
-    /// Returns true if a point is between two other points.
+    /// Returns true if a point is between from and to points.
     /// </summary>
     /// <param name="value">Point to check</param>
     /// <param name="from">Location of first point</param>
