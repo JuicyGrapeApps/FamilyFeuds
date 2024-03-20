@@ -159,9 +159,11 @@ public class Person : IFamilyEvents
                     image = FamilyFueds.Properties.Resources.Baby;
                     break;
                 case Emotion.Angel:
+                    m_emotional = 0;
                     image = FamilyFueds.Properties.Resources.Angel;
                     break;
                 case Emotion.Devil:
+                    m_emotional = 0;
                     image = FamilyFueds.Properties.Resources.Devil;
                     break;
             }
@@ -270,7 +272,6 @@ public class Person : IFamilyEvents
         m_intelligence = RandomGenerator.Int(20, 5);
         ChangeVolocity();
         ChangeMask();
-        Birthday();
 
         ApplicationControl.Update += Update;
         ApplicationControl.FamilyEvents.Subscribe(this);
@@ -284,8 +285,8 @@ public class Person : IFamilyEvents
     {
         if (isDead) return;
         Birthday();
-        Recover();
-        Idea();
+        Recovery();
+        Thinking();
     }
 
     /// <summary>
@@ -381,18 +382,18 @@ public class Person : IFamilyEvents
     /// <summary>
     /// Called when a person is over their emotion.
     /// </summary>
-    private void Recover()
+    private void Recovery()
     {
         if (m_emotional == 0) return;
         m_emotional--;
-        if (m_emotional < 0) emotion = isBaby ? Emotion.Happy: Emotion.None;
+        if (m_emotional <= 0) emotion = isBaby ? Emotion.Happy: Emotion.None;
     }
 
     /// <summary>
     /// Called every time a person has an idea, idea's occure after the person has been thinking,
     /// the amount of time it takes in seconds for a person to think depends on their intelligence.
     /// </summary>
-    private void Idea()
+    private void Thinking()
     {
         m_intelligence--;
         if (m_intelligence < 0)
