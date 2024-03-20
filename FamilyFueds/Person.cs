@@ -40,6 +40,16 @@ public class Person : IFamilyEvents
         Devil
     }
 
+    // Ideas a person has and how often they react on them.
+    public enum Ideas
+    {
+        ChangeDirection = 0,
+        Eat = 4,
+        HaveKids = 8,
+    }
+
+    public static readonly Ideas[] Brain = (Ideas[]) Enum.GetValues(typeof(Ideas));
+
     public int id;
     public int family { get; set; }
     public string name;
@@ -67,6 +77,8 @@ public class Person : IFamilyEvents
     public int followed = -1;
     public RectangleF bounds = new();
     public bool changeMask = false;
+
+    public int emotional { get; set; }
 
     // Boolean repesentations of emotional states
     public bool isInjured => m_emotion == Emotion.Injured;
@@ -105,11 +117,7 @@ public class Person : IFamilyEvents
     public int energy
     {
         get => m_energy;
-        set
-        {
-            m_energy = value;
-            if (m_energy < 1) Died();
-        }
+        set => Energy(value);
     }
 
     /// <summary>
@@ -256,7 +264,6 @@ public class Person : IFamilyEvents
 
             if (ApplicationControl.DEBUG_MODE) Debug.Print(person.fullname + " gave birth to " + fullname);
         }
-
         Initialize();
     }
 
@@ -390,16 +397,49 @@ public class Person : IFamilyEvents
     }
 
     /// <summary>
-    /// Called every time a person has an idea, idea's occure after the person has been thinking,
-    /// the amount of time it takes in seconds for a person to think depends on their intelligence.
+    /// Calculates the amount of time it takes in seconds for a person to 
+    /// have an idea depending on their intelligence.
     /// </summary>
     private void Thinking()
     {
         m_intelligence--;
         if (m_intelligence < 0)
         {
-            if (!isEmotional) ChangeVolocity();
+            if (!isEmotional) HaveIdea();
             m_intelligence = RandomGenerator.Int(20, 5);
+        }
+    }
+
+    /// <summary>
+    /// Called every time a person has an idea and returning the idea
+    /// they came up with.
+    /// </summary>
+    private void HaveIdea()
+    {
+        Ideas idea = RandomGenerator.Idea();
+
+        if (ApplicationControl.DEBUG_MODE) Debug.Print(fullname+" has the idea to "+idea.ToString());
+
+        switch (RandomGenerator.Idea()) 
+        {
+            case Ideas.ChangeDirection: ChangeVolocity(); break;
+            case Ideas.Eat: if (m_energy < 10) m_energy++; break;
+            case Ideas.HaveKids:
+                if (married > -1)
+                {
+                    Person spouse = ApplicationControl.person(married);
+                    if (spouse == null || spouse.isEmotional) break;
+                    emotion = Emotion.Love;
+                    m_emotional = 20;
+                    lookat = married;
+                    follow = true;
+                    spouse.emotion = Emotion.Love;
+                    spouse.emotional = 20;
+                    spouse.lookat = id;
+                    spouse.follow = true;
+                }
+                else ChangeVolocity();
+            break;
         }
     }
 
@@ -422,11 +462,14 @@ public class Person : IFamilyEvents
     }
 
     /// <summary>
-    /// Called when a person expires, factors that could cause this include old age or injuries sustained
+    /// Called to set a persons energy level if zero expires, factors that could cause this include old age or injuries sustained
     /// during an argument.
     /// </summary>
-    private void Died()
+    private int Energy(int value)
     {
+        m_energy = value;
+        if (m_energy > 0) return m_energy; 
+
         volocity.X = 0;
         follow = false;
         if (m_killer)
@@ -441,6 +484,8 @@ public class Person : IFamilyEvents
         }
         if (ApplicationControl.DEBUG_MODE) Debug.Print(fullname + " has died");
         ApplicationControl.FamilyEvents.Invoke(this);
+
+        return 0;
     }
 
     /// <summary>

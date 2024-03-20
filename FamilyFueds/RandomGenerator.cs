@@ -46,7 +46,19 @@ public static class RandomGenerator
     /// <param name="offset">Add an offset to random result</param>
     /// <param name="unsigned">(Optional) bool True (Unsigned), False (Signed)</param>
     /// <returns>Integer</returns>
-    public static int Int(int value, int offset, bool unsigned = false) => (rnd.Next(value + 1) + offset) * (unsigned && rnd.Next(2) == 1 ? -1: 1);
+    public static int Int(int value, int offset = 0, bool unsigned = false) => (rnd.Next(value + 1) + offset) * (unsigned && rnd.Next(2) == 1 ? -1: 1);
+
+    /// <summary>
+    /// Returns an idea from person 's brain.
+    /// </summary>
+    /// <returns></returns>
+    public static Person.Ideas Idea()
+    {
+        Person.Ideas idea = Person.Brain[Int(2)];
+        int react = (int)idea;
+        if (react > 0 && Int(react) == 0) idea = Person.Ideas.ChangeDirection;
+        return idea;
+    }
 
     /// <summary>
     /// Random surname generator this property returns either a random surname each time
