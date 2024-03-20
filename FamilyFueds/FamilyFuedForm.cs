@@ -83,33 +83,7 @@ namespace JuicyGrapeApps.FamilyFueds
 
             graphics = CreateGraphics();
 
-            // Create custom bots by invoking Birth event which is subscribed
-            // to by the OnCreate in the BotManager.
-            foreach (string fullname in ApplicationControl.names)
-            {
-                string name = fullname;
-                bool gender = name.Contains("(M)");
-                name = name.Replace(" (M)", "").Replace(" (F)", "");
-
-                int idx = name.IndexOf(" ");
-
-                if (idx != -1)
-                {
-                    string forename = name.Substring(0, idx);
-                    string surname = name.Substring(idx + 1);
-
-                    ApplicationControl.Events.Invoke(EventManager.Event.Birth, new Person(forename, surname, gender, ApplicationControl.familyIndex(surname)));
-                }
-            }
-
-            int numberOfPeople = ApplicationControl.NumberOfPeople;
-
-            // Create default bots by invoking Birth event which is subscribed
-            // to by the OnCreate in the BotManager.
-            for (int i = numberOfPeople; i < numberOfPeople + ApplicationControl.MaxDefaultNumber; i++)
-                ApplicationControl.Events.Invoke(EventManager.Event.Birth, new Person());
-
-            ApplicationControl.Events.Collision += OnCollision;
+            ApplicationControl.InitializeBots();
         }
 
         private Point mouseLocation;
@@ -148,10 +122,10 @@ namespace JuicyGrapeApps.FamilyFueds
             FamilyFeudsForm_Unload();
         }
 
+
         private void FamilyFeudsForm_Unload()
         {
             SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
-            ApplicationControl.Events.Collision -= OnCollision;
             graphics.Dispose();
             ApplicationControl.Shutdown();
         }
@@ -161,33 +135,15 @@ namespace JuicyGrapeApps.FamilyFueds
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Execute_Tick(object sender, EventArgs e)
-        {
-            try
-            {
-                for (int i = 0; i < ApplicationControl.NumberOfPeople; i++)
-                {
-                    Person person = ApplicationControl.family[i];
-                    Update(person);
-                    for (int j = 0; j < ApplicationControl.NumberOfPeople; j++) person.Contact(ApplicationControl.family[j]);
-                }
-            }
-            catch (Exception ex)
-            {
-                if (ApplicationControl.DEBUG_MODE) Debug.Print("Exception: "+ex.Message);
-            }
-        }
+        private void Execute_Tick(object sender, EventArgs e) => ApplicationControl.RefreshScreenSaver(this);
 
         /// <summary>
         /// Called every tick count of the Execute timer on the FamiltFeudForm form. This
         /// function clears and paints all the graphics on screen.
-        /// <see cref="Execute_Tick(object, EventArgs)"/>
         /// </summary>
         /// <param name="person"></param>
-        private void Update(Person person)
+        public void Draw(Person person)
         {
-            person.Update();
-
             if (!person.isInjured)
             {
                 graphics.FillRectangle(Brushes.Black, person.bounds);
@@ -290,7 +246,7 @@ namespace JuicyGrapeApps.FamilyFueds
         {
             if (person.lookat+person.followed == -2) return;
 
-            Person target = ApplicationControl.person((person.followed > -1) ? person.followed: person.lookat);
+            Person target = ApplicationControl.person(person.followed > -1 ? person.followed: person.lookat);
             
             if (target == null)
             {
@@ -371,37 +327,6 @@ namespace JuicyGrapeApps.FamilyFueds
             }
         }
 
-        /// <summary>
-        /// Collision event handler.
-        /// </summary>
-        /// <param name="person"></param>
-        /// <param name="collider"></param>
-        private void OnCollision(Person person, Person collider)
-        {
-            if (ApplicationControl.DEBUG_MODE) Debug.Print(person.fullname + " bumped into " + collider.fullname);
-            
-            person.volocity.X = (person.location.X < collider.location.X) ? -1: 1;
-            person.volocity.Y = (person.location.Y < collider.location.Y) ? -1 :1;
-            Update(person);
-
-            collider.volocity.X = (collider.location.X < person.location.X) ? -1 : 1;
-            collider.volocity.Y = (collider.location.Y < person.location.Y) ? -1 : 1;
-            Update(collider);
-
-            if (person.Marry(collider))
-            {
-                if (ApplicationControl.DEBUG_MODE) Debug.Print(person.name + " got married to " + collider.name);
-                person.emotion = Person.Emotion.Love;
-                collider.emotion = Person.Emotion.Love;
-
-                // BotManager has subscribed to birth event see OnCreate method of BotManager. 
-                ApplicationControl.Events.Invoke(EventManager.Event.Birth, new Person(person));
-
-                person.FamilyEmotional(Person.Emotion.Party, true);
-            }
-            else person.Fight(collider);
-        }
-
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
@@ -412,18 +337,18 @@ namespace JuicyGrapeApps.FamilyFueds
             // 
             this.Execute.Enabled = true;
             this.Execute.Interval = 12;
-            this.Execute.Tick += new EventHandler(this.Execute_Tick);
+            this.Execute.Tick += new System.EventHandler(this.Execute_Tick);
             // 
             // FamilyFeudsForm
             // 
-            this.BackColor = Color.Black;
-            this.ClientSize = new Size(300, 300);
-            this.Font = new Font("Segoe Print", 10.2F, FontStyle.Bold, GraphicsUnit.Point);
-            this.FormBorderStyle = FormBorderStyle.None;
+            this.BackColor = System.Drawing.Color.Black;
+            this.ClientSize = new System.Drawing.Size(300, 300);
+            this.Font = new System.Drawing.Font("Segoe Print", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FamilyFeudsForm";
-            this.Load += new EventHandler(this.FamilyFeudsForm_Load);
-            this.MouseClick += new MouseEventHandler(this.FamilyFeudsForm_MouseClick);
-            this.MouseMove += new MouseEventHandler(this.FamilyFeudsForm_MouseMove);
+            this.Load += new System.EventHandler(this.FamilyFeudsForm_Load);
+            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.FamilyFeudsForm_MouseClick);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FamilyFeudsForm_MouseMove);
             this.ResumeLayout(false);
 
         }

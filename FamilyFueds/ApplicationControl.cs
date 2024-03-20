@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 using Microsoft.Win32;
+using System.Diagnostics;
 
 namespace JuicyGrapeApps.FamilyFueds
 {
@@ -24,7 +25,7 @@ namespace JuicyGrapeApps.FamilyFueds
         public const string REG_KEY_NAMES = "FamilyNames";
         public const string REG_KEY_DEFAULT = "DefaultNames";
         public const int MAX_BOT_COUNT = 1000;
-        public const bool DEBUG_MODE = false;
+        public const bool DEBUG_MODE = true;
 
         // MessageBox Title
         public static string messageTitle = "Family Feuds";
@@ -38,8 +39,12 @@ namespace JuicyGrapeApps.FamilyFueds
         public static List<string> names = new List<string>();    // Custom family names from windows registary.
         public static List<string> surnames = new List<string>(); // Used to generate a custom family id.
         public static ExecuteMode Mode;
-        public static EventManager Events = new EventManager();
-        private static BotManager Bots = new BotManager();
+        public static FamilyEventManager FamilyEvents = new FamilyEventManager();
+
+        private static int m_elapsed;
+        private static DateTime m_time;
+
+        public static event CoreEventHandler Update;
 
         public enum ExecuteMode
         {
@@ -94,8 +99,7 @@ namespace JuicyGrapeApps.FamilyFueds
                         } while (idx > 0);
 
                     }
-
-                    string defaultPeople = (string)key.GetValue(REG_KEY_DEFAULT);
+                    string defaultPeople = (string) key.GetValue(REG_KEY_DEFAULT);
                     MaxDefaultNumber = (defaultPeople == null) ? 10 : int.Parse(defaultPeople);
                 }
             } catch { }
@@ -144,12 +148,69 @@ namespace JuicyGrapeApps.FamilyFueds
             Application.Run();
         }
 
+        public static void RefreshScreenSaver(Form form)
+        {
+            try
+            {
+                FamilyFeudsForm familyFeud = (FamilyFeudsForm)form;
+                for (int i = 0; i < NumberOfPeople; i++)
+                {
+                    Person person = family[i];
+                    familyFeud.Draw(person);
+                    CollisionDetection(person);                    
+                }
+                int elapsed = (DateTime.Now - m_time).Seconds;
+                if (elapsed == m_elapsed) return;
+                m_time = DateTime.Now;
+                Update?.Invoke();
+                GarbageBin.Empty();
+            }
+            catch (Exception ex)
+            {
+                if (DEBUG_MODE) Debug.Print("Exception: " + ex.Message+" --- "+ex.Source+" --- "+ex.Data);
+            }
+        }
+
+        private static async void CollisionDetection(Person person)
+        {
+            for (int i = 0; i < NumberOfPeople; i++) person.Contact(family[i]);
+        }
+
+        public static void InitializeBots()
+        {
+            // Create custom bots by invoking Birth event which is subscribed
+            // to by the OnCreate in the BotManager.
+            foreach (string fullname in names)
+            {
+                string name = fullname;
+                bool gender = name.Contains("(M)");
+                name = name.Replace(" (M)", "").Replace(" (F)", "");
+
+                int idx = name.IndexOf(" ");
+
+                if (idx != -1)
+                {
+                    string forename = name.Substring(0, idx);
+                    string surname = name.Substring(idx + 1);
+                    family.Add(new Person(forename, surname, gender, familyIndex(surname)));
+                }
+            }
+
+            int numberOfPeople = NumberOfPeople;
+
+            // Create default bots by invoking Birth event which is subscribed
+            // to by the OnCreate in the BotManager.
+            for (int i = numberOfPeople; i < numberOfPeople + MaxDefaultNumber; i++)
+                family.Add(new Person());
+        }
+
         /// <summary>
-        /// Application shutdown requested.
+        /// Application shutdown requested, this function invokes the Garbage event which
+        /// all IDisposable objects should be subscribed to so their Dispose method gets called.
         /// </summary>
         public static void Shutdown()
         {
-            Events.Dispose();
+            GarbageBin.Dispose();
             Application.Exit();
         }
     }

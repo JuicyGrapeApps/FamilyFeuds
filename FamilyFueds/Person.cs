@@ -22,7 +22,7 @@ using System.Diagnostics;
 /// emotional state, intellegence or family ties it also calculates things like a person's age, movement and
 /// even how long it takes to have an idea or recuperate from emotional damage.
 /// </summary>
-public class Person : IDisposable
+public class Person : IFamilyEvents
 {
     // Emotional states
     public enum Emotion
@@ -41,7 +41,7 @@ public class Person : IDisposable
     }
 
     public int id;
-    public int family;
+    public int family { get; set; }
     public string name;
     public string surname;
     public DateTime dob;
@@ -53,19 +53,15 @@ public class Person : IDisposable
     public int married = -1;
     public int father = -1;
     public int mother = -1;
-    public int ignore = -1;
+    public int bumped = -1;
     public int lookat = -1;
     public Point[] motherLine = new Point[4];
     public Point[] fatherLine = new Point[4];
     private int m_age;
     private int m_energy = 5;
     private Emotion m_emotion;
-    private DateTime m_recoverTime;
-    private DateTime m_brainActivity;
-    private bool m_recovered = true;
-    private int m_intellegence = 10;
+    private int m_intelligence = 10;
     private int m_emotional = 5;
-    private bool m_thinking = false;
     private bool m_killer = false;
     private bool m_follow = false;
     public int followed = -1;
@@ -82,6 +78,10 @@ public class Person : IDisposable
     public bool isDead => m_emotion == Emotion.Angel ||
                           m_emotion == Emotion.Devil;
 
+    public bool isActive => m_emotion != Emotion.Angel &&
+                            m_emotion != Emotion.Devil && 
+                            m_emotion != Emotion.Injured;
+
     // Randomize volocity changes direction and speed of the bot on screen.
     public void ChangeVolocity() => volocity = new Point(RandomGenerator.Int(2, 1, true), RandomGenerator.Int(2, 1, true));
     public string fullname => name + " " + surname;
@@ -89,7 +89,7 @@ public class Person : IDisposable
 
     public bool follow
     {
-        get => m_follow && lookat > -1;
+        get => m_follow && lookat > -1 && !isDead;
         set
         {
             followed = lookat;
@@ -100,43 +100,7 @@ public class Person : IDisposable
     }
 
     /// <summary>
-    /// Used to calculate how long it takes in seconds to recover from emotional damage
-    /// </summary>
-    public bool recovered
-    {
-        get
-        {
-            if (!m_recovered) m_recovered = m_emotional - (DateTime.Now - m_recoverTime).Seconds < 0;
-            if (m_recovered && ignore == -2) ignore = -1;
-            return m_recovered;
-        }
-        set
-        {
-            m_recovered = value;
-            if (!m_recovered) m_recoverTime = DateTime.Now;
-            if (value) follow = false;
-        }
-    }
-
-    /// <summary>
-    /// Used to calculate how long it takes in seconds for an idea to occure
-    /// </summary>
-    public bool idea
-    {
-        get
-        {
-            if (m_thinking) m_thinking = m_intellegence - (DateTime.Now - m_brainActivity).Seconds > 0;
-            return !m_thinking;
-        }
-        set
-        {
-            m_thinking = value;
-            if (m_thinking) m_brainActivity = DateTime.Now;
-        }
-    }
-
-    /// <summary>
-    /// Energy of the person a person will expire if energy reaches zero.
+    /// Amount of energy a person has if energy reaches zero they expire.
     /// </summary>
     public int energy
     {
@@ -149,7 +113,7 @@ public class Person : IDisposable
     }
 
     /// <summary>
-    /// Change a persons emotional state.
+    /// Change a person's emotional state.
     /// </summary>
     public Emotion emotion
     {
@@ -157,7 +121,7 @@ public class Person : IDisposable
         set
         {
             if (isDead) return;
-            recovered = true;
+            follow = false;
             m_emotional = 5;
             m_emotion = value;
             changeMask = true;
@@ -166,6 +130,7 @@ public class Person : IDisposable
             {
                 case Emotion.None:
                     image = gender ? FamilyFueds.Properties.Resources.Male : FamilyFueds.Properties.Resources.Female;
+                    m_emotional = 0;
                     break;
                 case Emotion.Love:
                     image = FamilyFueds.Properties.Resources.Love;
@@ -184,6 +149,7 @@ public class Person : IDisposable
                     image = FamilyFueds.Properties.Resources.Angry;
                     break;
                 case Emotion.Jealous:
+                    m_emotional = 8;
                     image = FamilyFueds.Properties.Resources.Jealous;
                     break;
                 case Emotion.Injured:
@@ -199,10 +165,12 @@ public class Person : IDisposable
                     image = FamilyFueds.Properties.Resources.Devil;
                     break;
             }
-            if (isEmotional) recovered = false;
         }
     }
 
+    /// <summary>
+    /// Changes image mask, masks are used to clear image on screen.
+    /// </summary>
     public void ChangeMask()
     {
         switch (m_emotion)
@@ -238,47 +206,30 @@ public class Person : IDisposable
     /// <param name="family"></param>
     public Person(string name, string surname, bool gender, int family)
     {
-        ApplicationControl.Events.Garbage += Dispose;
-
-        id = ApplicationControl.NumberOfPeople;
-        ApplicationControl.NumberOfPeople++;
-
         this.gender = gender;
         this.name = name;
-        dob = DateTime.Now;
-
         this.surname = surname;
         this.family = family;
-
-        location = RandomGenerator.Location;
         emotion = Emotion.None;
-        mask = gender ? FamilyFueds.Properties.Resources.Mask : FamilyFueds.Properties.Resources.FemaleMask;
-
-        ChangeVolocity();
-        m_intellegence = RandomGenerator.Int(20, 5);
-        idea = true;
+        location = RandomGenerator.Location;
+        Initialize();
     }
 
     /// <summary>
     /// Constructor used for a default person
     /// </summary>
     /// <param name="person"></param>
-    public Person(Person person = null)
+    public Person(Person? person = null)
     {
-        ApplicationControl.Events.Garbage += Dispose;
-
-        id = ApplicationControl.NumberOfPeople;
-        ApplicationControl.NumberOfPeople++;
         gender = RandomGenerator.Gender;
         name = RandomGenerator.Forename(gender);
-        dob = DateTime.Now;
 
         if (person == null)
         {
             surname = RandomGenerator.Surname;
             family = RandomGenerator.family;
-            location = RandomGenerator.Location;
             emotion = Emotion.None;
+            location = RandomGenerator.Location;
         }
         else
         {
@@ -297,32 +248,84 @@ public class Person : IDisposable
             }
 
             person = ApplicationControl.person(mother);
-            if (person != null) location = person.location;
-
+            if (person == null) location = RandomGenerator.Location;
+            else location = person.location;
             emotion = Emotion.Baby;
 
             if (ApplicationControl.DEBUG_MODE) Debug.Print(person.fullname + " gave birth to " + fullname);
-
-            Birthday();
         }
-        mask = FamilyFueds.Properties.Resources.Mask;
 
-        ChangeVolocity();
-        m_intellegence = RandomGenerator.Int(20, 5);
-        idea = true;
+        Initialize();
     }
 
     /// <summary>
-    /// Called after a collition event, this function preforms a marrage between the people who met depending
-    /// on certain criteria.
+    /// Initialise a person with data common to both custom and default people.
+    /// </summary>
+    private void Initialize()
+    {
+        id = ApplicationControl.NumberOfPeople;
+        ApplicationControl.NumberOfPeople++;
+
+        dob = DateTime.Now;
+        m_intelligence = RandomGenerator.Int(20, 5);
+        ChangeVolocity();
+        ChangeMask();
+        Birthday();
+
+        ApplicationControl.Update += Update;
+        ApplicationControl.FamilyEvents.Subscribe(this);
+        GarbageBin.Garbage += Dispose;
+    }
+
+    /// <summary>
+    /// Called on every screen update <see cref="FamilyFeudsForm.Update(Person)"/>
+    /// </summary>
+    public void Update()
+    {
+        if (isDead) return;
+        Birthday();
+        Recover();
+        Idea();
+    }
+
+    /// <summary>
+    /// Moves a bot on screen according to it's volocity.
+    /// </summary>
+    public void Move()
+    {
+        if (isInjured) return;
+
+        if (follow)
+        {
+            Person person = ApplicationControl.person(lookat);
+            if (person == null) follow = false;
+            else
+            {
+                if (location.X < person.location.X) volocity.X = 2;
+                if (location.X > person.location.X) volocity.X = -2;
+                if (location.Y < person.location.Y) volocity.Y = 2;
+                if (location.Y > person.location.Y) volocity.Y = -2;
+            }
+        }
+
+        location.X += volocity.X;
+        location.Y += volocity.Y;
+
+        if (!isDead) Contact();
+        else if (location.Y < -50 || location.Y > ApplicationControl.MaxHeight + 100) Trash();
+    }
+
+    /// <summary>
+    /// Called after a collition event, this function preforms a marrage between the people
+    /// if certain criteria is met.
     /// </summary>
     /// <param name="person"></param>
     /// <returns></returns>
-    public bool Marry(Person person)
+    public async Task<bool> Marry(Person person)
     {
-        if (isEmotional || person.isEmotional || isInjured || person.isInjured ||
-            person.mother == id || person.father == id || person.family == family ||
-            person.gender == gender || married + person.married != -2) return !isEmotional && !person.isEmotional && married == person.id;
+        if (isEmotional || person.isEmotional || person.mother == id ||
+            person.father == id || person.family == family || person.gender == gender ||
+            married + person.married != -2) return !isEmotional && !person.isEmotional && married == person.id;
 
         married = person.id;
         person.married = id;
@@ -341,93 +344,48 @@ public class Person : IDisposable
     }
 
     /// <summary>
-    /// Change entire families emotional state and sets any reaction to the emotion.
-    /// </summary>
-    /// <param name="familyEmotion"></param>
-    /// <param name="excludeAllEmotions"></param>
-    /// <param name="familyId"></param>
-    public void FamilyEmotional(Emotion familyEmotion, bool excludeAllEmotions = false, int familyId = -1)
-    {
-        bool retribution = familyId != -1;
-        if (!retribution) familyId = family;
-
-        List<Person> mob;
-
-        if (excludeAllEmotions) mob = ApplicationControl.family.FindAll(x => x.family == familyId && !isEmotional);
-        else mob = ApplicationControl.family.FindAll(x => x.family == familyId && !x.isDead && !x.isInjured && !x.isBaby);
-
-        foreach (Person person in mob)
-        {
-            person.emotion = familyEmotion;
-
-            if (retribution)
-            {
-                person.lookat = id;
-                person.follow = true;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Called on every screen update <see cref="FamilyFeudsForm.Update(Person)"/>
-    /// </summary>
-    public void Update()
-    {
-        if (isDead) return;
-        if (m_age != age)
-        {
-            m_age = age;
-            Birthday();
-        }
-        if (!m_recovered && recovered) Recovered();
-        if (m_thinking && idea) Idea();
-    }
-
-    /// <summary>
     /// Called after a collition event, this function preforms a argument between the people who met depending
     /// on certain criteria.
     /// </summary>
     /// <param name="person"></param>
-    public void Fight(Person person)
+    public async Task<bool> Fight(Person person)
     {
-        if (lookat == person.id) follow = false;
+        if (lookat == bumped) follow = false;
 
-        if (isDead || isInjured || person.isBaby || person.family == family ||
-            person.mother == id || person.father == id) return;
+        if (!isActive || person.isDead || person.isBaby || person.family == family ||
+            person.mother == id || person.father == id) return true;
 
         if (person.gender == gender || person.isAngry) {
-            if (person.energy == 1)
+            person.energy--;
+            if (person.energy == 0)
             {
-                person.energy = -1;
-                emotion = Emotion.Sad;
                 m_killer = true;
-                FamilyEmotional(Emotion.Angry, false, person.family);
+                return false;
             }
-            else
-            {
-                person.energy--;
-                person.emotion = Emotion.Injured;
-            }
+            else person.emotion = Emotion.Injured;
         }
         else if (person.married > -1)
         {
             Person spouse = ApplicationControl.person(person.married);
             if (spouse == null) person.married = -1;
-            else if (!spouse.isInjured)
+            else if (!spouse.isActive)
             {
                 spouse.emotion = Emotion.Jealous;
                 spouse.lookat = id;
                 spouse.follow = true;
             }
         }
+        return true;
     }
 
     /// <summary>
     /// Called when a person is over their emotion.
     /// </summary>
-    private void Recovered()
+    private void Recover()
     {
-        emotion = isBaby ? Emotion.Happy: Emotion.None;
+        if (m_emotional == 0) return;
+        m_emotional--;
+        if (m_emotional < 0) emotion = isBaby ? Emotion.Happy: Emotion.None;
     }
 
     /// <summary>
@@ -436,41 +394,11 @@ public class Person : IDisposable
     /// </summary>
     private void Idea()
     {
-        if (ApplicationControl.DEBUG_MODE) Debug.Print(name + " had an idea!");
-        if (isDead) return;
-        else if (!isEmotional) ChangeVolocity();
-        m_intellegence = RandomGenerator.Int(20, 5);
-        idea = true;
-    }
-
-    /// <summary>
-    /// Moves a bot on screen according to it's volocity.
-    /// </summary>
-    public void Move()
-    {
-        if (isInjured || ignore == -4) return;
-
-        if (follow)
+        m_intelligence--;
+        if (m_intelligence < 0)
         {
-            Person person = ApplicationControl.person(lookat);
-            if (person == null) follow = false;
-            else
-            {
-                if (location.X < person.location.X) volocity.X = 2;
-                if (location.X > person.location.X) volocity.X = -2;
-                if (location.Y < person.location.Y) volocity.Y = 2;
-                if (location.Y > person.location.Y) volocity.Y = -2;
-            }
-        }
-
-        location.X += volocity.X;
-        location.Y += volocity.Y;
-
-        if (ignore != -3) Contact();
-        else if (location.Y < -50 || location.Y > ApplicationControl.MaxHeight + 100)
-        {
-            ignore = -4;
-            ApplicationControl.Events.Invoke(EventManager.Event.Death, this);
+            if (!isEmotional) ChangeVolocity();
+            m_intelligence = RandomGenerator.Int(20, 5);
         }
     }
 
@@ -479,13 +407,17 @@ public class Person : IDisposable
     /// </summary>
     private void Birthday()
     {
-        if (ApplicationControl.DEBUG_MODE) Debug.Print("It's " + fullname + " " + (m_age+1) + " birthday!");
-        if (m_age == 0) ignore = -2;
-        else if (m_age == 5) { energy--; if (!isEmotional) emotion = Emotion.Party; }
-        else if (m_age == 10) { energy--; if (!isEmotional) emotion = Emotion.Party; }
-        else if (m_age == 15) { energy--; if (!isEmotional) emotion = Emotion.Party; }
-        else if (m_age == 20) { energy--; if (!isEmotional) emotion = Emotion.Party; }
-        else if (m_age == 25) energy--;
+        if (m_age != age)
+        {
+            if (ApplicationControl.DEBUG_MODE) Debug.Print("It's " + fullname + " " + (m_age+1) + " birthday!");
+
+            if (m_age == 5) { energy--; if (!isEmotional) emotion = Emotion.Party; }
+            else if (m_age == 10) { energy--; if (!isEmotional) emotion = Emotion.Party; }
+            else if (m_age == 15) { energy--; if (!isEmotional) emotion = Emotion.Party; }
+            else if (m_age == 20) { energy--; if (!isEmotional) emotion = Emotion.Party; }
+            else if (m_age == 25) energy--;
+            m_age = age;
+        }
     }
 
     /// <summary>
@@ -495,7 +427,7 @@ public class Person : IDisposable
     private void Died()
     {
         volocity.X = 0;
-
+        follow = false;
         if (m_killer)
         {
             emotion = Emotion.Devil;
@@ -504,21 +436,10 @@ public class Person : IDisposable
         else
         {
             emotion = Emotion.Angel;
-            volocity.Y = -3;
+            volocity.Y = -2;
         }
-
-        ignore = -3;
-
-        if (married > -1)
-        {
-            Person person = ApplicationControl.person(married);
-            if (person != null) person.married = -1;
-        }
-        married = -1;
-        mother = -1;
-        father = -1;
-
-        if (energy == 0) FamilyEmotional(Emotion.Sad);
+        if (ApplicationControl.DEBUG_MODE) Debug.Print(fullname + " has died");
+        ApplicationControl.FamilyEvents.Invoke(this);
     }
 
     /// <summary>
@@ -526,40 +447,83 @@ public class Person : IDisposable
     /// 
     /// <remarks>
     /// If event ever needed for screen collition use following:
-    /// Send: A byte using 0 << bit, set the bits for each screen contact.
-    /// Receive: The byte and decode with bool hasBit = (byte & (1 << bit)) != 0;
     /// </summary>
     private void Contact()
     {
-        byte impact = 0;
-        if (location.X < 0) { location.X = 0; volocity.X = 1; impact = 1 << 1; }
-        if (location.Y < 0) { location.Y = 0; volocity.Y = 1; impact = 1 << 2; }
-        if (location.X > ApplicationControl.MaxWidth) { location.X = ApplicationControl.MaxWidth; volocity.X = -1; impact = 1 << 3; }
-        if (location.Y > ApplicationControl.MaxHeight) { location.Y = ApplicationControl.MaxHeight; volocity.Y = -1; impact = 1 << 4; }
+        if (location.X < 0) { location.X = 0; volocity.X = 1; }
+        if (location.Y < 0) { location.Y = 0; volocity.Y = 1; }
+        if (location.X > ApplicationControl.MaxWidth) { location.X = ApplicationControl.MaxWidth; volocity.X = -1; }
+        if (location.Y > ApplicationControl.MaxHeight) { location.Y = ApplicationControl.MaxHeight; volocity.Y = -1; }
     }
 
     /// <summary>
     /// Check for contact with other bots.
     /// </summary>
     /// <param name="person"></param>
-    public void Contact(Person person)
+    public async void Contact(Person person)
     {
-        if (person.id != id && !Is.AnyEqual(ignore, person.id, person.ignore, id) && !isDead && !person.isDead &&
-           (Is.Between(person.location.X, location.X, location.X + 50) &&
-            Is.Between(person.location.Y, location.Y, location.Y + 50) ||
-            Is.Between(person.location.X + 50, location.X, location.X + 50) &&
-            Is.Between(person.location.Y + 50, location.Y, location.Y + 50)))
-        {
-            ignore = person.id;
-            ApplicationControl.Events.Invoke(EventManager.Event.Collision, this, person);
-        }
-        else if (ignore > -1 && Is.AnyEqual(ignore, person.id, person.ignore, id)) ignore = -1;
+        if (person == this) return;
+        bool ignored = bumped == person.id;
+
+        if (!isDead && !person.isDead && !ignored && Is.Overlap(location, person.location, 50)) {
+            bumped = person.id;
+            person.bumped = id;
+
+            if (await Marry(person))
+            {
+                if (ApplicationControl.DEBUG_MODE) Debug.Print(name + " got married to " + person.name);
+                emotion = Emotion.Love;
+                person.emotion = Emotion.Love;
+                ApplicationControl.family.Add(new Person(this));
+            }
+            else await Fight(person);
+
+            volocity.X = location.X < person.location.X ? -1 : 1;
+            volocity.Y = location.Y < person.location.Y ? -1 : 1;
+            
+            if (!person.isDead)
+            {
+                person.volocity.X = volocity.X * -1;
+                person.volocity.Y = volocity.Y * -1;
+            }
+    }
+        else if (ignored) bumped = -1;
+    }
+
+    public void Trash()
+    {
+        ApplicationControl.Update -= Update;
+        ApplicationControl.FamilyEvents.Unsubscribe(this);
+
+        if (ApplicationControl.family.Remove(this))
+            ApplicationControl.NumberOfPeople--;
+
+        GarbageBin.Add(this);
     }
 
     public void Dispose()
     {
-        ApplicationControl.Events.Garbage -= Dispose;
+        GarbageBin.Garbage -= Dispose;
         image.Dispose();
         mask.Dispose();
+    }
+
+    public void FamilyEvent(FeudEventArgs args)
+    {
+        if (!isActive || (isAngry && follow)) return;
+
+        Person person = args.person;
+
+        if (person.isDead)
+        {
+            if (person.bumped == -1) emotion = Emotion.Sad;
+            else
+            {
+                emotion = Emotion.Angry;
+                lookat = person.bumped;
+                follow = true;
+            }
+        }
+        else emotion = Emotion.Party;
     }
 }
