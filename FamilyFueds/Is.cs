@@ -16,6 +16,9 @@
 
 using System;
 
+/// <summary>
+/// Global expressions
+/// </summary>
 public static class Is
 {
     public static bool Between(int value, int from, int to) => value >= from && value <= to;

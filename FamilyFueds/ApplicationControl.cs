@@ -18,6 +18,9 @@ using System.Diagnostics;
 
 namespace JuicyGrapeApps.FamilyFueds
 {
+    /// <summary>
+    /// Global application controller class.
+    /// </summary>
     internal static class ApplicationControl
     {
         // Family Feud Global Constants
@@ -25,7 +28,7 @@ namespace JuicyGrapeApps.FamilyFueds
         public const string REG_KEY_NAMES = "FamilyNames";
         public const string REG_KEY_DEFAULT = "DefaultNames";
         public const int MAX_BOT_COUNT = 1000;
-        public const bool DEBUG_MODE = true;
+        public const bool DEBUG_MODE = false;
 
         // MessageBox Title
         public static string messageTitle = "Family Feuds";

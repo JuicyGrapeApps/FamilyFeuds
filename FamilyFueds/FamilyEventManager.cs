@@ -16,6 +16,9 @@
 
 namespace JuicyGrapeApps.FamilyFueds
 {
+    /// <summary>
+    /// Handles any family events that happen.
+    /// </summary>
     public class FamilyEventManager
     {
         static Dictionary<int, Action<FeudEventArgs>> FamilyEvents = new();

@@ -15,6 +15,9 @@
  */
 using JuicyGrapeApps.FamilyFueds;
 
+/// <summary>
+/// Global random generator
+/// </summary>
 public static class RandomGenerator
 {
     public static int family;

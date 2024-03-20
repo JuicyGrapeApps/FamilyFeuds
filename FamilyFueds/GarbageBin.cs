@@ -16,6 +16,9 @@
 
 namespace JuicyGrapeApps.FamilyFueds
 {
+    /// <summary>
+    /// Global garbage collector and disposal class.
+    /// </summary>
     public static class GarbageBin
     {
         public static event CoreEventHandler Garbage;
@@ -33,6 +36,10 @@ namespace JuicyGrapeApps.FamilyFueds
             }
         }
 
+        /// <summary>
+        /// Called on application shutdown and disposes of all relevant
+        /// objects.
+        /// </summary>
         public static void Dispose()
         {
             Empty();
