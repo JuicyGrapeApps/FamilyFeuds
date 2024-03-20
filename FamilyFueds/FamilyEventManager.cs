@@ -17,7 +17,7 @@
 namespace JuicyGrapeApps.FamilyFueds
 {
     /// <summary>
-    /// Handles any family events that happen.
+    /// Manages any family event that occures.
     /// </summary>
     public class FamilyEventManager
     {
@@ -32,8 +32,12 @@ namespace JuicyGrapeApps.FamilyFueds
         }
         public void Unsubscribe(IFamilyEvents handler)
         {
-            if (FamilyEvents.ContainsKey(handler.family))
-                FamilyEvents[handler.family] -= handler.FamilyEvent;
+            try
+            {
+                if (FamilyEvents.ContainsKey(handler.family))
+                    FamilyEvents[handler.family] -= handler.FamilyEvent;
+            } 
+            catch { }
         }
 
         public void Invoke(Person person) => FamilyEvents[person.family].Invoke(new FeudEventArgs(person));

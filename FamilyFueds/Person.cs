@@ -504,9 +504,12 @@ public class Person : IFamilyEvents
 
     public void Dispose()
     {
-        GarbageBin.Garbage -= Dispose;
-        image.Dispose();
-        mask.Dispose();
+        try
+        {
+            GarbageBin.Garbage -= Dispose;
+            image.Dispose();
+            mask.Dispose();
+        } catch { };
     }
 
     public void FamilyEvent(FeudEventArgs args)
