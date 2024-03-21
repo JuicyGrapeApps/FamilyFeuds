@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+
 namespace JuicyGrapeApps.FamilyFueds
 {
     public partial class FamilyFeudsForm : Form
@@ -133,12 +135,22 @@ namespace JuicyGrapeApps.FamilyFueds
         private void Execute_Tick(object sender, EventArgs e) => ApplicationControl.RefreshScreenSaver(this);
 
         /// <summary>
-        /// Called every tick count of the Execute timer on the FamiltFeudForm form. This
-        /// function clears and paints all the graphics on screen.
+        /// Called for each bot from the ApplicationControl, this function
+        /// clears and paints all the graphics on screen.
+        /// <see cref="ApplicationControl.RefreshScreenSaver(Form)"/>
         /// </summary>
         /// <param name="person"></param>
         public void Draw(Person person)
         {
+            ImageAttributes imageAttributes = new ImageAttributes();
+
+            if (person.ghost != 255f)
+            {
+                ColorMatrix colorMatrix = new ColorMatrix 
+                    { Matrix33 = person.ghost / 255f };
+                imageAttributes.SetColorMatrix(colorMatrix);
+            }
+
             if (!person.isInjured)
             {
                 graphics.FillRectangle(Brushes.Black, person.bounds);
@@ -147,20 +159,14 @@ namespace JuicyGrapeApps.FamilyFueds
 
             using (Pen pen = new Pen(Brushes.Black))
             {
-                if (person.parents.HasFlag(Person.Parent.Mother))
-                {
+                if (person.mother > -1)
                     graphics.DrawBezier(pen, person.motherLine[0], person.motherLine[1], person.motherLine[2], person.motherLine[3]);
-                    if (person.mother == -1) person.parents &= ~Person.Parent.Mother;
-                }
-                if (person.parents.HasFlag(Person.Parent.Father))
-                {
+                if (person.father > -1)
                     graphics.DrawBezier(pen, person.fatherLine[0], person.fatherLine[1], person.fatherLine[2], person.fatherLine[3]);
-                    if (person.father == -1) person.parents &= ~Person.Parent.Father;
-                }
             }
 
             DrawArrow(person, true);
-            
+
             person.Move();
 
             Point point = person.location;
@@ -171,8 +177,10 @@ namespace JuicyGrapeApps.FamilyFueds
             StringFormat format = new StringFormat();
             format.SetMeasurableCharacterRanges(new[] { new CharacterRange(0, person.fullname.Length) });
 
-            graphics.DrawImage(person.image, new Rectangle(person.location, new Size(50, 50)));
-            graphics.DrawString(person.fullname, Font, Brushes.WhiteSmoke, personalSpace, format);
+            graphics.DrawImage(person.image, new Rectangle(person.location, new Size(50, 50)), 0, 0, person.image.Width, person.image.Height, GraphicsUnit.Pixel, imageAttributes);
+
+            using (Brush brush = new SolidBrush(Color.FromArgb(person.ghost, Color.WhiteSmoke)))
+                graphics.DrawString(person.fullname, Font, brush, personalSpace, format);
 
             person.bounds = graphics.MeasureCharacterRanges(person.fullname, Font, personalSpace, format)[0].GetBounds(graphics);
             person.bounds.X -= 1;
@@ -186,6 +194,7 @@ namespace JuicyGrapeApps.FamilyFueds
                 if (parent == null || parent.isDead) person.mother = -1;
                 else
                 {
+                    Color color = Color.FromArgb(person.ghost, Color.Pink);
                     int offset = 40;
                     person.motherLine[0] = person.location;
                     person.motherLine[0].X += offset;
@@ -202,7 +211,7 @@ namespace JuicyGrapeApps.FamilyFueds
                     person.motherLine[2].X = person.motherLine[3].X - x;
                     person.motherLine[2].Y = person.motherLine[3].Y - y;
 
-                    using (Pen pen = new Pen(Brushes.Pink))
+                    using (Pen pen = new Pen(color))
                         graphics.DrawBezier(pen, person.motherLine[0], person.motherLine[1], person.motherLine[2], person.motherLine[3]);
                 }
             }
@@ -213,6 +222,7 @@ namespace JuicyGrapeApps.FamilyFueds
                 if (parent == null || parent.isDead) person.father = -1;
                 else
                 {
+                    Color color = Color.FromArgb(person.ghost, Color.LightBlue);
                     int offset = 40;
                     person.fatherLine[0] = person.location;
                     person.fatherLine[0].X += offset;
@@ -229,7 +239,7 @@ namespace JuicyGrapeApps.FamilyFueds
                     person.fatherLine[2].X = person.fatherLine[3].X - x;
                     person.fatherLine[2].Y = person.fatherLine[3].Y - y;
 
-                    using (Pen pen = new Pen(Brushes.LightBlue))
+                    using (Pen pen = new Pen(color))
                         graphics.DrawBezier(pen, person.fatherLine[0], person.fatherLine[1], person.fatherLine[2], person.fatherLine[3]);
                 }
             }
@@ -244,10 +254,10 @@ namespace JuicyGrapeApps.FamilyFueds
         /// <param name="clear"></param>
         public void DrawArrow(Person person, bool clear = false)
         {
-            if (person.lookat+person.followed == -2) return;
+            if (person.lookat + person.followed == -2) return;
 
-            Person target = ApplicationControl.person(person.followed > -1 ? person.followed: person.lookat);
-            
+            Person target = ApplicationControl.person(person.followed > -1 ? person.followed : person.lookat);
+
             if (target == null)
             {
                 person.lookat = -1;
@@ -255,7 +265,7 @@ namespace JuicyGrapeApps.FamilyFueds
                 return;
             }
 
-            Double scale = clear ? 11: 10;
+            Double scale = clear ? 11 : 10;
 
             using (Pen pen = clear ? new Pen(Brushes.Black, 3.0f) : new Pen(Brushes.NavajoWhite, 1.0f))
             {

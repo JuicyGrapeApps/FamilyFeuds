@@ -15,7 +15,6 @@
  */
 using JuicyGrapeApps.Core;
 using JuicyGrapeApps.FamilyFueds;
-using System;
 using System.Diagnostics;
 
 
@@ -53,15 +52,6 @@ public class Person : IFamilyEvents
     // Person's brain filled with ideas.
     public static readonly Ideas[] Brain = (Ideas[]) Enum.GetValues(typeof(Ideas));
 
-    // Mother and father comparison flags
-    [Flags]
-    public enum Parent
-    {
-        None = 0x00000000,
-        Mother = 0x00000001,
-        Father = 0x00000002
-    }
-
     public int id { get; set; }
     public int family { get; set; }
     public string name;
@@ -74,6 +64,8 @@ public class Person : IFamilyEvents
     public bool gender;
     public int spouse = -1;
     public int bumped = -1;
+    public int mother { get; set; } = -1;
+    public int father { get; set; } = -1;
     public int lookat = -1;
     public Point[] motherLine = new Point[4];
     public Point[] fatherLine = new Point[4];
@@ -83,28 +75,12 @@ public class Person : IFamilyEvents
     private int m_intelligence = 10;
     private int m_emotional = 5;
     private bool m_killer = false;
+    private int m_grave = 0;
     private bool m_follow = false;
     public int followed = -1;
     public RectangleF bounds = new();
     public bool changeMask = false;
-    private int m_father = -1;
-    private int m_mother = -1;
-    public Parent parents = Parent.None;
-
-    public int father { 
-        get => m_father;
-        set { 
-            m_father = value;
-            if (m_father > -1) parents |= Parent.Father;
-        }
-    }
-    public int mother { 
-        get => m_mother;
-        set { 
-            m_mother = value;
-            if (m_mother > -1) parents |= Parent.Mother;
-        }
-    }
+    public int ghost = 255;
 
     public int emotional { get; set; }
 
@@ -370,8 +346,13 @@ public class Person : IFamilyEvents
         location.X += volocity.X;
         location.Y += volocity.Y;
 
-        if (!isDead) OnCollision();
-        else if (location.Y < -50 || location.Y > ApplicationControl.MaxHeight + 100) Trash();
+        if (isDead)
+        {
+            float floating = 1 - (float) Math.Abs(m_grave - location.Y) / m_energy;
+            if (floating <= 0) Trash();
+            else ghost = (int) (255 * floating);
+        }
+        else OnCollision();
     }
 
     /// <summary>
@@ -399,7 +380,6 @@ public class Person : IFamilyEvents
             family = person.family;
             surname = person.surname;
         }
-
         SetFamilyEmotion(mother, Emotion.Happy);
         SetFamilyEmotion(father, Emotion.Happy);
         SetFamilyEmotion(person.mother, Emotion.Happy);
@@ -501,16 +481,12 @@ public class Person : IFamilyEvents
         {
             if (ApplicationControl.DEBUG_MODE) Debug.Print("It's " + fullname + " " + (m_age+1) + " birthday!");
 
-            if (m_age == 5) { energy--; if (!isEmotional) emotion = Emotion.Party; }
-            else if (m_age == 10) { energy--; if (!isEmotional) emotion = Emotion.Party; }
-            else if (m_age == 15) { energy--; if (!isEmotional) emotion = Emotion.Party; }
-            else if (m_age == 20) { energy--; if (!isEmotional) emotion = Emotion.Party; }
-            else if (m_age == 25) energy--;
             m_age = age;
+            if (age % 5 == 0) energy--;
 
-            if (!follow && isActive)
+            if (!isDead)
             {
-                emotion = Emotion.Party;
+                if (isAvailable) emotion = Emotion.Party;
                 SetFamilyEmotion(spouse, emotion);
                 SetFamilyEmotion(mother, emotion);
                 SetFamilyEmotion(father, emotion);
@@ -523,6 +499,7 @@ public class Person : IFamilyEvents
     /// </summary>
     private int Energy(int value)
     {
+        if (isDead) return 0;
         m_energy = value;
         if (m_energy > 0) return m_energy;
 
@@ -532,20 +509,20 @@ public class Person : IFamilyEvents
         {
             emotion = Emotion.Devil;
             volocity.Y = 3;
+            m_energy = ApplicationControl.MaxHeight - location.Y;
         }
         else
         {
             emotion = Emotion.Angel;
             volocity.Y = -2;
+            m_energy = location.Y;
         }
+        m_grave = location.Y;
         spouse = -1;
-        mother = -1;
-        father = -1;
 
         if (ApplicationControl.DEBUG_MODE) Debug.Print(fullname + " has died");
 
         ApplicationControl.FamilyEvents.Invoke(this);
-        ApplicationControl.FamilyEvents.InvokeChildren(this);
         return 0;
     }
 
@@ -599,6 +576,9 @@ public class Person : IFamilyEvents
 
     public void Trash()
     {
+        ApplicationControl.FamilyEvents.InvokeChildren(this);
+        mother = -1;
+        father = -1;
         ApplicationControl.Update -= Update;
         ApplicationControl.Collision -= OnCollision;
         ApplicationControl.FamilyEvents.Unsubscribe(this);
