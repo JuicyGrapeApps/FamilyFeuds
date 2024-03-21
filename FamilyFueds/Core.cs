@@ -126,21 +126,6 @@ namespace JuicyGrapeApps.Core
         public static bool Between(int value, int from, int to) => value >= from && value <= to;
 
         /// <summary>
-        /// Returns true if a point is between from and to points.
-        /// </summary>
-        /// <param name="value">Point to check</param>
-        /// <param name="from">Location of first point</param>
-        /// <param name="to">Location of second point</param>
-        /// <returns></returns>
-        public static bool PointBetween(Point value, Point from, Point to)
-        {
-            Point start = new Point(Math.Min(from.X, to.X), Math.Min(from.Y, to.Y));
-            Point end = new Point(Math.Max(from.X, to.X), Math.Max(from.Y, to.Y));
-            return value.X >= start.X && value.X <= end.X &&
-                   value.Y >= start.Y && value.Y <= end.Y;
-        }
-
-        /// <summary>
         /// Returns true if two identical rectangles overlap each other.
         /// </summary>
         /// <param name="value">Point location of first rectangle</param>
