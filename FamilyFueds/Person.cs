@@ -93,15 +93,14 @@ public class Person : IFamilyEvents
         get => m_father;
         set { 
             m_father = value;
-            if (m_father > -1) Parents();
+            if (m_father > -1) parents |= Parent.Father;
         }
     }
-
     public int mother { 
         get => m_mother;
         set { 
             m_mother = value;
-            if (m_mother > -1) Parents();
+            if (m_mother > -1) parents |= Parent.Mother;
         }
     }
 
@@ -125,7 +124,6 @@ public class Person : IFamilyEvents
     public void ChangeVolocity() => volocity = new Point(RandomGenerator.Int(2, 1, true), RandomGenerator.Int(2, 1, true));
     public string fullname => name + " " + surname;
     public int age => (DateTime.Now - dob).Minutes;
-
     public bool follow
     {
         get => m_follow && lookat > -1 && !isDead;
@@ -137,14 +135,6 @@ public class Person : IFamilyEvents
             m_follow = value;
         }
     }
-
-    /// <summary>
-    /// Used to remove parent lines when mother or father
-    /// values are set to minus one.
-    /// </summary>
-    public void Parents() =>
-        parents =(m_mother > -1 ? Parent.Mother : Parent.None) |
-                 (m_father > -1 ? Parent.Father : Parent.None);
 
     /// <summary>
     /// Amount of energy a person has if energy reaches zero they expire.

@@ -147,18 +147,16 @@ namespace JuicyGrapeApps.FamilyFueds
 
             using (Pen pen = new Pen(Brushes.Black))
             {
-                bool changeParents = false;
                 if (person.parents.HasFlag(Person.Parent.Mother))
                 {
                     graphics.DrawBezier(pen, person.motherLine[0], person.motherLine[1], person.motherLine[2], person.motherLine[3]);
-                    changeParents = person.mother == -1;
+                    if (person.mother == -1) person.parents &= ~Person.Parent.Mother;
                 }
                 if (person.parents.HasFlag(Person.Parent.Father))
                 {
                     graphics.DrawBezier(pen, person.fatherLine[0], person.fatherLine[1], person.fatherLine[2], person.fatherLine[3]);
-                    changeParents = changeParents || person.father == -1;
+                    if (person.father == -1) person.parents &= ~Person.Parent.Father;
                 }
-                if (changeParents) person.Parents();
             }
 
             DrawArrow(person, true);
