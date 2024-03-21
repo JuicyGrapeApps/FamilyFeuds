@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using JuicyGrapeApps.Core;
 using JuicyGrapeApps.FamilyFueds;
 using System;
 using System.Diagnostics;
@@ -330,6 +331,7 @@ public class Person : IFamilyEvents
         ChangeMask();
 
         ApplicationControl.Update += Update;
+        ApplicationControl.Collision += OnCollision;
         ApplicationControl.FamilyEvents.Subscribe(this);
         GarbageBin.Garbage += Dispose;
     }
@@ -368,7 +370,7 @@ public class Person : IFamilyEvents
         location.X += volocity.X;
         location.Y += volocity.Y;
 
-        if (!isDead) Contact();
+        if (!isDead) OnCollision();
         else if (location.Y < -50 || location.Y > ApplicationControl.MaxHeight + 100) Trash();
     }
 
@@ -553,7 +555,7 @@ public class Person : IFamilyEvents
     /// <remarks>
     /// If event ever needed for screen collition use following:
     /// </summary>
-    private void Contact()
+    private void OnCollision()
     {
         if (location.X < 0) { location.X = 0; volocity.X = 1; }
         if (location.Y < 0) { location.Y = 0; volocity.Y = 1; }
@@ -565,7 +567,7 @@ public class Person : IFamilyEvents
     /// Check for contact with other bots.
     /// </summary>
     /// <param name="person"></param>
-    public async void Contact(Person person)
+    public async void OnCollision(Person person)
     {
         if (person == this) return;
         bool ignored = bumped == person.id;
@@ -598,6 +600,7 @@ public class Person : IFamilyEvents
     public void Trash()
     {
         ApplicationControl.Update -= Update;
+        ApplicationControl.Collision -= OnCollision;
         ApplicationControl.FamilyEvents.Unsubscribe(this);
         
         if (ApplicationControl.family.Remove(this))

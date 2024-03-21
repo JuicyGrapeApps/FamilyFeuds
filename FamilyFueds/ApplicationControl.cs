@@ -48,6 +48,7 @@ namespace JuicyGrapeApps.FamilyFueds
         private static DateTime m_time;
 
         public static event CoreEventHandler? Update;
+        public static event PersonEventHandler? Collision;
 
         public enum ExecuteMode
         {
@@ -160,7 +161,7 @@ namespace JuicyGrapeApps.FamilyFueds
                 {
                     Person person = family[i];
                     familyFeud.Draw(person);
-                    CollisionDetection(person);                    
+                    Collision?.Invoke(person);                    
                 }
                 int elapsed = (DateTime.Now - m_time).Seconds;
                 if (elapsed == m_elapsed) return;
@@ -172,11 +173,6 @@ namespace JuicyGrapeApps.FamilyFueds
             {
                 if (DEBUG_MODE) Debug.Print("Exception: " + ex.Message+" --- "+ex.Source+" --- "+ex.Data);
             }
-        }
-
-        private static async void CollisionDetection(Person person)
-        {
-            for (int i = 0; i < NumberOfPeople; i++) person.Contact(family[i]);
         }
 
         public static void InitializeBots()
