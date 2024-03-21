@@ -154,7 +154,8 @@ public class Person : IFamilyEvents
         set
         {
             if (isDead) return;
-            follow = false;
+            if (m_emotion != value) follow = false;
+
             m_emotional = 5;
             m_emotion = value;
             changeMask = true;
@@ -381,19 +382,19 @@ public class Person : IFamilyEvents
     /// on certain criteria.
     /// </summary>
     /// <param name="person"></param>
-    public async Task<bool> Fight(Person person)
+    public async Task Fight(Person person)
     {
         if (lookat == bumped) follow = false;
 
         if (!isActive || person.isDead || person.isBaby || person.family == family ||
-            person.mother == id || person.father == id) return true;
+            person.mother == id || person.father == id) return;
 
-        if (person.gender == gender || person.isAngry) {
+        if (person.gender == gender || isAngry) {
             person.energy--;
             if (person.energy == 0)
             {
                 m_killer = true;
-                return false;
+                return;
             }
             else person.emotion = Emotion.Injured;
         }
@@ -408,7 +409,6 @@ public class Person : IFamilyEvents
                 partner.follow = true;
             }
         }
-        return true;
     }
 
     /// <summary>
