@@ -15,7 +15,6 @@
  */
 using Microsoft.Win32;
 using System.Globalization;
-using System.Xml.Linq;
 
 namespace JuicyGrapeApps.FamilyFueds
 {

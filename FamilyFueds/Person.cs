@@ -40,17 +40,27 @@ public class Person : IFamilyEvents
         Devil
     }
 
-    // Ideas a person has and how often they react on them.
+    // Peron's ideas equal to the impulse to react on them.
     public enum Ideas
     {
         ChangeDirection = 0,
-        Eat = 4,
-        HaveKids = 8,
+        Eat = 5,
+        HaveKids = 1,
     }
 
+    // Person's brain filled with ideas.
     public static readonly Ideas[] Brain = (Ideas[]) Enum.GetValues(typeof(Ideas));
 
-    public int id;
+    // Mother and father comparison flags
+    [Flags]
+    public enum Parent
+    {
+        None = 0x00000000,
+        Mother = 0x00000001,
+        Father = 0x00000002
+    }
+
+    public int id { get; set; }
     public int family { get; set; }
     public string name;
     public string surname;
@@ -60,9 +70,7 @@ public class Person : IFamilyEvents
     public Image image;
     public Image mask;
     public bool gender;
-    public int married = -1;
-    public int father = -1;
-    public int mother = -1;
+    public int spouse = -1;
     public int bumped = -1;
     public int lookat = -1;
     public Point[] motherLine = new Point[4];
@@ -77,6 +85,25 @@ public class Person : IFamilyEvents
     public int followed = -1;
     public RectangleF bounds = new();
     public bool changeMask = false;
+    private int m_father = -1;
+    private int m_mother = -1;
+    public Parent parents = Parent.None;
+
+    public int father { 
+        get => m_father;
+        set { 
+            m_father = value;
+            if (m_father > -1) Parents();
+        }
+    }
+
+    public int mother { 
+        get => m_mother;
+        set { 
+            m_mother = value;
+            if (m_mother > -1) Parents();
+        }
+    }
 
     public int emotional { get; set; }
 
@@ -110,6 +137,14 @@ public class Person : IFamilyEvents
             m_follow = value;
         }
     }
+
+    /// <summary>
+    /// Used to remove parent lines when mother or father
+    /// values are set to minus one.
+    /// </summary>
+    public void Parents() =>
+        parents =(m_mother > -1 ? Parent.Mother : Parent.None) |
+                 (m_father > -1 ? Parent.Father : Parent.None);
 
     /// <summary>
     /// Amount of energy a person has if energy reaches zero they expire.
@@ -248,13 +283,13 @@ public class Person : IFamilyEvents
 
             if (person.gender)
             {
-                mother = person.married;
+                mother = person.spouse;
                 father = person.id;
             }
             else
             {
                 mother = person.id;
-                father = person.married;
+                father = person.spouse;
             }
 
             person = ApplicationControl.person(mother);
@@ -333,10 +368,10 @@ public class Person : IFamilyEvents
     {
         if (isEmotional || person.isEmotional || person.mother == id ||
             person.father == id || person.family == family || person.gender == gender ||
-            married + person.married != -2) return !isEmotional && !person.isEmotional && married == person.id;
+            spouse + person.spouse != -2) return !isEmotional && !person.isEmotional && spouse == person.id;
 
-        married = person.id;
-        person.married = id;
+        spouse = person.id;
+        person.spouse = id;
 
         if (gender)
         {
@@ -372,15 +407,15 @@ public class Person : IFamilyEvents
             }
             else person.emotion = Emotion.Injured;
         }
-        else if (person.married > -1)
+        else if (person.spouse > -1)
         {
-            Person spouse = ApplicationControl.person(person.married);
-            if (spouse == null) person.married = -1;
-            else if (!spouse.isActive)
+            Person partner = ApplicationControl.person(person.spouse);
+            if (partner == null) person.spouse = -1;
+            else if (partner.isActive)
             {
-                spouse.emotion = Emotion.Jealous;
-                spouse.lookat = id;
-                spouse.follow = true;
+                partner.emotion = Emotion.Jealous;
+                partner.lookat = id;
+                partner.follow = true;
             }
         }
         return true;
@@ -405,7 +440,7 @@ public class Person : IFamilyEvents
         m_intelligence--;
         if (m_intelligence < 0)
         {
-            if (!isEmotional) HaveIdea();
+            if (!isEmotional) Idea();
             m_intelligence = RandomGenerator.Int(20, 5);
         }
     }
@@ -414,29 +449,23 @@ public class Person : IFamilyEvents
     /// Called every time a person has an idea and returning the idea
     /// they came up with.
     /// </summary>
-    private void HaveIdea()
+    private void Idea()
     {
         Ideas idea = RandomGenerator.Idea();
 
         if (ApplicationControl.DEBUG_MODE) Debug.Print(fullname+" has the idea to "+idea.ToString());
 
-        switch (RandomGenerator.Idea()) 
+        switch (idea) 
         {
             case Ideas.ChangeDirection: ChangeVolocity(); break;
             case Ideas.Eat: if (m_energy < 10) m_energy++; break;
             case Ideas.HaveKids:
-                if (married > -1)
+                if (spouse > -1)
                 {
-                    Person spouse = ApplicationControl.person(married);
-                    if (spouse == null || spouse.isEmotional) break;
                     emotion = Emotion.Love;
                     m_emotional = 20;
-                    lookat = married;
+                    lookat = spouse;
                     follow = true;
-                    spouse.emotion = Emotion.Love;
-                    spouse.emotional = 20;
-                    spouse.lookat = id;
-                    spouse.follow = true;
                 }
                 else ChangeVolocity();
             break;
@@ -462,13 +491,12 @@ public class Person : IFamilyEvents
     }
 
     /// <summary>
-    /// Called to set a persons energy level if zero expires, factors that could cause this include old age or injuries sustained
-    /// during an argument.
+    /// Set energy level, if level reaches zero person expires.
     /// </summary>
     private int Energy(int value)
     {
         m_energy = value;
-        if (m_energy > 0) return m_energy; 
+        if (m_energy > 0) return m_energy;
 
         volocity.X = 0;
         follow = false;
@@ -482,9 +510,14 @@ public class Person : IFamilyEvents
             emotion = Emotion.Angel;
             volocity.Y = -2;
         }
-        if (ApplicationControl.DEBUG_MODE) Debug.Print(fullname + " has died");
-        ApplicationControl.FamilyEvents.Invoke(this);
+        spouse = -1;
+        mother = -1;
+        father = -1;
 
+        if (ApplicationControl.DEBUG_MODE) Debug.Print(fullname + " has died");
+
+        ApplicationControl.FamilyEvents.Invoke(this);
+        ApplicationControl.FamilyEvents.InvokeChildren(this);
         return 0;
     }
 
@@ -540,7 +573,7 @@ public class Person : IFamilyEvents
     {
         ApplicationControl.Update -= Update;
         ApplicationControl.FamilyEvents.Unsubscribe(this);
-
+        
         if (ApplicationControl.family.Remove(this))
             ApplicationControl.NumberOfPeople--;
 
@@ -574,5 +607,17 @@ public class Person : IFamilyEvents
             }
         }
         else emotion = Emotion.Party;
+    }
+
+    public void ChildEvent(FeudEventArgs args)
+    {
+        Person person = args.person;
+        Debug.Print(fullname + " lost parent " + person.name);
+
+        if (person.isDead)
+        {
+            if (mother == person.id) mother = -1;
+            if (father == person.id) father = -1;
+        }
     }
 }

@@ -21,5 +21,5 @@ namespace JuicyGrapeApps.FamilyFueds
         public Person person;
 
         public FeudEventArgs(Person person) => this.person = person;
-    }
+   }
 }

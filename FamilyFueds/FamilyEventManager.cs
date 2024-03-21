@@ -22,24 +22,67 @@ namespace JuicyGrapeApps.FamilyFueds
     public class FamilyEventManager
     {
         static Dictionary<int, Action<FeudEventArgs>> FamilyEvents = new();
+        static Dictionary<int, Action<FeudEventArgs>> ChildEvents = new();
 
-        public void Subscribe(IFamilyEvents handler)
+        public void Subscribe(IFamilyEvents person)
         {
-            if (FamilyEvents.ContainsKey(handler.family))
-                FamilyEvents[handler.family] += handler.FamilyEvent;
+            if (FamilyEvents.ContainsKey(person.family))
+                FamilyEvents[person.family] += person.FamilyEvent;
             else
-                FamilyEvents.Add(handler.family, handler.FamilyEvent);
+                FamilyEvents.Add(person.family, person.FamilyEvent);
+            
+            if (person.mother > -1)
+            {
+                if (ChildEvents.ContainsKey(person.mother))
+                    ChildEvents[person.mother] += person.ChildEvent;
+                else
+                    ChildEvents.Add(person.mother, person.ChildEvent);
+            }
+            
+            if (person.father > -1)
+            {
+                if (ChildEvents.ContainsKey(person.father))
+                    ChildEvents[person.father] += person.ChildEvent;
+                else
+                    ChildEvents.Add(person.father, person.ChildEvent);
+            }
         }
-        public void Unsubscribe(IFamilyEvents handler)
+        public void Unsubscribe(IFamilyEvents person)
         {
             try
             {
-                if (FamilyEvents.ContainsKey(handler.family))
-                    FamilyEvents[handler.family] -= handler.FamilyEvent;
+                if (FamilyEvents.ContainsKey(person.family))
+                    FamilyEvents[person.family] -= person.FamilyEvent;
             } 
             catch { }
+            if (person.mother > -1)
+            {
+                try
+                {
+                    if (ChildEvents.ContainsKey(person.mother))
+                        ChildEvents[person.mother] -= person.ChildEvent;
+                } catch { }
+            }
+            if (person.father > -1)
+            {
+                try
+                {
+                    if (ChildEvents.ContainsKey(person.father))
+                        ChildEvents[person.father] -= person.ChildEvent;
+                } catch { }
+            }
         }
 
-        public void Invoke(Person person) => FamilyEvents[person.family].Invoke(new FeudEventArgs(person));
+        public void Invoke(Person person)
+        {
+            if (FamilyEvents.ContainsKey(person.family))
+                FamilyEvents[person.family]?.Invoke(new FeudEventArgs(person));
+        }
+            
+        public void InvokeChildren(Person person)
+        {
+            if (ChildEvents.ContainsKey(person.id))
+                ChildEvents[person.id]?.Invoke(new FeudEventArgs(person));
+        }
     }
 }

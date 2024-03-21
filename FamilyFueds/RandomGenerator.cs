@@ -36,7 +36,7 @@ public static class RandomGenerator
     /// Random location generator this function returns random point on the screen.
     /// </summary>
     /// <returns>Point (Screen Location)</returns>
-    public static Point Location => new Point(rnd.Next(ApplicationControl.MaxHeight + 1), rnd.Next(ApplicationControl.MaxWidth + 1));
+    public static Point Location => new Point(rnd.Next(ApplicationControl.MaxWidth + 1), rnd.Next(ApplicationControl.MaxHeight + 1));
 
     /// <summary>
     /// Random integer generator this function returns a random signed or unsigned integer value upto the maximum
@@ -54,9 +54,10 @@ public static class RandomGenerator
     /// <returns></returns>
     public static Person.Ideas Idea()
     {
-        Person.Ideas idea = Person.Brain[Int(2)];
+        Person.Ideas idea = Person.Ideas.ChangeDirection;
+        idea = Person.Brain[Int(2)];
         int react = (int)idea;
-        if (react > 0 && Int(react) == 0) idea = Person.Ideas.ChangeDirection;
+        if (react > 0 && Int(react) != 0) idea = Person.Ideas.ChangeDirection;
         return idea;
     }
 

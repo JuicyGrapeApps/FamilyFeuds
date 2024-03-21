@@ -13,12 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using System.Diagnostics;
-using System.Drawing;
 using System.Runtime.InteropServices;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
-
 namespace JuicyGrapeApps.FamilyFueds
 {
     public partial class FamilyFeudsForm : Form
@@ -152,11 +147,18 @@ namespace JuicyGrapeApps.FamilyFueds
 
             using (Pen pen = new Pen(Brushes.Black))
             {
-                if (person.mother > -1)
+                bool changeParents = false;
+                if (person.parents.HasFlag(Person.Parent.Mother))
+                {
                     graphics.DrawBezier(pen, person.motherLine[0], person.motherLine[1], person.motherLine[2], person.motherLine[3]);
-
-                if (person.father > -1)
+                    changeParents = person.mother == -1;
+                }
+                if (person.parents.HasFlag(Person.Parent.Father))
+                {
                     graphics.DrawBezier(pen, person.fatherLine[0], person.fatherLine[1], person.fatherLine[2], person.fatherLine[3]);
+                    changeParents = changeParents || person.father == -1;
+                }
+                if (changeParents) person.Parents();
             }
 
             DrawArrow(person, true);
@@ -342,7 +344,7 @@ namespace JuicyGrapeApps.FamilyFueds
             // FamilyFeudsForm
             // 
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(300, 300);
+            this.ClientSize = new System.Drawing.Size(282, 253);
             this.Font = new System.Drawing.Font("Segoe Print", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FamilyFeudsForm";
