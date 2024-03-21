@@ -248,6 +248,7 @@ public class Person : IFamilyEvents
         this.family = family;
         emotion = Emotion.None;
         location = RandomGenerator.Location;
+        m_intelligence = RandomGenerator.Int(20, 5);
         Initialize();
     }
 
@@ -266,6 +267,7 @@ public class Person : IFamilyEvents
             family = RandomGenerator.family;
             emotion = Emotion.None;
             location = RandomGenerator.Location;
+            m_intelligence = RandomGenerator.Int(20, 5);
         }
         else
         {
@@ -282,10 +284,8 @@ public class Person : IFamilyEvents
                 mother = person.id;
                 father = person.spouse;
             }
-
-            person = ApplicationControl.person(mother);
-            if (person == null) location = RandomGenerator.Location;
-            else location = person.location;
+            location = person.location;
+            m_intelligence = 5;
             emotion = Emotion.Baby;
 
             if (ApplicationControl.DEBUG_MODE) Debug.Print(person.fullname + " gave birth to " + fullname);
@@ -302,7 +302,6 @@ public class Person : IFamilyEvents
         ApplicationControl.NumberOfPeople++;
 
         dob = DateTime.Now;
-        m_intelligence = RandomGenerator.Int(20, 5);
         ChangeVolocity();
         ChangeMask();
 
@@ -549,7 +548,8 @@ public class Person : IFamilyEvents
         if (person == this) return;
         bool ignored = bumped == person.id;
 
-        if (!isDead && !person.isDead && !ignored && Is.Overlap(location, person.location, 50)) {
+        if (!isDead && !person.isDead && !ignored && 
+            Is.Overlap(location, person.location, new Size(43, 43))) {
             bumped = person.id;
             person.bumped = id;
 

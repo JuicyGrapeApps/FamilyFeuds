@@ -109,7 +109,7 @@ namespace JuicyGrapeApps.Core
         /// Usage: Use this function to target an index in a collection, use with lastIndex to sync different arrays with same lengths.
         public static void SetIndex(object collection, int index) => Collection(collection, index, ScrollingAction.Targeted);
     }
-#endregion
+    #endregion
 
     /// <summary>
     /// Global expressions
@@ -134,9 +134,10 @@ namespace JuicyGrapeApps.Core
         /// <returns></returns>
         public static bool PointBetween(Point value, Point from, Point to)
         {
-            Point start = new Point(Math.Min(from.X,to.X), Math.Min(from.Y, to.Y));
+            Point start = new Point(Math.Min(from.X, to.X), Math.Min(from.Y, to.Y));
             Point end = new Point(Math.Max(from.X, to.X), Math.Max(from.Y, to.Y));
-            return value.X >= start.X && value.Y >= start.Y && value.X <= end.X && value.Y <= end.Y;
+            return value.X >= start.X && value.X <= end.X &&
+                   value.Y >= start.Y && value.Y <= end.Y;
         }
 
         /// <summary>
@@ -146,8 +147,8 @@ namespace JuicyGrapeApps.Core
         /// <param name="target">Point location of second rectangle</param>
         /// <param name="size">Size of rectangles</param>
         /// <returns></returns>
-        public static bool Overlap(Point value, Point target, int size) =>
-            Is.PointBetween(value, target, new Point(target.X += size, target.Y += size)) ||
-            Is.PointBetween(target, value, new Point(value.X += size, value.Y += size));
+        public static bool Overlap(Point value, Point target, Size size) =>
+            !Rectangle.Intersect(new Rectangle(value, size),
+                                 new Rectangle(target, size)).IsEmpty;
     }
 }
