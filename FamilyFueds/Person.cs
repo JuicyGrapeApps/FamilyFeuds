@@ -207,12 +207,12 @@ public class Person : IFamilyEvents
     }
 
     /// <summary>
-    /// Will change duplcate emotion to all family member's if they 
-    /// are available or all children if a negative two is passed to function.
+    /// Sets family members emotions or all children's if a negative two
+    /// is passed to function.
     /// </summary>
     /// <param name="id"></param>
     /// <param name="emotion"></param>
-    private void SetFamilyEmotion(int id)
+    private void SetFamilyEmotion(int id, Emotion emotion)
     {
         if (id == -2) ApplicationControl.FamilyEvents.InvokeChildren(this);  
         else if (id > -1)
@@ -397,6 +397,11 @@ public class Person : IFamilyEvents
             family = person.family;
             surname = person.surname;
         }
+
+        SetFamilyEmotion(mother, Emotion.Happy);
+        SetFamilyEmotion(father, Emotion.Happy);
+        SetFamilyEmotion(person.mother, Emotion.Happy);
+        SetFamilyEmotion(person.father, Emotion.Happy);
         return true;
     }
 
@@ -504,9 +509,9 @@ public class Person : IFamilyEvents
             if (!follow && isActive)
             {
                 emotion = Emotion.Party;
-                SetFamilyEmotion(spouse);
-                SetFamilyEmotion(mother);
-                SetFamilyEmotion(father);
+                SetFamilyEmotion(spouse, emotion);
+                SetFamilyEmotion(mother, emotion);
+                SetFamilyEmotion(father, emotion);
             }
         }
     }
@@ -575,7 +580,6 @@ public class Person : IFamilyEvents
                 emotion = Emotion.Love;
                 person.emotion = Emotion.Love;
                 ApplicationControl.family.Add(new Person(this));
-                ApplicationControl.FamilyEvents.Invoke(this);
             }
             else await Fight(person);
 
