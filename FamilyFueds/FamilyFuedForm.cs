@@ -37,7 +37,7 @@ namespace JuicyGrapeApps.FamilyFueds
             ES_SYSTEM_REQUIRED = 0x00000001
         }
 
-        private Graphics graphics;
+        public Graphics graphics;
 
         public FamilyFeudsForm(IntPtr PreviewWndHandle)
         {
@@ -169,11 +169,7 @@ namespace JuicyGrapeApps.FamilyFueds
 
             person.Move();
 
-            Point point = person.location;
-            point.X += 56;
-            point.Y += 12;
-
-            RectangleF personalSpace = new RectangleF(point, new Size(300, 30));
+            RectangleF personalSpace = new RectangleF(new Point(person.location.X + 56, person.location.Y + 12), new Size(300, 30));
             StringFormat format = new StringFormat();
             format.SetMeasurableCharacterRanges(new[] { new CharacterRange(0, person.fullname.Length) });
 
