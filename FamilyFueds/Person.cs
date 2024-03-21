@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 using JuicyGrapeApps.FamilyFueds;
+using System;
 using System.Diagnostics;
 
 
@@ -119,6 +120,7 @@ public class Person : IFamilyEvents
     public bool isActive => m_emotion != Emotion.Angel &&
                             m_emotion != Emotion.Devil && 
                             m_emotion != Emotion.Injured;
+    public bool isAvailable => !follow && isActive;
 
     // Randomize volocity changes direction and speed of the bot on screen.
     public void ChangeVolocity() => volocity = new Point(RandomGenerator.Int(2, 1, true), RandomGenerator.Int(2, 1, true));
@@ -200,6 +202,27 @@ public class Person : IFamilyEvents
                     m_emotional = 0;
                     image = FamilyFueds.Properties.Resources.Devil;
                     break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Will change duplcate emotion to all family member's if they 
+    /// are available or all children if a negative two is passed to function.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="emotion"></param>
+    private void SetFamilyEmotion(int id)
+    {
+        if (id == -2) ApplicationControl.FamilyEvents.InvokeChildren(this);  
+        else if (id > -1)
+        {
+            Person person = ApplicationControl.person(id);
+            if (person != null && person.isAvailable)
+            {
+                person.emotion = emotion;
+                person.lookat = lookat;
+                person.follow = follow;
             }
         }
     }
@@ -477,6 +500,14 @@ public class Person : IFamilyEvents
             else if (m_age == 20) { energy--; if (!isEmotional) emotion = Emotion.Party; }
             else if (m_age == 25) energy--;
             m_age = age;
+
+            if (!follow && isActive)
+            {
+                emotion = Emotion.Party;
+                SetFamilyEmotion(spouse);
+                SetFamilyEmotion(mother);
+                SetFamilyEmotion(father);
+            }
         }
     }
 
@@ -544,6 +575,7 @@ public class Person : IFamilyEvents
                 emotion = Emotion.Love;
                 person.emotion = Emotion.Love;
                 ApplicationControl.family.Add(new Person(this));
+                ApplicationControl.FamilyEvents.Invoke(this);
             }
             else await Fight(person);
 
@@ -596,6 +628,11 @@ public class Person : IFamilyEvents
                 follow = true;
             }
         }
+        else if (person.emotion == Emotion.Love)
+        {
+            if (emotion != Emotion.Love && emotion != Emotion.Baby)
+                emotion = Emotion.Happy;
+        }
         else emotion = Emotion.Party;
     }
 
@@ -608,6 +645,12 @@ public class Person : IFamilyEvents
         {
             if (mother == person.id) mother = -1;
             if (father == person.id) father = -1;
+        } 
+        else if (isAvailable)
+        {
+            emotion = person.emotion;
+            lookat = person.lookat;
+            follow = person.follow;
         }
     }
 }

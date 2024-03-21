@@ -44,10 +44,10 @@ namespace JuicyGrapeApps.FamilyFueds
         public static ExecuteMode Mode;
         public static FamilyEventManager FamilyEvents = new FamilyEventManager();
 
-        private static int m_elapsed;
+        private static int m_elapsed = 0;
         private static DateTime m_time;
 
-        public static event CoreEventHandler Update;
+        public static event CoreEventHandler? Update;
 
         public enum ExecuteMode
         {
