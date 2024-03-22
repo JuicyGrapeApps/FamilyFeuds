@@ -46,7 +46,7 @@ public class Person : IFamilyEvents
     {
         ChangeDirection = 0,
         Eat = 5,
-        HaveKids = 1,
+        HaveKids = 8,
     }
 
     // Person's brain filled with ideas.

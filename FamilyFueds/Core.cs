@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using System.Numerics;
+
 namespace JuicyGrapeApps.Core
 {
     /// <summary>
@@ -124,6 +126,26 @@ namespace JuicyGrapeApps.Core
         /// <param name="to"></param>
         /// <returns></returns>
         public static bool Between(int value, int from, int to) => value >= from && value <= to;
+
+        /// <summary>
+        /// Moves a point a cetain distance towards another point, the
+        /// discance covered is passed in move parameter as a decimal
+        /// pacentage 0 - (0%) equals origin point and 1 - (100%) equals
+        /// target point, for example: 0.5f - (50%) would equal halfway
+        /// between the origin point and target point. 
+        /// </summary>
+        /// <param name="origin">Point of origin</param>
+        /// <param name="target">Point of destination</param>
+        /// <param name="move">The distance range from 0 to 1</param>
+        /// <param name="cap">Cap the rage between 0 and 1</param>
+        /// <returns>Any given point beween the two points</returns>
+        public static Point Towards(Point origin, Point target, float move, bool cap = true)
+        {
+            if (cap) move = (move < 0) ? 0 : (move > 1) ? 1 : move;
+            Vector2 vector = Vector2.Lerp(new Vector2(origin.X, origin.Y),
+                                          new Vector2(target.X, target.Y), move);
+            return new Point((int)vector.X, (int)vector.Y);
+        }
 
         /// <summary>
         /// Returns true if two identical rectangles overlap each other.

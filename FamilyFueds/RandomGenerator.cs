@@ -39,14 +39,27 @@ public static class RandomGenerator
     public static Point Location => new Point(rnd.Next(ApplicationControl.MaxWidth + 1), rnd.Next(ApplicationControl.MaxHeight + 1));
 
     /// <summary>
-    /// Random integer generator this function returns a random signed or unsigned integer value upto the maximum
-    /// value passed in parrameters
+    /// Random integer generator this function returns a random signed or
+    /// unsigned integer value upto the maximu value passed in parameters.
     /// </summary>
     /// <param name="value">The maximum integer value returned</param>
     /// <param name="offset">Add an offset to random result</param>
     /// <param name="unsigned">(Optional) bool True (Unsigned), False (Signed)</param>
     /// <returns>Integer</returns>
-    public static int Int(int value, int offset = 0, bool unsigned = false) => (rnd.Next(value + 1) + offset) * (unsigned && rnd.Next(2) == 1 ? -1: 1);
+    public static int Int(int value, int offset = 0, bool unsigned = false) =>
+        (rnd.Next(value + 1) + offset) * (unsigned && rnd.Next(2) == 1 ? -1: 1);
+
+    /// <summary>
+    /// Random floating point generator this function returns a random
+    /// signed or unsigned floating point value upto the maximum value
+    /// passed in parameters.
+    /// </summary>
+    /// <param name="value">The maximum float value returned</param>
+    /// <param name="offset">Add an offset to random result</param>
+    /// <param name="unsigned">(Optional) bool True (Unsigned), False (Signed)</param>
+    /// <returns>Integer</returns>
+    public static double Float(double value, double offset = 0, bool unsigned = false) => 
+        (rnd.NextDouble() * value + offset) * (unsigned && rnd.Next(2) == 1 ? -1 : 1);
 
     /// <summary>
     /// Returns an idea from person 's brain.
@@ -93,6 +106,50 @@ public static class RandomGenerator
         }
     }
 
+    /// <summary>
+    /// Random color generator
+    /// </summary>
+    public static Color Color
+    {
+        get
+        {
+            Color color = Color.LightYellow;
+            switch (Int(10))
+            {
+                case 1:
+                    color = Color.Tomato;
+                    break;
+                case 2:
+                    color = Color.LightBlue;
+                    break;
+                case 3:
+                    color = Color.LightGreen;
+                    break;
+                case 4:
+                    color = Color.LightSalmon;
+                    break;
+                case 5:
+                    color = Color.LightPink;
+                    break;
+                case 6:
+                    color = Color.Orange;
+                    break;
+                case 7:
+                    color = Color.Lime;
+                    break;
+                case 8:
+                    color = Color.Magenta;
+                    break;
+                case 9:
+                    color = Color.MediumAquamarine;
+                    break;
+                case 10:
+                    color = Color.MediumSpringGreen;
+                    break;
+            }
+            return color;
+        }
+    }
     /// <summary>
     /// Random name generator this function returns either a male or female forename
     /// depending on parameter passed to it.

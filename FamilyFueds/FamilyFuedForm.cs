@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using JuicyGrapeApps.Core;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
@@ -37,7 +38,114 @@ namespace JuicyGrapeApps.FamilyFueds
             ES_SYSTEM_REQUIRED = 0x00000001
         }
 
+        // Firework variables
+        const int MAX_FIREWORKS = 3;
+        const int EXPLOSION_PARTICALS = 20;
+
         public Graphics graphics;
+        private float[] fireworkThrust = new float[MAX_FIREWORKS] { 0.02f, 0.05f, 0.03f };
+        bool[] fireworkExplode = new bool[MAX_FIREWORKS] { false, false, false };
+        bool[] fireworkLit = new bool[MAX_FIREWORKS] { false, false, false };
+        Single[] thrust = new Single[MAX_FIREWORKS] { 0f, 0f, 0f };
+        Single[] fireworkFuse = new float[MAX_FIREWORKS] { 1.2f, 2f, 1.8f };
+        Partical[] fireworkPartical = new Partical[MAX_FIREWORKS];
+        Partical[,] explosion = new Partical[MAX_FIREWORKS, EXPLOSION_PARTICALS];
+        int[] fireworkHeight = new int[] { 0, 0, 0 };
+        int[] fireworkDistance =new int[] { 0, 0, 0 };
+        static Point origin = new Point(ApplicationControl.MaxHeight - 200,
+                                        ApplicationControl.MaxWidth / 2);
+
+        /// <summary>
+        /// Firwork partical stucture used for storing a firework's data
+        /// and drawing it to screen.
+        /// </summary>
+        struct Partical
+        {
+            public Point origin;
+            public Point target;
+            private Color color;
+            private double decay = 0;
+            Trail[] trail;
+
+            internal struct Trail
+            {
+                public Point coord;
+                public Color color;
+                public Trail(Point coord, Color color)
+                {
+                    this.coord = coord;
+                    this.color = color;
+                }
+            }
+
+            public Point coord
+            {
+                get => trail[0].coord;
+                set => Trails(value);
+            }
+
+            public Partical(Point origin, Point target, int trails, Color color)
+            {
+                this.origin = origin;
+                this.target = target;
+                this.color = color;
+                trail = new Trail[trails];
+                trail[0] = new Trail(origin, color);
+                SetAlphas();
+            }
+
+            public Partical(Point origin, int trails, Color color)
+            {
+                this.origin = origin;
+                this.target = origin;
+                this.color = color;
+                trail = new Trail[trails];
+                trail[0] = new Trail(origin, color);
+                SetAlphas();
+            }
+
+            private void SetAlphas()
+            {
+                int length = trail.Length-1;
+                for (int i = 0; i < trail.Length; i++)
+                    trail[i].color = Color.FromArgb(255 - (int)(255 * ((double)i / length)), color);
+            }
+
+            public void Draw(Graphics g, Point point)
+            {
+                coord = point;
+                using (Pen clear = new Pen(Brushes.Black, 2))
+                {
+                    Point a = new Point(point.X, point.Y+1);
+                    foreach (Trail t in trail)
+                    {
+                        if (t.coord.X == 0 || t.coord == origin) continue;
+                        using (Pen pen = new Pen(t.color, 2))
+                        {
+                            g.DrawLine(clear, a, t.coord);
+                            g.DrawLine(pen, a, t.coord);
+                            a = t.coord;
+                        }
+                    }
+                }
+                Decay();
+            }
+
+            private void Trails(Point value)
+            {
+                for (int i = trail.Length - 2; i > -1; i--)
+                    trail[i+1].coord = trail[i].coord;
+
+                trail[0] = new Trail(value, color);
+            }
+
+            public void Decay()
+            {
+                double rate = Math.Sin(decay);
+                if (rate < 1f) decay += 0.01f;
+                target.Y += (int)(100 * rate);
+            }
+        }
 
         public FamilyFeudsForm(IntPtr PreviewWndHandle)
         {
@@ -133,6 +241,12 @@ namespace JuicyGrapeApps.FamilyFueds
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Execute_Tick(object sender, EventArgs e) => ApplicationControl.RefreshScreenSaver(this);
+
+        public void FamilyWinner()
+        {
+            for (int i = 0; i < MAX_FIREWORKS; i++)
+                DrawFireworks(i);
+        }
 
         /// <summary>
         /// Called for each bot from the ApplicationControl, this function
@@ -330,6 +444,53 @@ namespace JuicyGrapeApps.FamilyFueds
                 if (target.isDead) person.emotion = Person.Emotion.Sad;
                 else if (target.family == person.family) person.emotion = Person.Emotion.None;
                 person.followed = -1;
+            }
+        }
+
+        /// <summary>
+        /// Shows firework display when only one family are left.
+        /// </summary>
+        /// <param name="firework"></param>
+        public void DrawFireworks(int firework)
+        {
+            if (!fireworkLit[firework])
+            {
+                fireworkLit[firework] = true;
+                fireworkHeight[firework] = RandomGenerator.Int(750, 100);
+                fireworkDistance[firework] = RandomGenerator.Int(150, 75, true);
+                thrust[firework] = 0;
+                fireworkExplode[firework] = false;
+                fireworkPartical[firework] = new Partical(origin, RandomGenerator.Int(25,10), RandomGenerator.Color);
+            }
+
+            thrust[firework] += fireworkThrust[firework];
+
+            if (thrust[firework] < fireworkFuse[firework] && !fireworkExplode[firework])
+            {
+                Point point = fireworkPartical[firework].origin;
+                point.X += (int)(Math.Cos(thrust[firework]) * fireworkDistance[firework]);
+                point.Y -= (int)(Math.Sin(thrust[firework]) * fireworkHeight[firework]);
+                fireworkPartical[firework].Draw(graphics, point);
+            }
+            else if (!fireworkExplode[firework])
+            {
+                fireworkExplode[firework] = true;
+                thrust[firework] = 0;
+                fireworkThrust[firework] = (Single)RandomGenerator.Float(0.1f, 0.01f);
+                for (int i = 0; i < EXPLOSION_PARTICALS; i++)
+                {
+                    fireworkPartical[firework].target = fireworkPartical[firework].coord;
+                    fireworkPartical[firework].target.X += (int)(Math.Cos(RandomGenerator.Float(6.3)) * 500);
+                    fireworkPartical[firework].target.Y -= (int)(Math.Sin(RandomGenerator.Float(6.3)) * 500);
+                    explosion[firework, i] = new Partical(fireworkPartical[firework].coord, fireworkPartical[firework].target, RandomGenerator.Int(10, 5), RandomGenerator.Color);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < EXPLOSION_PARTICALS; i++)
+                    explosion[firework, i].Draw(graphics, Is.Towards(explosion[firework, i].origin, explosion[firework, i].target, thrust[firework], false));
+
+                if (thrust[firework] > 2) fireworkLit[firework] = false;
             }
         }
 

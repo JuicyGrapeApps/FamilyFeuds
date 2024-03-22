@@ -15,6 +15,8 @@
  */
 using Microsoft.Win32;
 using System.Diagnostics;
+using System.Drawing;
+using System.Runtime.Intrinsics.X86;
 
 namespace JuicyGrapeApps.FamilyFueds
 {
@@ -50,7 +52,7 @@ namespace JuicyGrapeApps.FamilyFueds
         private static int m_clear = CLEAR_COUNTDOWN;
         public static event CoreEventHandler? Update;
         public static event PersonEventHandler? Collision;
-
+        public static int familyWon = -1;
         public enum ExecuteMode
         {
             FullScreen,
@@ -158,18 +160,39 @@ namespace JuicyGrapeApps.FamilyFueds
             try
             {
                 FamilyFeudsForm familyFeud = (FamilyFeudsForm)form;
-                for (int i = 0; i < NumberOfPeople; i++)
+                if (familyWon == -1)
                 {
-                    Person person = family[i];
-                    familyFeud.Draw(person);
-                    Collision?.Invoke(person);                    
+                    int familyId = -1;
+                    bool isWinner = true; 
+                    for (int i = 0; i < NumberOfPeople; i++)
+                    {
+                        Person person = family[i];
+                        familyFeud.Draw(person);
+                        Collision?.Invoke(person);
+                        
+                        if (familyId != person.family)
+                        {
+                            if (familyId != -1) isWinner = false; 
+                            familyId = person.family;
+                        }
+                    }
+                    if (HeartBeat())
+                    {
+                        Update?.Invoke();
+                        GarbageBin.Empty();
+
+                        if (isWinner)
+                        {
+                            familyFeud.graphics.Clear(Color.Black);
+                            familyWon = familyId;
+                        }
+                    }
+                } 
+                else
+                {
+                    familyFeud.FamilyWinner();
+                    HeartBeat();
                 }
-                int elapsed = (DateTime.Now - m_time).Seconds;
-                if (elapsed == m_elapsed) return;
-                m_time = DateTime.Now;
-                m_clear--;
-                Update?.Invoke();
-                GarbageBin.Empty();
 
                 if (m_clear < 0)
                 {
@@ -181,6 +204,15 @@ namespace JuicyGrapeApps.FamilyFueds
             {
                 if (DEBUG_MODE) Debug.Print("Exception: " + ex.Message+" --- "+ex.Source+" --- "+ex.Data);
             }
+        }
+
+        private static bool HeartBeat()
+        {
+            int elapsed = (DateTime.Now - m_time).Seconds;
+            if (elapsed == m_elapsed) return false;
+            m_time = DateTime.Now;
+            m_clear--;
+            return true;
         }
 
         public static void InitializeBots()
