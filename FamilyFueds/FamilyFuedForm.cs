@@ -495,15 +495,18 @@ namespace JuicyGrapeApps.FamilyFueds
 
                 if (thrust[firework] > 2)
                 {
-                    fireworkLit[firework] = false;
-                    graphics.Clear(Color.Black);
                     restartCountdown--;
+                    graphics.Clear(Color.Black);
 
                     if (restartCountdown <= 0)
                     {
+                        for (int i = 0; i < MAX_FIREWORKS; i++)
+                            fireworkLit[firework] = false;
+
                         restartCountdown = 10;
                         ApplicationControl.Restart();
                     }
+                    else fireworkLit[firework] = false;
                 }
             }
         }
