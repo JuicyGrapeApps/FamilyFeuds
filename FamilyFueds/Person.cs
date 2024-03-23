@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 using JuicyGrapeApps.Core;
 using JuicyGrapeApps.FamilyFueds;
 using System.Diagnostics;
-
 
 /// <summary>
 /// This class is the bot representation of a person on screen it stores their details such as date of birth,
@@ -206,7 +204,7 @@ public class Person : IFeudEvent
     }
 
     /// <summary>
-    /// Changes image mask, masks are used to clear image on screen.
+    /// Changes image mask, masks are used to clear the image on screen.
     /// </summary>
     public void ChangeMask()
     {
@@ -235,12 +233,12 @@ public class Person : IFeudEvent
     }
 
     /// <summary>
-    /// Constructor used for a custom person
+    /// Constructor used for a custom person.
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="surname"></param>
-    /// <param name="gender"></param>
-    /// <param name="family"></param>
+    /// <param name="name">Forename of person</param>
+    /// <param name="surname">Surname/Family name of person</param>
+    /// <param name="gender">Gender of person</param>
+    /// <param name="family">Family id of the person's family</param>
     public Person(string name, string surname, bool gender, int family)
     {
         this.gender = gender;
@@ -254,9 +252,9 @@ public class Person : IFeudEvent
     }
 
     /// <summary>
-    /// Constructor used for a default person
+    /// Constructor used for children or a default person.
     /// </summary>
-    /// <param name="person"></param>
+    /// <param name="person">Creates a child of the person passed or a random default person if null</param>
     public Person(Person? person = null)
     {
         gender = RandomGenerator.Gender;
@@ -295,7 +293,7 @@ public class Person : IFeudEvent
     }
 
     /// <summary>
-    /// Initialise a person with data common to both custom and default people.
+    /// Initialize a person with data common to both custom and default people.
     /// </summary>
     private void Initialize()
     {
@@ -575,6 +573,10 @@ public class Person : IFeudEvent
         else if (ignored) bumped = -1;
     }
 
+    /// <summary>
+    /// This function is required as it is part of the ITrashable interface
+    /// and used in conjuction with the IDisposable to clean up any resources. 
+    /// </summary>
     public void Trash()
     {
         ApplicationControl.FamilyEvents.InvokeChildren(this);
@@ -590,6 +592,9 @@ public class Person : IFeudEvent
         GarbageBin.Add(this);
     }
 
+    /// <summary>
+    /// Clean up the memory used by resources.
+    /// </summary>
     public void Dispose()
     {
         try
@@ -600,6 +605,12 @@ public class Person : IFeudEvent
         } catch { };
     }
 
+    /// <summary>
+    /// This function is called on all members of the same family once the
+    /// FamilyEvents event is invoked in FamiyEventManager.
+    /// <see cref="FamilyEventManager.Invoke(IFeudEvent)"/>
+    /// </summary>
+    /// <param name="args">Arguments received from event</param>
     public void FamilyEvent(FeudEventArgs args)
     {
         if (!isActive || (isAngry && follow)) return;
@@ -624,6 +635,12 @@ public class Person : IFeudEvent
         else emotion = Emotion.Party;
     }
 
+    /// <summary>
+    /// This function is called on every child of a parent once the 
+    /// ChildEvent event is invoked in FamiyEventManager.
+    /// <see cref="FamilyEventManager.InvokeChildren(IFeudEvent)"/>
+    /// </summary>
+    /// <param name="args">Arguments received from event</param>
     public void ChildEvent(FeudEventArgs args)
     {
         Person person = (Person)args.person;

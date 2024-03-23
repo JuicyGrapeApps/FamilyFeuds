@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 using Microsoft.Win32;
 using System.Diagnostics;
 
@@ -79,7 +78,7 @@ namespace JuicyGrapeApps.FamilyFueds
         }
 
         /// <summary>
-        /// Initialise screen saver the settings are retrieved from the Windows registary
+        /// Initialize screen saver the settings are retrieved from the Windows registary
         /// at path specified by the gobal constants <see cref="=WIN_REG_PATH"/> and also
         /// <see cref="=REG_KEY_NAMES"/> and <seealso cref="=REG_KEY_DEFAULTS"/>
         /// </summary>
