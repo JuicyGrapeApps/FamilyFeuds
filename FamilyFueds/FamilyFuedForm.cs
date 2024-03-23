@@ -70,6 +70,10 @@ namespace JuicyGrapeApps.FamilyFueds
             private double decay = 0;
             Trail[] trail;
 
+            /// <summary>
+            /// Fireworks trails fade transparancy gradually over length
+            /// of trail passed to the partical constuctor.
+            /// </summary>
             internal struct Trail
             {
                 public Point coord;
@@ -87,6 +91,15 @@ namespace JuicyGrapeApps.FamilyFueds
                 set => Trails(value);
             }
 
+            /// <summary>
+            /// Partical constructor sets up the structue with parameters
+            /// passed to it. There is an overload constuctor that only
+            /// needs one location passed. <see cref="Partical(Point , int, Color)"/>
+            /// </summary>
+            /// <param name="origin">Coordinates where partical originated</param>
+            /// <param name="target">Target coodinates of partical</param>
+            /// <param name="trails">Lenth of partical trail</param>
+            /// <param name="color">The color of the partical</param>
             public Partical(Point origin, Point target, int trails, Color color)
             {
                 this.origin = origin;
@@ -97,6 +110,12 @@ namespace JuicyGrapeApps.FamilyFueds
                 SetAlphas();
             }
 
+            /// <summary>
+            /// Overload constuctor. <seealso cref="Partical(Point, Point, int, Color)"/>
+            /// </summary>
+            /// <param name="origin"></param>
+            /// <param name="trails"></param>
+            /// <param name="color"></param>
             public Partical(Point origin, int trails, Color color)
             {
                 this.origin = origin;
@@ -107,6 +126,10 @@ namespace JuicyGrapeApps.FamilyFueds
                 SetAlphas();
             }
 
+            /// <summary>
+            /// Define colors along trail with ever decreasing alpha's
+            /// causing a fade effect.
+            /// </summary>
             private void SetAlphas()
             {
                 int length = trail.Length-1;
@@ -114,6 +137,11 @@ namespace JuicyGrapeApps.FamilyFueds
                     trail[i].color = Color.FromArgb(255 - (int)(255 * ((double)i / length)), color);
             }
 
+            /// <summary>
+            /// Draw particals on screen.
+            /// </summary>
+            /// <param name="g"></param>
+            /// <param name="point"></param>
             public void Draw(Graphics g, Point point)
             {
                 coord = point;
@@ -134,6 +162,10 @@ namespace JuicyGrapeApps.FamilyFueds
                 Decay();
             }
 
+            /// <summary>
+            /// Move all coorinates in trail one space.
+            /// </summary>
+            /// <param name="value"></param>
             private void Trails(Point value)
             {
                 for (int i = trail.Length - 2; i > -1; i--)
@@ -142,6 +174,7 @@ namespace JuicyGrapeApps.FamilyFueds
                 trail[0] = new Trail(value, color);
             }
 
+            // Decay target coordinate to cause gravitation effect. 
             public void Decay()
             {
                 double rate = Math.Sin(decay);
@@ -363,8 +396,8 @@ namespace JuicyGrapeApps.FamilyFueds
         /// <summary>
         /// Draws the arrow that points to the person who's being looked at.
         /// </summary>
-        /// <param name="person"></param>
-        /// <param name="clear"></param>
+        /// <param name="person">Person to look at</param>
+        /// <param name="clear">Is arrow being erased or drawn</param>
         public void DrawArrow(Person person, bool clear = false)
         {
             if (person.lookat + person.followed == -2) return;
@@ -451,7 +484,8 @@ namespace JuicyGrapeApps.FamilyFueds
         }
 
         /// <summary>
-        /// Shows firework display when only one family are left.
+        /// Shows firework display when their is a winning family, families
+        /// win when they are the only ones left on screen.
         /// </summary>
         /// <param name="firework"></param>
         public void DrawFireworks(int firework)
