@@ -129,8 +129,8 @@ namespace JuicyGrapeApps.Core
         public static bool Between(int value, int from, int to) => value >= from && value <= to;
 
         /// <summary>
-        /// Moves a point a cetain distance towards another point, the
-        /// discance covered is passed in move parameter as a decimal
+        /// Moves a point a certain distance towards another point, the
+        /// discance covered is passed in the move parameter as a decimal
         /// pacentage 0 - (0%) equals origin point and 1 - (100%) equals
         /// target point, for example: 0.5f - (50%) would equal halfway
         /// between the origin point and target point. 
