@@ -538,7 +538,7 @@ namespace JuicyGrapeApps.FamilyFueds
                             fireworkLit[firework] = false;
 
                         restartCountdown = 10;
-                        ApplicationControl.Restart();
+                        ApplicationControl.Restart(this);
                     }
                     else fireworkLit[firework] = false;
                 }

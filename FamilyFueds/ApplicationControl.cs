@@ -211,11 +211,15 @@ namespace JuicyGrapeApps.FamilyFueds
         /// <summary>
         /// Restarts the screen saver after fireworks display is over.
         /// </summary>
-        public static void Restart()
+        public static void Restart(Form form)
         {
+            FamilyFeudsForm familyFeud = (FamilyFeudsForm)form;
+
             family.Clear();
             familyWon = -1;
             NumberOfPeople = 0;
+
+            familyFeud.graphics.Clear(Color.Black);
             InitializeBots();
         }
 
