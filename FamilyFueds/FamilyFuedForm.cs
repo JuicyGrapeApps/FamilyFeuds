@@ -47,16 +47,16 @@ namespace JuicyGrapeApps.FamilyFueds
 
         // Firework variables
         private float[] fireworkThrust = new float[MAX_FIREWORKS] { 0.02f, 0.05f, 0.03f };
-        bool[] fireworkExplode = new bool[MAX_FIREWORKS] { false, false, false };
-        bool[] fireworkLit = new bool[MAX_FIREWORKS] { false, false, false };
-        Single[] thrust = new Single[MAX_FIREWORKS] { 0f, 0f, 0f };
-        Single[] fireworkFuse = new float[MAX_FIREWORKS] { 1.2f, 2f, 1.8f };
-        Partical[] fireworkPartical = new Partical[MAX_FIREWORKS];
-        Partical[,] explosion = new Partical[MAX_FIREWORKS, EXPLOSION_PARTICALS];
-        int[] fireworkHeight = new int[] { 0, 0, 0 };
-        int[] fireworkDistance =new int[] { 0, 0, 0 };
-        static Point origin = new Point(ApplicationControl.MaxHeight - 200,
-                                        ApplicationControl.MaxWidth / 2);
+        private bool[] fireworkExplode = new bool[MAX_FIREWORKS] { false, false, false };
+        private bool[] fireworkLit = new bool[MAX_FIREWORKS] { false, false, false };
+        private Single[] thrust = new Single[MAX_FIREWORKS] { 0f, 0f, 0f };
+        private Single[] fireworkFuse = new float[MAX_FIREWORKS] { 1.2f, 2f, 1.8f };
+        private Partical[] fireworkPartical = new Partical[MAX_FIREWORKS];
+        private Partical[,] explosion = new Partical[MAX_FIREWORKS, EXPLOSION_PARTICALS];
+        private int[] fireworkHeight = new int[] { 0, 0, 0 };
+        private int[] fireworkDistance =new int[] { 0, 0, 0 };
+        private static Point origin = new Point(ApplicationControl.MaxHeight - 200,
+                                                ApplicationControl.MaxWidth / 2);
 
         /// <summary>
         /// Firwork partical stucture used for storing a firework's data
