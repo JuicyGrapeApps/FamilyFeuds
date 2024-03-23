@@ -627,7 +627,7 @@ public class Person : IFamilyEvents
     public void ChildEvent(FeudEventArgs args)
     {
         Person person = args.person;
-        Debug.Print(fullname + " lost parent " + person.name);
+        if (ApplicationControl.DEBUG_MODE) Debug.Print(fullname + " lost parent " + person.name);
 
         if (person.isDead)
         {

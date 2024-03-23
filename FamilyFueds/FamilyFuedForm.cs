@@ -52,7 +52,7 @@ namespace JuicyGrapeApps.FamilyFueds
         private Single[] thrust = new Single[MAX_FIREWORKS] { 0f, 0f, 0f };
         private Single[] fireworkFuse = new float[MAX_FIREWORKS] { 1.2f, 2f, 1.8f };
         private Partical[] fireworkPartical = new Partical[MAX_FIREWORKS];
-        private Partical[,] explosion = new Partical[MAX_FIREWORKS, EXPLOSION_PARTICALS];
+        private Partical[,]? explosion = new Partical[MAX_FIREWORKS, EXPLOSION_PARTICALS];
         private int[] fireworkHeight = new int[] { 0, 0, 0 };
         private int[] fireworkDistance =new int[] { 0, 0, 0 };
         private static Point origin = new Point(ApplicationControl.MaxHeight - 200,
@@ -157,6 +157,24 @@ namespace JuicyGrapeApps.FamilyFueds
                             g.DrawLine(pen, a, t.coord);
                             a = t.coord;
                         }
+                    }
+                }
+                Decay();
+            }
+
+            /// <summary>
+            /// Clears partical and trail on screen.
+            /// </summary>
+            /// <param name="g"></param>
+            public void Clear(Graphics g)
+            {
+                using (Pen clear = new Pen(Brushes.Black, 2))
+                {
+                    Point a = trail[0].coord;
+                    for (int i = trail.Length-1; i > -1; i--)
+                    {
+                        g.DrawLine(clear, a, trail[i].coord);
+                        a = trail[i].coord;
                     }
                 }
                 Decay();
@@ -278,7 +296,7 @@ namespace JuicyGrapeApps.FamilyFueds
         /// <param name="e"></param>
         private void Execute_Tick(object sender, EventArgs e) => ApplicationControl.RefreshScreenSaver(this);
 
-        public void FamilyWinner()
+        public void FireworkDisplay()
         {
             for (int i = 0; i < MAX_FIREWORKS; i++)
                 DrawFireworks(i);
@@ -521,12 +539,10 @@ namespace JuicyGrapeApps.FamilyFueds
                     fireworkPartical[firework].target.Y -= (int)(Math.Sin(RandomGenerator.Float(6.3)) * 500);
                     explosion[firework, i] = new Partical(fireworkPartical[firework].coord, fireworkPartical[firework].target, RandomGenerator.Int(10, 5), RandomGenerator.Color);
                 }
+                fireworkPartical[firework].Clear(graphics);
             }
             else
             {
-                for (int i = 0; i < EXPLOSION_PARTICALS; i++)
-                    explosion[firework, i].Draw(graphics, Is.Towards(explosion[firework, i].origin, explosion[firework, i].target, thrust[firework], false));
-
                 if (thrust[firework] > 2)
                 {
                     restartCountdown--;
@@ -535,13 +551,15 @@ namespace JuicyGrapeApps.FamilyFueds
                     if (restartCountdown <= 0)
                     {
                         for (int i = 0; i < MAX_FIREWORKS; i++)
-                            fireworkLit[firework] = false;
+                            fireworkLit[i] = false;
 
                         restartCountdown = 10;
-                        ApplicationControl.Restart(this);
+                        ApplicationControl.Restart();
                     }
                     else fireworkLit[firework] = false;
-                }
+                } else
+                    for (int i = 0; i < EXPLOSION_PARTICALS; i++)
+                        explosion[firework, i].Draw(graphics, Is.Towards(explosion[firework, i].origin, explosion[firework, i].target, thrust[firework], false));
             }
         }
 

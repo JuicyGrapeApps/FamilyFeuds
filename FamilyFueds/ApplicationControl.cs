@@ -51,7 +51,7 @@ namespace JuicyGrapeApps.FamilyFueds
         private static int m_clear = CLEAR_COUNTDOWN;
         public static event CoreEventHandler? Update;
         public static event PersonEventHandler? Collision;
-        public static int familyWon = -1;
+        public static bool fireWorks = false;
         public enum ExecuteMode
         {
             FullScreen,
@@ -164,42 +164,37 @@ namespace JuicyGrapeApps.FamilyFueds
             {
                 FamilyFeudsForm familyFeud = (FamilyFeudsForm)form;
 
-                if (familyWon == -1)
+                if (fireWorks) familyFeud.FireworkDisplay();
+                else 
                 {
                     int familyId = -1;
-                    bool isWinner = true; 
+                    bool isWinner = true;
                     for (int i = 0; i < NumberOfPeople; i++)
                     {
                         Person person = family[i];
                         familyFeud.Draw(person);
                         Collision?.Invoke(person);
-                        
+
                         if (familyId != person.family)
                         {
-                            if (familyId != -1) isWinner = false; 
+                            if (familyId != -1) isWinner = false;
                             familyId = person.family;
                         }
                     }
+
                     int elapsed = (DateTime.Now - m_time).Seconds;
-                    if (elapsed == m_elapsed) return;
+                    if (elapsed == m_elapsed && m_clear > 0) return;
                     m_time = DateTime.Now;
                     m_clear--;
                     Update?.Invoke();
                     GarbageBin.Empty();
 
-                    if (isWinner)
+                    if (m_clear < 0 || isWinner)
                     {
-                        familyFeud.graphics.Clear(Color.Black);
-                        familyWon = familyId;
                         m_clear = CLEAR_COUNTDOWN;
+                        familyFeud.graphics.Clear(Color.Black);
+                        fireWorks = isWinner;
                     }
-                } 
-                else familyFeud.FamilyWinner();
-
-                if (m_clear < 0)
-                {
-                    m_clear = CLEAR_COUNTDOWN;
-                    familyFeud.graphics.Clear(Color.Black);
                 }
             }
             catch (Exception ex)
@@ -211,14 +206,13 @@ namespace JuicyGrapeApps.FamilyFueds
         /// <summary>
         /// Restarts the screen saver after fireworks display is over.
         /// </summary>
-        public static void Restart(Form form)
+        public static void Restart()
         {
-            FamilyFeudsForm familyFeud = (FamilyFeudsForm)form;
             family.Clear();
             NumberOfPeople = 0;
-            familyWon = -1;
             InitializeBots();
-            familyFeud.graphics.Clear(Color.Black);
+            m_clear = -1;
+            fireWorks = false;
         }
 
         public static void InitializeBots()
