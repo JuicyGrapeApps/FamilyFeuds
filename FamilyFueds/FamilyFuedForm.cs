@@ -38,11 +38,14 @@ namespace JuicyGrapeApps.FamilyFueds
             ES_SYSTEM_REQUIRED = 0x00000001
         }
 
-        // Firework variables
+        // Firework constants
         const int MAX_FIREWORKS = 3;
         const int EXPLOSION_PARTICALS = 20;
 
         public Graphics graphics;
+        public int restartCountdown = 10;
+
+        // Firework variables
         private float[] fireworkThrust = new float[MAX_FIREWORKS] { 0.02f, 0.05f, 0.03f };
         bool[] fireworkExplode = new bool[MAX_FIREWORKS] { false, false, false };
         bool[] fireworkLit = new bool[MAX_FIREWORKS] { false, false, false };
@@ -490,7 +493,18 @@ namespace JuicyGrapeApps.FamilyFueds
                 for (int i = 0; i < EXPLOSION_PARTICALS; i++)
                     explosion[firework, i].Draw(graphics, Is.Towards(explosion[firework, i].origin, explosion[firework, i].target, thrust[firework], false));
 
-                if (thrust[firework] > 2) fireworkLit[firework] = false;
+                if (thrust[firework] > 2)
+                {
+                    fireworkLit[firework] = false;
+                    graphics.Clear(Color.Black);
+                    restartCountdown--;
+
+                    if (restartCountdown <= 0)
+                    {
+                        restartCountdown = 10;
+                        ApplicationControl.Restart();
+                    }
+                }
             }
         }
 

@@ -155,11 +155,16 @@ namespace JuicyGrapeApps.FamilyFueds
             Application.Run();
         }
 
+        /// <summary>
+        /// Main program loop that updates bots and draws them on screen.
+        /// </summary>
+        /// <param name="form"></param>
         public static void RefreshScreenSaver(Form form)
         {
             try
             {
                 FamilyFeudsForm familyFeud = (FamilyFeudsForm)form;
+
                 if (familyWon == -1)
                 {
                     int familyId = -1;
@@ -176,23 +181,21 @@ namespace JuicyGrapeApps.FamilyFueds
                             familyId = person.family;
                         }
                     }
-                    if (HeartBeat())
-                    {
-                        Update?.Invoke();
-                        GarbageBin.Empty();
+                    int elapsed = (DateTime.Now - m_time).Seconds;
+                    if (elapsed == m_elapsed) return;
+                    m_time = DateTime.Now;
+                    m_clear--;
+                    Update?.Invoke();
+                    GarbageBin.Empty();
 
-                        if (isWinner)
-                        {
-                            familyFeud.graphics.Clear(Color.Black);
-                            familyWon = familyId;
-                        }
+                    if (isWinner)
+                    {
+                        familyFeud.graphics.Clear(Color.Black);
+                        familyWon = familyId;
+                        m_clear = CLEAR_COUNTDOWN;
                     }
                 } 
-                else
-                {
-                    familyFeud.FamilyWinner();
-                    HeartBeat();
-                }
+                else familyFeud.FamilyWinner();
 
                 if (m_clear < 0)
                 {
@@ -206,13 +209,15 @@ namespace JuicyGrapeApps.FamilyFueds
             }
         }
 
-        private static bool HeartBeat()
+        /// <summary>
+        /// Restarts the screen saver after fireworks display is over.
+        /// </summary>
+        public static void Restart()
         {
-            int elapsed = (DateTime.Now - m_time).Seconds;
-            if (elapsed == m_elapsed) return false;
-            m_time = DateTime.Now;
-            m_clear--;
-            return true;
+            family.Clear();
+            familyWon = -1;
+            NumberOfPeople = 0;
+            InitializeBots();
         }
 
         public static void InitializeBots()
