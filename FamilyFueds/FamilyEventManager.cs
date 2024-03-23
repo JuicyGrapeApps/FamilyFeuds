@@ -24,7 +24,7 @@ namespace JuicyGrapeApps.FamilyFueds
         static Dictionary<int, Action<FeudEventArgs>> FamilyEvents = new();
         static Dictionary<int, Action<FeudEventArgs>> ChildEvents = new();
 
-        public void Subscribe(IFamilyEvents person)
+        public void Subscribe(IFeudEvent person)
         {
             if (FamilyEvents.ContainsKey(person.family))
                 FamilyEvents[person.family] += person.FamilyEvent;
@@ -47,7 +47,7 @@ namespace JuicyGrapeApps.FamilyFueds
                     ChildEvents.Add(person.father, person.ChildEvent);
             }
         }
-        public void Unsubscribe(IFamilyEvents person)
+        public void Unsubscribe(IFeudEvent person)
         {
             try
             {
@@ -73,13 +73,13 @@ namespace JuicyGrapeApps.FamilyFueds
             }
         }
 
-        public void Invoke(Person person)
+        public void Invoke(IFeudEvent person)
         {
             if (FamilyEvents.ContainsKey(person.family))
                 FamilyEvents[person.family]?.Invoke(new FeudEventArgs(person));
         }
             
-        public void InvokeChildren(Person person)
+        public void InvokeChildren(IFeudEvent person)
         {
             if (ChildEvents.ContainsKey(person.id))
                 ChildEvents[person.id]?.Invoke(new FeudEventArgs(person));

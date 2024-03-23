@@ -24,7 +24,7 @@ using System.Diagnostics;
 /// emotional state, intellegence or family ties it also calculates things like a person's age, movement and
 /// even how long it takes to have an idea or recuperate from emotional damage.
 /// </summary>
-public class Person : IFamilyEvents
+public class Person : IFeudEvent
 {
     // Emotional states
     public enum Emotion
@@ -604,7 +604,7 @@ public class Person : IFamilyEvents
     {
         if (!isActive || (isAngry && follow)) return;
 
-        Person person = args.person;
+        Person person = (Person) args.person;
 
         if (person.isDead)
         {
@@ -626,7 +626,7 @@ public class Person : IFamilyEvents
 
     public void ChildEvent(FeudEventArgs args)
     {
-        Person person = args.person;
+        Person person = (Person)args.person;
         if (ApplicationControl.DEBUG_MODE) Debug.Print(fullname + " lost parent " + person.name);
 
         if (person.isDead)

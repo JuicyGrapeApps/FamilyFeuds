@@ -30,7 +30,7 @@ namespace JuicyGrapeApps.FamilyFueds
         public const string REG_KEY_DEFAULT = "DefaultNames";
         public const int MAX_BOT_COUNT = 1000;
         public const int CLEAR_COUNTDOWN = 30;
-        public const bool DEBUG_MODE = false;
+        public const bool DEBUG_MODE = true;
 
         // MessageBox Title
         public static string messageTitle = "Family Feuds";
@@ -81,7 +81,7 @@ namespace JuicyGrapeApps.FamilyFueds
         /// <summary>
         /// Initialise screen saver the settings are retrieved from the Windows registary
         /// at path specified by the gobal constants <see cref="=WIN_REG_PATH"/> and also
-        /// <see cref="=REG_KEY_NAMES"/> and <see cref="=REG_KEY_DEFAULTS"/>
+        /// <see cref="=REG_KEY_NAMES"/> and <seealso cref="=REG_KEY_DEFAULTS"/>
         /// </summary>
         public static void Initialize()
         {

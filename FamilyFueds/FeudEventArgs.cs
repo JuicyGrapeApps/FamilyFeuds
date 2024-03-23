@@ -18,8 +18,8 @@ namespace JuicyGrapeApps.FamilyFueds
 {
     public class FeudEventArgs
     {
-        public Person person;
+        public IFeudEvent person;
 
-        public FeudEventArgs(Person person) => this.person = person;
+        public FeudEventArgs(IFeudEvent person) => this.person = person;
    }
 }

@@ -16,7 +16,7 @@
 
 using JuicyGrapeApps.FamilyFueds;
 
-public interface IFamilyEvents : ITrashable
+public interface IFeudEvent : ITrashable
 {
     int id { get; set; }
     int family { get; set; }
