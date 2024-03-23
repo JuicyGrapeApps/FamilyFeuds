@@ -214,13 +214,11 @@ namespace JuicyGrapeApps.FamilyFueds
         public static void Restart(Form form)
         {
             FamilyFeudsForm familyFeud = (FamilyFeudsForm)form;
-
             family.Clear();
-            familyWon = -1;
             NumberOfPeople = 0;
-
-            familyFeud.graphics.Clear(Color.Black);
+            familyWon = -1;
             InitializeBots();
+            familyFeud.graphics.Clear(Color.Black);
         }
 
         public static void InitializeBots()
