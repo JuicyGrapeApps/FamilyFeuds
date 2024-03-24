@@ -44,7 +44,7 @@ public class Person : IFeudEvent
     public enum Ideas
     {
         ChangeDirection = 0,
-        Eat = 5,
+        Eat = 6,
         HaveKids = 8,
     }
 
@@ -81,6 +81,7 @@ public class Person : IFeudEvent
     public bool changeMask = false;
     public int ghost = 255;
     public bool forceMask = false;
+    private float m_speed = 0.0005f;
 
     public int lookat { 
         get => m_lookat;
@@ -330,17 +331,15 @@ public class Person : IFeudEvent
         {
             Person? person = ApplicationControl.person(lookat);
             if (person == null) lookat = -1;
-            else
-            {
-                if (location.X < person.location.X) volocity.X = 2;
-                if (location.X > person.location.X) volocity.X = -2;
-                if (location.Y < person.location.Y) volocity.Y = 2;
-                if (location.Y > person.location.Y) volocity.Y = -2;
-            }
+            else location = Is.Towards(location, person.location, m_speed);
+            m_speed += 0.0005f;
         }
-
-        location.X += volocity.X;
-        location.Y += volocity.Y;
+        else
+        {
+            m_speed = 0.0005f;
+            location.X += volocity.X;
+            location.Y += volocity.Y;
+        }
 
         if (isDead)
         {
@@ -447,8 +446,6 @@ public class Person : IFeudEvent
     private void Idea()
     {
         Ideas idea = RandomGenerator.Idea();
-
-        if (ApplicationControl.DEBUG_MODE) Debug.Print(fullname+" has the idea to "+idea.ToString());
 
         switch (idea) 
         {

@@ -29,7 +29,7 @@ namespace JuicyGrapeApps.FamilyFueds
         public const string REG_KEY_DEFAULT = "DefaultNames";
         public const int MAX_BOT_COUNT = 1000;
         public const int CLEAR_COUNTDOWN = 30;
-        public const bool DEBUG_MODE = false;
+        public const bool DEBUG_MODE = true;
 
         // MessageBox Title
         public static string messageTitle = "Family Feuds";
