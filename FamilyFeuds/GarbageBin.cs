@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace JuicyGrapeApps.FamilyFueds
+namespace JuicyGrapeApps.FamilyFeuds
 {
     /// <summary>
     /// Global garbage collector and disposal class.

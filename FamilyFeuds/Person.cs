@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 using JuicyGrapeApps.Core;
-using JuicyGrapeApps.FamilyFueds;
+using JuicyGrapeApps.FamilyFeuds;
 
 /// <summary>
 /// This class is the bot representation of a person on screen it stores their details such as date of birth,

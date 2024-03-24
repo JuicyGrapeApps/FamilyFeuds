@@ -17,7 +17,7 @@ using JuicyGrapeApps.Core;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
-namespace JuicyGrapeApps.FamilyFueds
+namespace JuicyGrapeApps.FamilyFeuds
 {
     public partial class FamilyFeudsForm : Form
     {

@@ -15,7 +15,7 @@
  */
 using Microsoft.Win32;
 
-namespace JuicyGrapeApps.FamilyFueds
+namespace JuicyGrapeApps.FamilyFeuds
 {
     /// <summary>
     /// Global application controller class.

@@ -16,7 +16,7 @@
 using Microsoft.Win32;
 using System.Globalization;
 
-namespace JuicyGrapeApps.FamilyFueds
+namespace JuicyGrapeApps.FamilyFeuds
 {
     public partial class FamilyFeudSettings : Form
     {
