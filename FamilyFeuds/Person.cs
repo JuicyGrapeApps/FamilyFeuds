@@ -139,43 +139,43 @@ public class Person : IFeudEvent
             switch (m_emotion)
             {
                 case Emotion.None:
-                    image = gender ? FamilyFueds.Properties.Resources.Male : FamilyFueds.Properties.Resources.Female;
+                    image = gender ? FamilyFeuds.Properties.Resources.Male : FamilyFeuds.Properties.Resources.Female;
                     m_emotional = 0;
                     break;
                 case Emotion.Love:
-                    image = FamilyFueds.Properties.Resources.Love;
+                    image = FamilyFeuds.Properties.Resources.Love;
                     break;
                 case Emotion.Happy:
-                    image = FamilyFueds.Properties.Resources.Happy;
+                    image = FamilyFeuds.Properties.Resources.Happy;
                     break;
                 case Emotion.Party:
-                    image = FamilyFueds.Properties.Resources.Party;
+                    image = FamilyFeuds.Properties.Resources.Party;
                     break;
                 case Emotion.Sad:
-                    image = FamilyFueds.Properties.Resources.Sad;
+                    image = FamilyFeuds.Properties.Resources.Sad;
                     break;
                 case Emotion.Angry:
                     m_emotional = 20;
-                    image = FamilyFueds.Properties.Resources.Angry;
+                    image = FamilyFeuds.Properties.Resources.Angry;
                     break;
                 case Emotion.Jealous:
                     m_emotional = 8;
-                    image = FamilyFueds.Properties.Resources.Jealous;
+                    image = FamilyFeuds.Properties.Resources.Jealous;
                     break;
                 case Emotion.Injured:
-                    image = FamilyFueds.Properties.Resources.Injured;
+                    image = FamilyFeuds.Properties.Resources.Injured;
                     forceMask = true;
                     break;
                 case Emotion.Baby:
-                    image = FamilyFueds.Properties.Resources.Baby;
+                    image = FamilyFeuds.Properties.Resources.Baby;
                     break;
                 case Emotion.Angel:
                     m_emotional = 0;
-                    image = FamilyFueds.Properties.Resources.Angel;
+                    image = FamilyFeuds.Properties.Resources.Angel;
                     break;
                 case Emotion.Devil:
                     m_emotional = 0;
-                    image = FamilyFueds.Properties.Resources.Devil;
+                    image = FamilyFeuds.Properties.Resources.Devil;
                     break;
             }
         }
@@ -209,22 +209,22 @@ public class Person : IFeudEvent
         switch (m_emotion)
         {
             case Emotion.None:
-                mask = gender ? FamilyFueds.Properties.Resources.Mask : FamilyFueds.Properties.Resources.FemaleMask;
+                mask = gender ? FamilyFeuds.Properties.Resources.Mask : FamilyFeuds.Properties.Resources.FemaleMask;
                 break;
             case Emotion.Party:
-                mask = FamilyFueds.Properties.Resources.PartyMask;
+                mask = FamilyFeuds.Properties.Resources.PartyMask;
                 break;
             case Emotion.Sad:
-                mask = FamilyFueds.Properties.Resources.SadMask;
+                mask = FamilyFeuds.Properties.Resources.SadMask;
                 break;
             case Emotion.Angel:
-                mask = FamilyFueds.Properties.Resources.AngelMask;
+                mask = FamilyFeuds.Properties.Resources.AngelMask;
                 break;
             case Emotion.Devil:
-                mask = FamilyFueds.Properties.Resources.DevilMask;
+                mask = FamilyFeuds.Properties.Resources.DevilMask;
                 break;
             default:
-                mask = FamilyFueds.Properties.Resources.Mask;
+                mask = FamilyFeuds.Properties.Resources.Mask;
                 break;
         }
         changeMask = false;

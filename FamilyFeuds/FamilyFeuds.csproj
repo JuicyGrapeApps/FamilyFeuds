@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="FamilyFuedForm.resx">
+    <EmbeddedResource Update="FamilyFeudForm.resx">
       <Generator></Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Properties\Resources.resx">

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FamilyFueds {
+namespace FamilyFeuds {
     using System;
     
     
