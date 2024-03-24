@@ -193,10 +193,5 @@ namespace JuicyGrapeApps.FamilyFeuds
         {
             if (e.KeyChar == ' ') textSurname.Select();
         }
-
-        private void labelNotIncluding_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

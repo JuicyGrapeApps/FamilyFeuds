@@ -29,12 +29,11 @@
         private void InitializeComponent()
         {
             buttonOk = new Button();
-            label2 = new Label();
             textForename = new TextBox();
             textSurname = new TextBox();
             labelComputerName = new Label();
             labelPersonName = new Label();
-            label3 = new Label();
+            labelCustomPeople = new Label();
             listFamilyNames = new ListBox();
             buttonAdd = new Button();
             buttonRemove = new Button();
@@ -43,14 +42,14 @@
             radioFemale = new RadioButton();
             trackbarDefaultPeople = new TrackBar();
             labelDefaultPeople = new Label();
-            labelDefaultSlider = new Label();
-            labelNotIncluding = new Label();
+            labelExcluding = new Label();
+            labelPeopleGenerated = new Label();
             ((System.ComponentModel.ISupportInitialize)trackbarDefaultPeople).BeginInit();
             SuspendLayout();
             // 
             // buttonOk
             // 
-            buttonOk.Location = new Point(172, 584);
+            buttonOk.Location = new Point(172, 549);
             buttonOk.Name = "buttonOk";
             buttonOk.Size = new Size(94, 29);
             buttonOk.TabIndex = 4;
@@ -58,19 +57,9 @@
             buttonOk.UseVisualStyleBackColor = true;
             buttonOk.Click += buttonOk_Click;
             // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            label2.Location = new Point(29, 24);
-            label2.Name = "label2";
-            label2.Size = new Size(236, 20);
-            label2.TabIndex = 5;
-            label2.Text = "Setup Family Feuds Screen Saver";
-            // 
             // textForename
             // 
-            textForename.Location = new Point(170, 333);
+            textForename.Location = new Point(171, 296);
             textForename.Name = "textForename";
             textForename.Size = new Size(178, 27);
             textForename.TabIndex = 0;
@@ -78,7 +67,7 @@
             // 
             // textSurname
             // 
-            textSurname.Location = new Point(170, 366);
+            textSurname.Location = new Point(171, 329);
             textSurname.Name = "textSurname";
             textSurname.Size = new Size(178, 27);
             textSurname.TabIndex = 1;
@@ -86,7 +75,7 @@
             // labelComputerName
             // 
             labelComputerName.AutoSize = true;
-            labelComputerName.Location = new Point(33, 336);
+            labelComputerName.Location = new Point(34, 299);
             labelComputerName.Name = "labelComputerName";
             labelComputerName.Size = new Size(75, 20);
             labelComputerName.TabIndex = 2;
@@ -95,27 +84,28 @@
             // labelPersonName
             // 
             labelPersonName.AutoSize = true;
-            labelPersonName.Location = new Point(33, 369);
+            labelPersonName.Location = new Point(34, 332);
             labelPersonName.Name = "labelPersonName";
             labelPersonName.Size = new Size(67, 20);
             labelPersonName.TabIndex = 3;
             labelPersonName.Text = "Surname";
             // 
-            // label3
+            // labelCustomPeople
             // 
-            label3.AutoSize = true;
-            label3.Location = new Point(29, 58);
-            label3.Name = "label3";
-            label3.RightToLeft = RightToLeft.Yes;
-            label3.Size = new Size(155, 20);
-            label3.TabIndex = 6;
-            label3.Text = "Custom Family Names";
+            labelCustomPeople.AutoSize = true;
+            labelCustomPeople.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            labelCustomPeople.Location = new Point(30, 21);
+            labelCustomPeople.Name = "labelCustomPeople";
+            labelCustomPeople.RightToLeft = RightToLeft.Yes;
+            labelCustomPeople.Size = new Size(114, 20);
+            labelCustomPeople.TabIndex = 6;
+            labelCustomPeople.Text = "Custom People";
             // 
             // listFamilyNames
             // 
             listFamilyNames.FormattingEnabled = true;
             listFamilyNames.ItemHeight = 20;
-            listFamilyNames.Location = new Point(29, 91);
+            listFamilyNames.Location = new Point(30, 54);
             listFamilyNames.Name = "listFamilyNames";
             listFamilyNames.Size = new Size(319, 224);
             listFamilyNames.TabIndex = 7;
@@ -123,7 +113,7 @@
             // 
             // buttonAdd
             // 
-            buttonAdd.Location = new Point(86, 442);
+            buttonAdd.Location = new Point(87, 405);
             buttonAdd.Name = "buttonAdd";
             buttonAdd.Size = new Size(94, 29);
             buttonAdd.TabIndex = 8;
@@ -133,7 +123,7 @@
             // 
             // buttonRemove
             // 
-            buttonRemove.Location = new Point(186, 442);
+            buttonRemove.Location = new Point(187, 405);
             buttonRemove.Name = "buttonRemove";
             buttonRemove.Size = new Size(94, 29);
             buttonRemove.TabIndex = 9;
@@ -143,7 +133,7 @@
             // 
             // buttonCancel
             // 
-            buttonCancel.Location = new Point(272, 584);
+            buttonCancel.Location = new Point(272, 549);
             buttonCancel.Name = "buttonCancel";
             buttonCancel.Size = new Size(94, 29);
             buttonCancel.TabIndex = 10;
@@ -155,7 +145,7 @@
             // 
             radioMale.AutoSize = true;
             radioMale.Checked = true;
-            radioMale.Location = new Point(170, 402);
+            radioMale.Location = new Point(171, 365);
             radioMale.Name = "radioMale";
             radioMale.Size = new Size(63, 24);
             radioMale.TabIndex = 11;
@@ -166,7 +156,7 @@
             // radioFemale
             // 
             radioFemale.AutoSize = true;
-            radioFemale.Location = new Point(254, 402);
+            radioFemale.Location = new Point(255, 365);
             radioFemale.Name = "radioFemale";
             radioFemale.Size = new Size(78, 24);
             radioFemale.TabIndex = 12;
@@ -175,7 +165,7 @@
             // 
             // trackbarDefaultPeople
             // 
-            trackbarDefaultPeople.Location = new Point(33, 522);
+            trackbarDefaultPeople.Location = new Point(34, 487);
             trackbarDefaultPeople.Maximum = 20;
             trackbarDefaultPeople.Name = "trackbarDefaultPeople";
             trackbarDefaultPeople.Size = new Size(288, 56);
@@ -188,39 +178,39 @@
             // 
             labelDefaultPeople.AutoSize = true;
             labelDefaultPeople.Font = new Font("Segoe UI", 14F, FontStyle.Regular, GraphicsUnit.Point);
-            labelDefaultPeople.Location = new Point(323, 528);
+            labelDefaultPeople.Location = new Point(324, 493);
             labelDefaultPeople.Name = "labelDefaultPeople";
             labelDefaultPeople.Size = new Size(40, 32);
             labelDefaultPeople.TabIndex = 14;
             labelDefaultPeople.Text = "10";
             // 
-            // labelDefaultSlider
+            // labelExcluding
             // 
-            labelDefaultSlider.AutoSize = true;
-            labelDefaultSlider.Location = new Point(33, 494);
-            labelDefaultSlider.Name = "labelDefaultSlider";
-            labelDefaultSlider.Size = new Size(127, 20);
-            labelDefaultSlider.TabIndex = 15;
-            labelDefaultSlider.Text = "People Generated";
+            labelExcluding.AutoSize = true;
+            labelExcluding.Font = new Font("Segoe UI", 8F, FontStyle.Italic, GraphicsUnit.Point);
+            labelExcluding.Location = new Point(163, 460);
+            labelExcluding.Name = "labelExcluding";
+            labelExcluding.Size = new Size(125, 19);
+            labelExcluding.TabIndex = 16;
+            labelExcluding.Text = "(excluding custom)";
             // 
-            // labelNotIncluding
+            // labelPeopleGenerated
             // 
-            labelNotIncluding.AutoSize = true;
-            labelNotIncluding.Font = new Font("Segoe UI", 8F, FontStyle.Italic, GraphicsUnit.Point);
-            labelNotIncluding.Location = new Point(158, 496);
-            labelNotIncluding.Name = "labelNotIncluding";
-            labelNotIncluding.Size = new Size(149, 19);
-            labelNotIncluding.TabIndex = 16;
-            labelNotIncluding.Text = "(not including custom)";
-            labelNotIncluding.Click += labelNotIncluding_Click;
+            labelPeopleGenerated.AutoSize = true;
+            labelPeopleGenerated.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            labelPeopleGenerated.Location = new Point(34, 460);
+            labelPeopleGenerated.Name = "labelPeopleGenerated";
+            labelPeopleGenerated.Size = new Size(133, 20);
+            labelPeopleGenerated.TabIndex = 15;
+            labelPeopleGenerated.Text = "People Generated";
             // 
             // FamilyFeudSettings
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(378, 625);
-            Controls.Add(labelNotIncluding);
-            Controls.Add(labelDefaultSlider);
+            ClientSize = new Size(378, 590);
+            Controls.Add(labelPeopleGenerated);
+            Controls.Add(labelExcluding);
             Controls.Add(labelDefaultPeople);
             Controls.Add(trackbarDefaultPeople);
             Controls.Add(radioFemale);
@@ -229,8 +219,7 @@
             Controls.Add(buttonRemove);
             Controls.Add(buttonAdd);
             Controls.Add(listFamilyNames);
-            Controls.Add(label3);
-            Controls.Add(label2);
+            Controls.Add(labelCustomPeople);
             Controls.Add(buttonOk);
             Controls.Add(labelPersonName);
             Controls.Add(labelComputerName);
@@ -248,12 +237,11 @@
 
         #endregion
         private Button buttonOk;
-        private Label label2;
         private TextBox textForename;
         private TextBox textSurname;
         private Label labelComputerName;
         private Label labelPersonName;
-        private Label label3;
+        private Label labelCustomPeople;
         private ListBox listFamilyNames;
         private Button buttonAdd;
         private Button buttonRemove;
@@ -262,7 +250,7 @@
         private RadioButton radioFemale;
         private TrackBar trackbarDefaultPeople;
         private Label labelDefaultPeople;
-        private Label labelDefaultSlider;
-        private Label labelNotIncluding;
+        private Label labelExcluding;
+        private Label labelPeopleGenerated;
     }
 }
