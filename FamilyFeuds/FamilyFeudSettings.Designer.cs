@@ -59,7 +59,7 @@
             // 
             // textForename
             // 
-            textForename.Location = new Point(171, 296);
+            textForename.Location = new Point(171, 294);
             textForename.Name = "textForename";
             textForename.Size = new Size(178, 27);
             textForename.TabIndex = 0;
@@ -67,7 +67,7 @@
             // 
             // textSurname
             // 
-            textSurname.Location = new Point(171, 329);
+            textSurname.Location = new Point(171, 327);
             textSurname.Name = "textSurname";
             textSurname.Size = new Size(178, 27);
             textSurname.TabIndex = 1;
@@ -75,7 +75,7 @@
             // labelComputerName
             // 
             labelComputerName.AutoSize = true;
-            labelComputerName.Location = new Point(34, 299);
+            labelComputerName.Location = new Point(34, 297);
             labelComputerName.Name = "labelComputerName";
             labelComputerName.Size = new Size(75, 20);
             labelComputerName.TabIndex = 2;
@@ -84,7 +84,7 @@
             // labelPersonName
             // 
             labelPersonName.AutoSize = true;
-            labelPersonName.Location = new Point(34, 332);
+            labelPersonName.Location = new Point(34, 330);
             labelPersonName.Name = "labelPersonName";
             labelPersonName.Size = new Size(67, 20);
             labelPersonName.TabIndex = 3;
@@ -94,7 +94,7 @@
             // 
             labelCustomPeople.AutoSize = true;
             labelCustomPeople.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            labelCustomPeople.Location = new Point(30, 21);
+            labelCustomPeople.Location = new Point(30, 19);
             labelCustomPeople.Name = "labelCustomPeople";
             labelCustomPeople.RightToLeft = RightToLeft.Yes;
             labelCustomPeople.Size = new Size(114, 20);
@@ -105,7 +105,7 @@
             // 
             listFamilyNames.FormattingEnabled = true;
             listFamilyNames.ItemHeight = 20;
-            listFamilyNames.Location = new Point(30, 54);
+            listFamilyNames.Location = new Point(30, 52);
             listFamilyNames.Name = "listFamilyNames";
             listFamilyNames.Size = new Size(319, 224);
             listFamilyNames.TabIndex = 7;
@@ -113,7 +113,7 @@
             // 
             // buttonAdd
             // 
-            buttonAdd.Location = new Point(87, 405);
+            buttonAdd.Location = new Point(87, 406);
             buttonAdd.Name = "buttonAdd";
             buttonAdd.Size = new Size(94, 29);
             buttonAdd.TabIndex = 8;
@@ -123,7 +123,7 @@
             // 
             // buttonRemove
             // 
-            buttonRemove.Location = new Point(187, 405);
+            buttonRemove.Location = new Point(187, 406);
             buttonRemove.Name = "buttonRemove";
             buttonRemove.Size = new Size(94, 29);
             buttonRemove.TabIndex = 9;
