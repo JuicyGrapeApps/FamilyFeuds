@@ -61,7 +61,7 @@ namespace JuicyGrapeApps.FamilyFueds
         /// <summary>
         ///  Find a person by id.
         /// </summary>
-        public static Person person(int id) => family.Find(x => x.id == id);
+        public static Person? person(int id) => family.Find(x => x.id == id);
 
         /// <summary>
         ///  Retrive the unique family id or create one if family has none.
@@ -74,7 +74,8 @@ namespace JuicyGrapeApps.FamilyFueds
                 idx = surnames.Count;
                 surnames.Add(surname);
             }
-            return idx + 1000;  // This must be greater than lenght of surnames array in RandomGenerator.
+            return idx + 1000;  // Return value must be greater than length of surnames
+                                // array in RandomGenerator to prevent conflicts.
         }
 
         /// <summary>
@@ -86,13 +87,14 @@ namespace JuicyGrapeApps.FamilyFueds
         {
             try
             {
-                RegistryKey key = Registry.CurrentUser.OpenSubKey(WIN_REG_PATH);
+                RegistryKey? key = Registry.CurrentUser.OpenSubKey(WIN_REG_PATH);
 
                 if (key != null)
                 {
-                    string familyNames = (string)key.GetValue(REG_KEY_NAMES);
+                    var regNames = key.GetValue(REG_KEY_NAMES);
+                    string familyNames = (regNames == null) ? "" : (string)regNames;
 
-                    if (familyNames != null && familyNames.Length > 0)
+                    if (!String.IsNullOrEmpty(familyNames))
                     {
                         int idx = familyNames.IndexOf(".");
                         do
@@ -104,8 +106,9 @@ namespace JuicyGrapeApps.FamilyFueds
                         } while (idx > 0);
 
                     }
-                    string defaultPeople = (string) key.GetValue(REG_KEY_DEFAULT);
-                    MaxDefaultNumber = (defaultPeople == null) ? 10 : int.Parse(defaultPeople);
+                    var regPeople = key.GetValue(REG_KEY_DEFAULT);
+                    string defaultPeople = (regPeople == null) ? "" : (string)regPeople;
+                    MaxDefaultNumber = String.IsNullOrEmpty(defaultPeople) ? 10 : int.Parse(defaultPeople);
                 }
             } catch { }
         }

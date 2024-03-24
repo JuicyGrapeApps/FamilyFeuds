@@ -319,8 +319,9 @@ namespace JuicyGrapeApps.FamilyFueds
                 imageAttributes.SetColorMatrix(colorMatrix);
             }
 
-            if (!person.isInjured)
+            if (!person.isInjured || person.forceMask)
             {
+                if (person.forceMask) person.forceMask = false;
                 graphics.FillRectangle(Brushes.Black, person.bounds);
                 graphics.DrawImage(person.mask, new Rectangle(person.location, new Size(50, 50)));
             }
@@ -354,7 +355,7 @@ namespace JuicyGrapeApps.FamilyFueds
 
             if (person.mother > -1)
             {
-                Person parent = ApplicationControl.person(person.mother);
+                Person? parent = ApplicationControl.person(person.mother);
                 if (parent == null || parent.isDead) person.mother = -1;
                 else
                 {
@@ -382,7 +383,7 @@ namespace JuicyGrapeApps.FamilyFueds
 
             if (person.father > -1)
             {
-                Person parent = ApplicationControl.person(person.father);
+                Person? parent = ApplicationControl.person(person.father);
                 if (parent == null || parent.isDead) person.father = -1;
                 else
                 {
@@ -420,7 +421,7 @@ namespace JuicyGrapeApps.FamilyFueds
         {
             if (person.lookat + person.followed == -2) return;
 
-            Person target = ApplicationControl.person(person.followed > -1 ? person.followed : person.lookat);
+            Person? target = ApplicationControl.person(person.followed > -1 ? person.followed : person.lookat);
 
             if (target == null)
             {
@@ -497,7 +498,7 @@ namespace JuicyGrapeApps.FamilyFueds
             {
                 if (target.isDead) person.emotion = Person.Emotion.Sad;
                 else if (target.family == person.family) person.emotion = Person.Emotion.None;
-                person.followed = -1;
+                person.followed = person.lookat;
             }
         }
 

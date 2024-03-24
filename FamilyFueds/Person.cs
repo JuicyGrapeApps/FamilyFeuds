@@ -53,6 +53,9 @@ public class Person : IFeudEvent
 
     public int id { get; set; }
     public int family { get; set; }
+    public int mother { get; set; } = -1;
+    public int father { get; set; } = -1;
+
     public string name;
     public string surname;
     public DateTime dob;
@@ -63,24 +66,30 @@ public class Person : IFeudEvent
     public bool gender;
     public int spouse = -1;
     public int bumped = -1;
-    public int mother { get; set; } = -1;
-    public int father { get; set; } = -1;
-    public int lookat = -1;
     public Point[] motherLine = new Point[4];
     public Point[] fatherLine = new Point[4];
     private int m_age;
     private int m_energy = 5;
+    private int m_lookat = -1;
     private Emotion m_emotion;
     private int m_intelligence = 10;
     private int m_emotional = 5;
     private bool m_killer = false;
     private int m_grave = 0;
-    private bool m_follow = false;
     public int followed = -1;
     public RectangleF bounds = new();
     public bool changeMask = false;
     public int ghost = 255;
+    public bool forceMask = false;
 
+    public int lookat { 
+        get => m_lookat;
+        set
+        {
+            if (m_lookat != -1  && followed == -1) followed = m_lookat;
+            m_lookat = value;
+        }
+    }
     public int emotional { get; set; }
 
     // Boolean repesentations of emotional states
@@ -96,23 +105,12 @@ public class Person : IFeudEvent
     public bool isActive => m_emotion != Emotion.Angel &&
                             m_emotion != Emotion.Devil && 
                             m_emotion != Emotion.Injured;
-    public bool isAvailable => !follow && isActive;
+    public bool isAvailable => lookat > -1 && isActive;
 
     // Randomize volocity changes direction and speed of the bot on screen.
     public void ChangeVolocity() => volocity = new Point(RandomGenerator.Int(2, 1, true), RandomGenerator.Int(2, 1, true));
     public string fullname => name + " " + surname;
     public int age => (DateTime.Now - dob).Minutes;
-    public bool follow
-    {
-        get => m_follow && lookat > -1 && !isDead;
-        set
-        {
-            followed = lookat;
-            if (value) value = lookat > -1;
-            else lookat = -1;
-            m_follow = value;
-        }
-    }
 
     /// <summary>
     /// Amount of energy a person has if energy reaches zero they expire.
@@ -132,7 +130,7 @@ public class Person : IFeudEvent
         set
         {
             if (isDead) return;
-            if (m_emotion != value) follow = false;
+            if (m_emotion != value) lookat = -1;
 
             m_emotional = 5;
             m_emotion = value;
@@ -166,6 +164,7 @@ public class Person : IFeudEvent
                     break;
                 case Emotion.Injured:
                     image = FamilyFueds.Properties.Resources.Injured;
+                    forceMask = true;
                     break;
                 case Emotion.Baby:
                     image = FamilyFueds.Properties.Resources.Baby;
@@ -193,12 +192,11 @@ public class Person : IFeudEvent
         if (id == -2) ApplicationControl.FamilyEvents.InvokeChildren(this);  
         else if (id > -1)
         {
-            Person person = ApplicationControl.person(id);
+            Person? person = ApplicationControl.person(id);
             if (person != null && person.isAvailable)
             {
                 person.emotion = emotion;
                 person.lookat = lookat;
-                person.follow = follow;
             }
         }
     }
@@ -328,10 +326,10 @@ public class Person : IFeudEvent
     {
         if (isInjured) return;
 
-        if (follow)
+        if (lookat > -1)
         {
-            Person person = ApplicationControl.person(lookat);
-            if (person == null) follow = false;
+            Person? person = ApplicationControl.person(lookat);
+            if (person == null) lookat = -1;
             else
             {
                 if (location.X < person.location.X) volocity.X = 2;
@@ -392,7 +390,7 @@ public class Person : IFeudEvent
     /// <param name="person"></param>
     public async Task Fight(Person person)
     {
-        if (lookat == bumped) follow = false;
+        if (lookat == bumped) lookat = -1;
 
         if (!isActive || person.isDead || person.isBaby || person.family == family ||
             person.mother == id || person.father == id) return;
@@ -408,13 +406,12 @@ public class Person : IFeudEvent
         }
         else if (person.spouse > -1)
         {
-            Person partner = ApplicationControl.person(person.spouse);
+            Person? partner = ApplicationControl.person(person.spouse);
             if (partner == null) person.spouse = -1;
             else if (partner.isActive)
             {
                 partner.emotion = Emotion.Jealous;
                 partner.lookat = id;
-                partner.follow = true;
             }
         }
     }
@@ -463,7 +460,6 @@ public class Person : IFeudEvent
                     emotion = Emotion.Love;
                     m_emotional = 20;
                     lookat = spouse;
-                    follow = true;
                 }
                 else ChangeVolocity();
             break;
@@ -502,7 +498,7 @@ public class Person : IFeudEvent
         if (m_energy > 0) return m_energy;
 
         volocity.X = 0;
-        follow = false;
+        lookat = -1;
         if (m_killer)
         {
             emotion = Emotion.Devil;
@@ -613,7 +609,7 @@ public class Person : IFeudEvent
     /// <param name="args">Arguments received from event</param>
     public void FamilyEvent(FeudEventArgs args)
     {
-        if (!isActive || (isAngry && follow)) return;
+        if (!isActive || (isAngry && lookat > -1)) return;
 
         Person person = (Person) args.person;
 
@@ -624,7 +620,6 @@ public class Person : IFeudEvent
             {
                 emotion = Emotion.Angry;
                 lookat = person.bumped;
-                follow = true;
             }
         }
         else if (person.emotion == Emotion.Love)
@@ -655,7 +650,6 @@ public class Person : IFeudEvent
         {
             emotion = person.emotion;
             lookat = person.lookat;
-            follow = person.follow;
         }
     }
 }
