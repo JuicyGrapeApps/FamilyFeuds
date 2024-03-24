@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 using Microsoft.Win32;
-using System.Diagnostics;
 
 namespace JuicyGrapeApps.FamilyFueds
 {
@@ -29,7 +28,6 @@ namespace JuicyGrapeApps.FamilyFueds
         public const string REG_KEY_DEFAULT = "DefaultNames";
         public const int MAX_BOT_COUNT = 1000;
         public const int CLEAR_COUNTDOWN = 30;
-        public const bool DEBUG_MODE = false;
 
         // MessageBox Title
         public static string messageTitle = "Family Feuds";
@@ -119,8 +117,6 @@ namespace JuicyGrapeApps.FamilyFueds
         /// </summary>
         public static void Configure()
         {
-            if (DEBUG_MODE) { Run(); return; }
-            
             Mode = ExecuteMode.Configure;
             Application.Run(new FamilyFeudSettings());
         }
@@ -199,10 +195,7 @@ namespace JuicyGrapeApps.FamilyFueds
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                if (DEBUG_MODE) Debug.Print("Exception: " + ex.Message+" --- "+ex.Source+" --- "+ex.Data);
-            }
+            catch { }
         }
 
         /// <summary>

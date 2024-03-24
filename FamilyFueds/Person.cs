@@ -15,7 +15,6 @@
  */
 using JuicyGrapeApps.Core;
 using JuicyGrapeApps.FamilyFueds;
-using System.Diagnostics;
 
 /// <summary>
 /// This class is the bot representation of a person on screen it stores their details such as date of birth,
@@ -285,8 +284,6 @@ public class Person : IFeudEvent
             location = person.location;
             m_intelligence = 5;
             emotion = Emotion.Baby;
-
-            if (ApplicationControl.DEBUG_MODE) Debug.Print(person.fullname + " gave birth to " + fullname);
         }
         Initialize();
     }
@@ -470,8 +467,6 @@ public class Person : IFeudEvent
     {
         if (m_age != age)
         {
-            if (ApplicationControl.DEBUG_MODE) Debug.Print("It's " + fullname + " " + (m_age+1) + " birthday!");
-
             m_age = age;
             if (age % 5 == 0) energy--;
 
@@ -491,6 +486,7 @@ public class Person : IFeudEvent
     private int Energy(int value)
     {
         if (isDead) return 0;
+ 
         m_energy = value;
         if (m_energy > 0) return m_energy;
 
@@ -510,8 +506,6 @@ public class Person : IFeudEvent
         }
         m_grave = location.Y;
         spouse = -1;
-
-        if (ApplicationControl.DEBUG_MODE) Debug.Print(fullname + " has died");
 
         ApplicationControl.FamilyEvents.Invoke(this);
         return 0;
@@ -547,7 +541,6 @@ public class Person : IFeudEvent
 
             if (await Marry(person))
             {
-                if (ApplicationControl.DEBUG_MODE) Debug.Print(name + " got married to " + person.name);
                 emotion = Emotion.Love;
                 person.emotion = Emotion.Love;
                 ApplicationControl.family.Add(new Person(this));
@@ -636,7 +629,6 @@ public class Person : IFeudEvent
     public void ChildEvent(FeudEventArgs args)
     {
         Person person = (Person)args.person;
-        if (ApplicationControl.DEBUG_MODE) Debug.Print(fullname + " lost parent " + person.name);
 
         if (person.isDead)
         {
