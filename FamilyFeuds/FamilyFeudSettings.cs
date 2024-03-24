@@ -34,14 +34,15 @@ namespace JuicyGrapeApps.FamilyFeuds
         {
             RegistryKey key = Registry.CurrentUser.CreateSubKey(ApplicationControl.WIN_REG_PATH);
             string listOfNames = "";
-            foreach (string name in listFamilyNames.Items) listOfNames += name+".";
+            foreach (string name in listFamilyNames.Items) listOfNames += name + ".";
             key.SetValue(ApplicationControl.REG_KEY_NAMES, listOfNames);
             key.SetValue(ApplicationControl.REG_KEY_DEFAULT, labelDefaultPeople.Text);
         }
 
         private void buttonOk_Click(object sender, EventArgs e)
         {
-            if (textForename.Text != string.Empty && textSurname.Text != string.Empty) {
+            if (textForename.Text != string.Empty && textSurname.Text != string.Empty)
+            {
                 string name = GetName(false);
                 string ext = " (M)";
                 string gender = "male";
@@ -132,7 +133,7 @@ namespace JuicyGrapeApps.FamilyFeuds
             bool empty = String.IsNullOrEmpty(name);
             if (empty)
             {
-                string s = (i == 1 ? "forename": (i == 2 ? "surname" : "details"));
+                string s = (i == 1 ? "forename" : (i == 2 ? "surname" : "details"));
                 MessageBox.Show($"Missing {s} you'll need to enter both the forename and surname.",
                     ApplicationControl.messageTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -191,6 +192,11 @@ namespace JuicyGrapeApps.FamilyFeuds
         private void textForename_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == ' ') textSurname.Select();
+        }
+
+        private void labelNotIncluding_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
