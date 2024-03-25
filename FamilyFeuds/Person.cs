@@ -642,7 +642,6 @@ public class Person : IFeudEvent
 
             image.Dispose();
             mask.Dispose();
-            Debug.Print("Disposal of " + fullname);
         }
         catch { }
     }
