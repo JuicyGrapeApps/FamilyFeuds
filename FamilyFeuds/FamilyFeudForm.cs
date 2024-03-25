@@ -565,28 +565,27 @@ namespace JuicyGrapeApps.FamilyFeuds
 
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.Execute = new System.Windows.Forms.Timer(this.components);
-            this.SuspendLayout();
+            components = new System.ComponentModel.Container();
+            Execute = new System.Windows.Forms.Timer(components);
+            SuspendLayout();
             // 
             // Execute
             // 
-            this.Execute.Enabled = true;
-            this.Execute.Interval = 12;
-            this.Execute.Tick += new System.EventHandler(this.Execute_Tick);
+            Execute.Enabled = true;
+            Execute.Interval = 12;
+            Execute.Tick += Execute_Tick;
             // 
             // FamilyFeudsForm
             // 
-            this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(282, 253);
-            this.Font = new System.Drawing.Font("Segoe Print", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "FamilyFeudsForm";
-            this.Load += new System.EventHandler(this.FamilyFeudsForm_Load);
-            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.FamilyFeudsForm_MouseClick);
-            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FamilyFeudsForm_MouseMove);
-            this.ResumeLayout(false);
-
+            BackColor = Color.Black;
+            ClientSize = new Size(282, 253);
+            Font = new Font("Segoe Print", 10.2F, FontStyle.Bold, GraphicsUnit.Point);
+            FormBorderStyle = FormBorderStyle.None;
+            Name = "FamilyFeudsForm";
+            Load += FamilyFeudsForm_Load;
+            MouseClick += FamilyFeudsForm_MouseClick;
+            MouseMove += FamilyFeudsForm_MouseMove;
+            ResumeLayout(false);
         }
 
         private System.Windows.Forms.Timer Execute;

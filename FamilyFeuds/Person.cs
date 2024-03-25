@@ -417,7 +417,7 @@ public class Person : IFeudEvent
         if (lookat == bumped) lookat = -1;
         if (person.lookat == id) person.lookat = -1;
 
-        if (!isDead || person.isDead || person.isBaby || person.family == family ||
+        if (person.isDead || person.isBaby || person.family == family ||
             person.mother == id || person.father == id) return;
 
         if (person.gender == gender || isAngry) {            
