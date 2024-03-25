@@ -525,7 +525,10 @@ public class Person : IFeudEvent
     private int Energy(int value)
     {
         if (isDead) return 0;
-        
+
+        if (ApplicationControl.OverPopulated)
+            value = (value < m_energy) ? value - 2 : m_energy;
+
         m_energy = value;
         if (m_energy > 0) return m_energy;
 

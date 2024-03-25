@@ -46,9 +46,11 @@ namespace JuicyGrapeApps.FamilyFeuds
         private static int m_elapsed = 0;
         private static DateTime m_time;
         private static int m_clear = CLEAR_COUNTDOWN;
+        public static bool fireWorks = false;
+        public static bool OverPopulated = false;
         public static event CoreEventHandler? Update;
         public static event PersonEventHandler? Collision;
-        public static bool fireWorks = false;
+
         public enum ExecuteMode
         {
             FullScreen,
@@ -165,6 +167,8 @@ namespace JuicyGrapeApps.FamilyFeuds
                 if (fireWorks) familyFeud.FireworkDisplay();
                 else 
                 {
+                    OverPopulated = (MAX_BOT_COUNT / 2 > NumberOfPeople);
+
                     int familyId = -1;
                     bool isWinner = true;
                     for (int i = 0; i < NumberOfPeople; i++)
