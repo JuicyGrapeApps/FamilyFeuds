@@ -183,15 +183,24 @@ namespace JuicyGrapeApps.FamilyFeuds
                     int elapsed = (DateTime.Now - m_time).Seconds;
                     if (elapsed == m_elapsed && m_clear > 0) return;
                     m_time = DateTime.Now;
-                    m_clear--;
-                    Update?.Invoke();
-                    GarbageBin.Empty();
 
-                    if (m_clear < 0 || isWinner)
+                    if (isWinner)
+                    {
+                        fireWorks = true;
+                        m_clear = -1;
+                        GarbageBin.Dispose();
+                    }
+                    else
+                    {
+                        m_clear--;
+                        Update?.Invoke();
+                        GarbageBin.Empty();
+                    }
+
+                    if (m_clear < 0)
                     {
                         m_clear = CLEAR_COUNTDOWN;
                         familyFeud.graphics.Clear(Color.Black);
-                        fireWorks = isWinner;
                     }
                 }
             }
@@ -203,8 +212,6 @@ namespace JuicyGrapeApps.FamilyFeuds
         /// </summary>
         public static void Restart()
         {
-            family.Clear();
-            NumberOfPeople = 0;
             InitializeBots();
             m_clear = -1;
             fireWorks = false;

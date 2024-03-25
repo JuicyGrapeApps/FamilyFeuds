@@ -43,8 +43,8 @@ public class Person : IFeudEvent
     public enum Ideas
     {
         ChangeDirection = 0,
-        Eat = 6,
-        HaveKids = 8,
+        Eat = 10,
+        HaveKids = 20,
     }
 
     // Person's brain filled with ideas.
@@ -90,6 +90,13 @@ public class Person : IFeudEvent
             m_lookat = value;
         }
     }
+
+    public bool killer
+    {
+        get => m_killer;
+        set => m_killer = value;
+    }
+
     public int emotional { get; set; }
 
     // Boolean repesentations of emotional states
@@ -105,7 +112,7 @@ public class Person : IFeudEvent
     public bool isActive => m_emotion != Emotion.Angel &&
                             m_emotion != Emotion.Devil && 
                             m_emotion != Emotion.Injured;
-    public bool isAvailable => lookat > -1 && isActive;
+    public bool isAvailable => lookat == -1 && isActive;
 
     // Randomize volocity changes direction and speed of the bot on screen.
     public void ChangeVolocity() => volocity = new Point(RandomGenerator.Int(2, 1, true), RandomGenerator.Int(2, 1, true));
@@ -355,10 +362,22 @@ public class Person : IFeudEvent
     /// <returns></returns>
     public async Task<bool> Marry(Person person)
     {
-        if (isEmotional || person.isEmotional || person.mother == id ||
-            person.father == id || person.family == family || person.gender == gender ||
-            spouse + person.spouse != -2) return !isEmotional && !person.isEmotional && spouse == person.id;
+        bool haveEmotions = isEmotional || person.isEmotional;
+        if (haveEmotions || person.mother == id || person.father == id ||
+            person.family == family || person.gender == gender || spouse + person.spouse != -2) {
 
+            if (spouse == person.id)
+            {
+                if (lookat == person.id && person.lookat == id)
+                {
+                    lookat = -1;
+                    person.lookat = -1;
+                    return true;
+                }
+                else return !haveEmotions;
+            }
+            else return false;
+        }
         spouse = person.id;
         person.spouse = id;
 
@@ -387,18 +406,24 @@ public class Person : IFeudEvent
     public async Task Fight(Person person)
     {
         if (lookat == bumped) lookat = -1;
+        if (person.lookat == id) person.lookat = -1;
 
         if (!isActive || person.isDead || person.isBaby || person.family == family ||
             person.mother == id || person.father == id) return;
 
-        if (person.gender == gender || isAngry) {
-            person.energy--;
-            if (person.energy == 0)
+        if (person.gender == gender || isAngry) {            
+            if (RandomGenerator.Bool())
             {
-                m_killer = true;
-                return;
+                person.energy--;
+                if (person.energy == 0) m_killer = true;
+                else person.emotion = Emotion.Injured;
             }
-            else person.emotion = Emotion.Injured;
+            else
+            {
+                energy--;
+                if (energy == 0) person.killer = true;
+                else emotion = Emotion.Injured;
+            }
         }
         else if (person.spouse > -1)
         {
@@ -449,11 +474,16 @@ public class Person : IFeudEvent
             case Ideas.ChangeDirection: ChangeVolocity(); break;
             case Ideas.Eat: if (m_energy < 10) m_energy++; break;
             case Ideas.HaveKids:
-                if (spouse > -1)
+                if (spouse > -1 && isAvailable && emotion != Emotion.Love)
                 {
-                    emotion = Emotion.Love;
-                    m_emotional = 20;
-                    lookat = spouse;
+                    Person? partner = ApplicationControl.person(spouse);
+                    if (partner != null && partner.isAvailable)
+                    {
+                        emotion = Emotion.Love;
+                        lookat = spouse;
+                        partner.emotion = Emotion.Love;
+                        partner.lookat = id;
+                    }
                 }
                 else ChangeVolocity();
             break;
@@ -486,12 +516,12 @@ public class Person : IFeudEvent
     private int Energy(int value)
     {
         if (isDead) return 0;
- 
+        
         m_energy = value;
         if (m_energy > 0) return m_energy;
 
-        volocity.X = 0;
-        lookat = -1;
+        if (lookat > -1) lookat = -1;
+
         if (m_killer)
         {
             emotion = Emotion.Devil;
@@ -504,6 +534,7 @@ public class Person : IFeudEvent
             volocity.Y = -2;
             m_energy = location.Y;
         }
+        volocity.X = 0;
         m_grave = location.Y;
         spouse = -1;
 
@@ -547,15 +578,17 @@ public class Person : IFeudEvent
             }
             else await Fight(person);
 
-            volocity.X = location.X < person.location.X ? -1 : 1;
-            volocity.Y = location.Y < person.location.Y ? -1 : 1;
-            
+            if (!isDead) {
+                volocity.X = location.X < person.location.X ? -1 : 1;
+                volocity.Y = location.Y < person.location.Y ? -1 : 1;
+            }
+
             if (!person.isDead)
             {
                 person.volocity.X = volocity.X * -1;
                 person.volocity.Y = volocity.Y * -1;
             }
-    }
+        }
         else if (ignored) bumped = -1;
     }
 
@@ -566,16 +599,14 @@ public class Person : IFeudEvent
     public void Trash()
     {
         ApplicationControl.FamilyEvents.InvokeChildren(this);
-        mother = -1;
-        father = -1;
         ApplicationControl.Update -= Update;
         ApplicationControl.Collision -= OnCollision;
         ApplicationControl.FamilyEvents.Unsubscribe(this);
-        
-        if (ApplicationControl.family.Remove(this))
-            ApplicationControl.NumberOfPeople--;
 
-        GarbageBin.Add(this);
+        mother = -1;
+        father = -1;
+
+        GarbageBin.Bin(this);
     }
 
     /// <summary>
@@ -586,9 +617,20 @@ public class Person : IFeudEvent
         try
         {
             GarbageBin.Garbage -= Dispose;
+
+            if (!GarbageBin.Contains(this))
+            {
+                ApplicationControl.Update -= Update;
+                ApplicationControl.Collision -= OnCollision;
+                ApplicationControl.FamilyEvents.Unsubscribe(this);
+                if (ApplicationControl.family.Remove(this))
+                    ApplicationControl.NumberOfPeople--;
+            }
+
             image.Dispose();
             mask.Dispose();
-        } catch { };
+        }
+        catch { }
     }
 
     /// <summary>

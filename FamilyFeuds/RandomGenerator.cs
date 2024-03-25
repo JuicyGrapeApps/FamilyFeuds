@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 using JuicyGrapeApps.FamilyFeuds;
+using System.Diagnostics;
 
 /// <summary>
 /// Global random generator
@@ -62,13 +63,18 @@ public static class RandomGenerator
         (rnd.NextDouble() * value + offset) * (unsigned && rnd.Next(2) == 1 ? -1 : 1);
 
     /// <summary>
+    /// Returns a random boolean value.
+    /// </summary>
+    /// <returns></returns>
+    public static bool Bool() => Int(1) == 0;
+
+    /// <summary>
     /// Returns an idea from person 's brain.
     /// </summary>
     /// <returns></returns>
     public static Person.Ideas Idea()
     {
-        Person.Ideas idea = Person.Ideas.ChangeDirection;
-        idea = Person.Brain[Int(2)];
+        Person.Ideas idea = Person.Brain[Int(2)];
         int react = (int)idea;
         if (react > 0 && Int(react) != 0) idea = Person.Ideas.ChangeDirection;
         return idea;

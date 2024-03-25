@@ -281,7 +281,6 @@ namespace JuicyGrapeApps.FamilyFeuds
             FamilyFeudsForm_Unload();
         }
 
-
         private void FamilyFeudsForm_Unload()
         {
             SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
@@ -497,7 +496,7 @@ namespace JuicyGrapeApps.FamilyFeuds
             if (clear)
             {
                 if (target.isDead) person.emotion = Person.Emotion.Sad;
-                else if (target.family == person.family) person.emotion = Person.Emotion.None;
+                else if (target.family == person.family && person.emotion != Person.Emotion.Love) person.emotion = Person.Emotion.None;
                 person.followed = person.lookat;
             }
         }

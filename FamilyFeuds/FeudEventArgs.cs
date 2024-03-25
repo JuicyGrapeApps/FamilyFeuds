@@ -18,7 +18,25 @@ namespace JuicyGrapeApps.FamilyFeuds
     public class FeudEventArgs
     {
         public IFeudEvent person;
+        private FamilyEventManager.Flag flags;
 
-        public FeudEventArgs(IFeudEvent person) => this.person = person;
-   }
+        public FeudEventArgs(IFeudEvent person, FamilyEventManager.Flag flags = FamilyEventManager.Flag.None)
+        {
+            this.person = person;
+            this.flags = flags;
+        }
+
+        public FeudEventArgs AddFlag(FamilyEventManager.Flag flag)
+        {
+            flags |= flag;
+            return this;
+        }
+        public FeudEventArgs RemoveFlag(FamilyEventManager.Flag flag)
+        {
+            flags &= ~flag;
+            return this;
+        }
+
+        public bool HasFlag(FamilyEventManager.Flag flag) => flags.HasFlag(flag);
+    }
 }
