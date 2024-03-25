@@ -28,6 +28,7 @@ namespace JuicyGrapeApps.FamilyFeuds
         public const string REG_KEY_DEFAULT = "DefaultNames";
         public const int MAX_BOT_COUNT = 50;
         public const int CLEAR_COUNTDOWN = 30;
+        public const int POPULATION_LIMIT = 20;
 
         // MessageBox Title
         public static string messageTitle = "Family Feuds";
@@ -167,7 +168,7 @@ namespace JuicyGrapeApps.FamilyFeuds
                 if (fireWorks) familyFeud.FireworkDisplay();
                 else 
                 {
-                    OverPopulated = NumberOfPeople > MAX_BOT_COUNT / 2;
+                    OverPopulated = NumberOfPeople > POPULATION_LIMIT;
 
                     int familyId = -1;
                     bool isWinner = true;
