@@ -36,8 +36,9 @@ namespace JuicyGrapeApps.FamilyFeuds
         // Family Feud Global Settings
         public static int MaxHeight;  // Screen dimensions.
         public static int MaxWidth;
-        public static int MaxDefaultNumber = 10;
-        public static int NumberOfPeople = 0;                     // Number of bots on screen.  
+        public static int MaxDefaultNumber = 10; // Default people generated
+        public static int UniqueBotId = 0;       // Bots Unique Id
+        public static int NumberOfPeople = 0;    // Number of bots on screen.  
         public static List<Person> family = new List<Person>();   // FamilyFeuds bot data.
         public static List<string> names = new List<string>();    // Custom family names from windows registary.
         public static List<string> surnames = new List<string>(); // Used to generate a custom family id.
@@ -47,8 +48,10 @@ namespace JuicyGrapeApps.FamilyFeuds
         private static int m_elapsed = 0;
         private static DateTime m_time;
         private static int m_clear = CLEAR_COUNTDOWN;
-        public static bool fireWorks = false;
-        public static bool OverPopulated = false;
+        public static bool fireWorks = false;  // Display fireworks
+        public static bool OverPopulated = false;   // Control Population Growth
+
+        // FamilyFeuds Events
         public static event CoreEventHandler? Update;
         public static event PersonEventHandler? Collision;
 
@@ -218,6 +221,7 @@ namespace JuicyGrapeApps.FamilyFeuds
         public static void Restart()
         {
             InitializeBots();
+            UniqueBotId = 0;
             m_clear = -1;
             fireWorks = false;
         }

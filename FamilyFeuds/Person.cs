@@ -81,6 +81,7 @@ public class Person : IFeudEvent
     public int ghost = 255;
     public bool forceMask = false;
     private float m_speed = 0.0005f;
+    private bool m_reciveEvents = false;
 
     public int lookat { 
         get => m_lookat;
@@ -100,6 +101,7 @@ public class Person : IFeudEvent
     public int emotional { get; set; }
 
     // Boolean repesentations of emotional states
+
     public bool isInjured => m_emotion == Emotion.Injured;
     public bool isEmotional => m_emotion != Emotion.None && 
                                m_emotion != Emotion.Happy &&
@@ -309,16 +311,16 @@ public class Person : IFeudEvent
     /// </summary>
     private void Initialize()
     {
-        id = ApplicationControl.NumberOfPeople;
+        id = ApplicationControl.UniqueBotId;
+        ApplicationControl.UniqueBotId++;
         ApplicationControl.NumberOfPeople++;
 
         dob = DateTime.Now;
         ChangeVolocity();
         ChangeMask();
+        Subscribe();
 
         ApplicationControl.Update += Update;
-        ApplicationControl.Collision += OnCollision;
-        ApplicationControl.FamilyEvents.Subscribe(this);
         GarbageBin.Garbage += Dispose;
     }
 
@@ -371,22 +373,16 @@ public class Person : IFeudEvent
     /// <returns></returns>
     public async Task<bool> Marry(Person person)
     {
-        bool haveEmotions = isEmotional || person.isEmotional;
-        if (haveEmotions || person.mother == id || person.father == id ||
-            person.family == family || person.gender == gender || spouse + person.spouse != -2) {
+        bool hasEmotions = (isEmotional || person.isEmotional) && !(lookat == spouse && person.lookat == person.spouse);
+        if (person.mother == id || person.father == id || person.gender == gender || hasEmotions) return false;
 
-            if (spouse == person.id)
-            {
-                if (lookat == person.id && person.lookat == id)
-                {
-                    lookat = -1;
-                    person.lookat = -1;
-                    return true;
-                }
-                else return !haveEmotions;
-            }
+        if (person.family == family || spouse + person.spouse != -2) {
+            lookat = -1;
+            person.lookat = -1;
+            if (spouse == person.id || person.spouse == id) return true;
             else return false;
         }
+
         spouse = person.id;
         person.spouse = id;
 
@@ -434,7 +430,7 @@ public class Person : IFeudEvent
                 else emotion = Emotion.Injured;
             }
         }
-        else if (person.spouse > -1)
+        else if (person.isAngry && person.spouse > -1)
         {
             Person? partner = ApplicationControl.person(person.spouse);
             if (partner == null) person.spouse = -1;
@@ -551,6 +547,7 @@ public class Person : IFeudEvent
         spouse = -1;
 
         ApplicationControl.FamilyEvents.Invoke(this);
+        Unsubscribe();
         return 0;
     }
 
@@ -605,6 +602,28 @@ public class Person : IFeudEvent
     }
 
     /// <summary>
+    /// Subscrib to collision and family events
+    /// </summary>
+    private void Subscribe()
+    {
+        if (m_reciveEvents) return;
+        ApplicationControl.Collision += OnCollision;
+        ApplicationControl.FamilyEvents.Subscribe(this);
+        m_reciveEvents = true;
+    }
+
+    /// <summary>
+    /// Unsubscrib from collision and family events
+    /// </summary>
+    private void Unsubscribe()
+    {
+        if (!m_reciveEvents) return;
+        ApplicationControl.Collision -= OnCollision;
+        ApplicationControl.FamilyEvents.Unsubscribe(this);
+        m_reciveEvents = false;
+    }
+
+    /// <summary>
     /// This function is required as it is part of the ITrashable interface
     /// and used in conjuction with the IDisposable to clean up any resources. 
     /// </summary>
@@ -612,8 +631,7 @@ public class Person : IFeudEvent
     {
         ApplicationControl.FamilyEvents.InvokeChildren(this);
         ApplicationControl.Update -= Update;
-        ApplicationControl.Collision -= OnCollision;
-        ApplicationControl.FamilyEvents.Unsubscribe(this);
+        Unsubscribe();
 
         mother = -1;
         father = -1;
@@ -633,8 +651,8 @@ public class Person : IFeudEvent
             if (!GarbageBin.Contains(this))
             {
                 ApplicationControl.Update -= Update;
-                ApplicationControl.Collision -= OnCollision;
-                ApplicationControl.FamilyEvents.Unsubscribe(this);
+                Unsubscribe();
+
                 if (ApplicationControl.family.Remove(this))
                     ApplicationControl.NumberOfPeople--;
             }
