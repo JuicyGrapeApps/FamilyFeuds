@@ -129,6 +129,15 @@ public class Person : IFeudEvent
     }
 
     /// <summary>
+    /// Returns true person is looking else where.
+    /// </summary>
+    /// <param name="person"></param>
+    /// <returns></returns>
+    private bool FocusedElsewhere(Person person) =>
+        lookat + person.lookat != -2 && this.id != person.lookat &&
+        person.id != this.lookat;
+
+    /// <summary>
     /// Change a person's emotional state.
     /// </summary>
     public Emotion emotion
@@ -544,7 +553,6 @@ public class Person : IFeudEvent
 
     /// <summary>
     /// Check for contact with screen bounderies
-    /// 
     /// <remarks>
     /// If event ever needed for screen collition use following:
     /// </summary>
@@ -562,11 +570,12 @@ public class Person : IFeudEvent
     /// <param name="person"></param>
     public async void OnCollision(Person person)
     {
-        if (person == this) return;
+        if (person == this || FocusedElsewhere(person)) return;
         bool ignored = bumped == person.id;
 
         if (!isDead && !person.isDead && !ignored && 
             Is.Overlap(location, person.location, new Size(43, 43))) {
+
             bumped = person.id;
             person.bumped = id;
 

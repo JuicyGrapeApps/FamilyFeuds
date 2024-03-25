@@ -125,7 +125,7 @@ namespace JuicyGrapeApps.Core
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        public static bool Between(int value, int from, int to) => value >= from && value <= to;
+        internal static bool Between(int value, int from, int to) => value >= from && value <= to;
 
         /// <summary>
         /// Moves a point a certain distance towards another point, the
@@ -139,7 +139,7 @@ namespace JuicyGrapeApps.Core
         /// <param name="move">The distance range from 0 to 1</param>
         /// <param name="cap">Cap the rage between 0 and 1</param>
         /// <returns>Any given point beween the two points</returns>
-        public static Point Towards(Point origin, Point target, float move, bool cap = true)
+        internal static Point Towards(Point origin, Point target, float move, bool cap = true)
         {
             if (cap) move = (move < 0) ? 0 : (move > 1) ? 1 : move;
             Vector2 vector = Vector2.Lerp(new Vector2(origin.X, origin.Y),
@@ -154,8 +154,17 @@ namespace JuicyGrapeApps.Core
         /// <param name="target">Point location of second rectangle</param>
         /// <param name="size">Size of rectangles</param>
         /// <returns></returns>
-        public static bool Overlap(Point value, Point target, Size size) =>
+        internal static bool Overlap(Point value, Point target, Size size) =>
             !Rectangle.Intersect(new Rectangle(value, size),
                                  new Rectangle(target, size)).IsEmpty;
+
+        /// <summary>
+        /// Returns true if either person is staring at other else false. 
+        /// </summary>
+        /// <param name="person">Person being looked at</param>
+        /// <param name="other">Person being looked at</param>
+        /// <returns></returns>
+        internal static bool LookingAt(Person person, Person other) =>
+            person.lookat == other.id || other.id == person.id;        
     }
 }

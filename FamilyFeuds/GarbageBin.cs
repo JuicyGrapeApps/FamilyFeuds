@@ -22,12 +22,12 @@ namespace JuicyGrapeApps.FamilyFeuds
     {
         public static event CoreEventHandler? Garbage;
         private static List<IDisposable> trash = new List<IDisposable>();   // Store FamilyFeuds bot data until bin is emptied.
-        
+
         /// <summary>
         /// Put person to bin
         /// </summary>
         /// <param name="person">Person to put in bin</param>
-        public static void Bin(Person person) {
+        internal static void Bin(Person person) {
             trash.Add(person);
 
             if (ApplicationControl.family.Remove(person))
@@ -39,12 +39,12 @@ namespace JuicyGrapeApps.FamilyFeuds
         /// </summary>
         /// <param name="person">Person in bin</param>
         /// <returns></returns>
-        public static bool Contains(Person person) => trash.Contains(person);
+        internal static bool Contains(Person person) => trash.Contains(person);
 
         /// <summary>
         /// Empty bin and clean up memory.
         /// </summary>
-        public static void Empty()
+        internal static void Empty()
         {
             if (trash.Count == 0) return;
             foreach (Person person in trash) person.Dispose();
@@ -55,7 +55,7 @@ namespace JuicyGrapeApps.FamilyFeuds
         /// Called on application shutdown and disposes of all relevant
         /// objects.
         /// </summary>
-        public static void Dispose()
+        internal static void Dispose()
         {
             Empty();
             Garbage?.Invoke();
