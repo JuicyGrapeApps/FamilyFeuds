@@ -417,11 +417,11 @@ public class Person : IFeudEvent
         if (lookat == bumped) lookat = -1;
         if (person.lookat == id) person.lookat = -1;
 
-        if (!isActive || person.isDead || person.isBaby || person.family == family ||
+        if (!isDead || person.isDead || person.isBaby || person.family == family ||
             person.mother == id || person.father == id) return;
 
         if (person.gender == gender || isAngry) {            
-            if (RandomGenerator.Bool())
+            if (person.isInjured || (!isInjured && RandomGenerator.Bool()))
             {
                 person.energy--;
                 if (person.energy == 0) m_killer = true;
