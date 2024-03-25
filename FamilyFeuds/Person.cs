@@ -373,13 +373,17 @@ public class Person : IFeudEvent
     /// <returns></returns>
     public async Task<bool> Marry(Person person)
     {
-        bool hasEmotions = (isEmotional || person.isEmotional) && !(lookat == spouse && person.lookat == person.spouse);
+        bool hasEmotions = (isEmotional || person.isEmotional) &&
+                          !(lookat == spouse && person.lookat == person.spouse);
         if (person.mother == id || person.father == id || person.gender == gender || hasEmotions) return false;
 
         if (person.family == family || spouse + person.spouse != -2) {
-            lookat = -1;
-            person.lookat = -1;
-            if (spouse == person.id || person.spouse == id) return true;
+            if (spouse == person.id || person.spouse == id)
+            {
+                lookat = -1;
+                person.lookat = -1;
+                return true;
+            }
             else return false;
         }
 
@@ -430,7 +434,7 @@ public class Person : IFeudEvent
                 else emotion = Emotion.Injured;
             }
         }
-        else if (person.isAngry && person.spouse > -1)
+        else if (!isAngry && !person.isAngry && person.spouse > -1)
         {
             Person? partner = ApplicationControl.person(person.spouse);
             if (partner == null) person.spouse = -1;
@@ -479,7 +483,8 @@ public class Person : IFeudEvent
             case Ideas.ChangeDirection: ChangeVolocity(); break;
             case Ideas.Eat: if (m_energy < 10) m_energy++; break;
             case Ideas.HaveKids:
-                if (spouse > -1 && isAvailable && emotion != Emotion.Love)
+                if (spouse > -1 && isAvailable && emotion != Emotion.Love &&
+                    !ApplicationControl.OverPopulated)
                 {
                     Person? partner = ApplicationControl.person(spouse);
                     if (partner != null && partner.isAvailable)
