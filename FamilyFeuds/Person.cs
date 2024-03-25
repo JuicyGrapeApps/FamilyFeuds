@@ -15,6 +15,7 @@
  */
 using JuicyGrapeApps.Core;
 using JuicyGrapeApps.FamilyFeuds;
+using System.Diagnostics;
 
 /// <summary>
 /// This class is the bot representation of a person on screen it stores their details such as date of birth,
@@ -641,6 +642,7 @@ public class Person : IFeudEvent
 
             image.Dispose();
             mask.Dispose();
+            Debug.Print("Disposal of " + fullname);
         }
         catch { }
     }

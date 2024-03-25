@@ -29,14 +29,14 @@ public static class RandomGenerator
     /// depending on parameter passed to it.
     /// </summary>
     /// <returns>Boolean True (Male), False (Female)</returns>
-    public static bool Gender => rnd.Next(2) == 0;
+    internal static bool Gender => rnd.Next(2) == 0;
 
 
     /// <summary>
     /// Random location generator this function returns random point on the screen.
     /// </summary>
     /// <returns>Point (Screen Location)</returns>
-    public static Point Location => new Point(rnd.Next(ApplicationControl.MaxWidth + 1), rnd.Next(ApplicationControl.MaxHeight + 1));
+    internal static Point Location => new Point(rnd.Next(ApplicationControl.MaxWidth + 1), rnd.Next(ApplicationControl.MaxHeight + 1));
 
     /// <summary>
     /// Random integer generator this function returns a random signed or
@@ -46,7 +46,7 @@ public static class RandomGenerator
     /// <param name="offset">Add an offset to random result</param>
     /// <param name="unsigned">(Optional) bool True (Unsigned), False (Signed)</param>
     /// <returns>Integer</returns>
-    public static int Int(int value, int offset = 0, bool unsigned = false) =>
+    internal static int Int(int value, int offset = 0, bool unsigned = false) =>
         (rnd.Next(value + 1) + offset) * (unsigned && rnd.Next(2) == 1 ? -1: 1);
 
     /// <summary>
@@ -58,20 +58,20 @@ public static class RandomGenerator
     /// <param name="offset">Add an offset to random result</param>
     /// <param name="unsigned">(Optional) bool True (Unsigned), False (Signed)</param>
     /// <returns>Integer</returns>
-    public static double Float(double value, double offset = 0, bool unsigned = false) => 
+    internal static double Float(double value, double offset = 0, bool unsigned = false) => 
         (rnd.NextDouble() * value + offset) * (unsigned && rnd.Next(2) == 1 ? -1 : 1);
 
     /// <summary>
     /// Returns a random boolean value.
     /// </summary>
     /// <returns></returns>
-    public static bool Bool() => Int(1) == 0;
+    internal static bool Bool() => Int(1) == 0;
 
     /// <summary>
     /// Returns an idea from person 's brain.
     /// </summary>
     /// <returns></returns>
-    public static Person.Ideas Idea()
+    internal static Person.Ideas Idea()
     {
         Person.Ideas idea = Person.Brain[Int(2)];
         int react = (int)idea;
@@ -83,7 +83,7 @@ public static class RandomGenerator
     /// Random surname generator this property returns either a random surname each time
     /// </summary>
     /// <returns>String (Surname)</returns>
-    public static string Surname
+    internal static string Surname
     {
         get
         {
@@ -114,7 +114,7 @@ public static class RandomGenerator
     /// <summary>
     /// Random color generator
     /// </summary>
-    public static Color Color
+    internal static Color Color
     {
         get
         {
@@ -161,7 +161,7 @@ public static class RandomGenerator
     /// </summary>
     /// <param name="male">True = Male Forename, False = Female Forename</param>
     /// <returns>String (Forename)</returns>
-    public static string Forename(bool male)
+    internal static string Forename(bool male)
     {
         string name;
 
