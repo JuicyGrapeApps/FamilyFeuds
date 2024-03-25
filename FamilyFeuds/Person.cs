@@ -134,8 +134,8 @@ public class Person : IFeudEvent
     /// <param name="person"></param>
     /// <returns></returns>
     private bool FocusedElsewhere(Person person) =>
-        lookat + person.lookat != -2 && this.id != person.lookat &&
-        person.id != this.lookat;
+        lookat + person.lookat != -2 && id != person.lookat &&
+        person.id != lookat;
 
     /// <summary>
     /// Change a person's emotional state.
@@ -420,17 +420,17 @@ public class Person : IFeudEvent
         if (person.isDead || person.isBaby || person.family == family ||
             person.mother == id || person.father == id) return;
 
-        if (person.gender == gender || isAngry) {            
+        if (person.gender == gender || isAngry || person.isAngry) {            
             if (person.isInjured || (!isInjured && RandomGenerator.Bool()))
             {
                 person.energy--;
-                if (person.energy == 0) m_killer = true;
+                if (person.isDead) m_killer = true;
                 else person.emotion = Emotion.Injured;
             }
             else
             {
                 energy--;
-                if (energy == 0) person.killer = true;
+                if (isDead) person.killer = true;
                 else emotion = Emotion.Injured;
             }
         }
