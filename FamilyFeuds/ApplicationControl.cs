@@ -167,7 +167,7 @@ namespace JuicyGrapeApps.FamilyFeuds
                 if (fireWorks) familyFeud.FireworkDisplay();
                 else 
                 {
-                    OverPopulated = (MAX_BOT_COUNT / 2 > NumberOfPeople);
+                    OverPopulated = NumberOfPeople > MAX_BOT_COUNT / 2;
 
                     int familyId = -1;
                     bool isWinner = true;
