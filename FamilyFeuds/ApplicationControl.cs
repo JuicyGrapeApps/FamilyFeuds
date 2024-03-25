@@ -26,7 +26,7 @@ namespace JuicyGrapeApps.FamilyFeuds
         public const string WIN_REG_PATH = "SOFTWARE\\FamilyFeuds";
         public const string REG_KEY_NAMES = "FamilyNames";
         public const string REG_KEY_DEFAULT = "DefaultNames";
-        public const int MAX_BOT_COUNT = 1000;
+        public const int MAX_BOT_COUNT = 50;
         public const int CLEAR_COUNTDOWN = 30;
 
         // MessageBox Title
