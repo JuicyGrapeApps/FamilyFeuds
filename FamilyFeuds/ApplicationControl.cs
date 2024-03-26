@@ -230,8 +230,7 @@ namespace JuicyGrapeApps.FamilyFeuds
 
         public static void InitializeBots()
         {
-            // Create custom bots by invoking Birth event which is subscribed
-            // to by the OnCreate in the BotManager.
+            // Create custom bots.
             foreach (string fullname in names)
             {
                 string name = fullname;
@@ -250,8 +249,7 @@ namespace JuicyGrapeApps.FamilyFeuds
 
             int numberOfPeople = NumberOfPeople;
 
-            // Create default bots by invoking Birth event which is subscribed
-            // to by the OnCreate in the BotManager.
+            // Create default bots.
             for (int i = numberOfPeople; i < numberOfPeople + MaxDefaultNumber; i++)
                 family.Add(new Person());
         }
