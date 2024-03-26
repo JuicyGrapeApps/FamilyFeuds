@@ -220,10 +220,10 @@ namespace JuicyGrapeApps.FamilyFeuds
         /// </summary>
         public static void Restart()
         {
-            InitializeBots();
+            family.Clear();
             UniqueBotId = 0;
             NumberOfPeople = 0;
-            family.Clear();
+            InitializeBots();
             m_clear = -1;
             fireWorks = false;
         }
