@@ -15,6 +15,7 @@
  */
 using JuicyGrapeApps.Core;
 using JuicyGrapeApps.FamilyFeuds;
+using System.Diagnostics;
 
 /// <summary>
 /// This class is the bot representation of a person on screen it stores their details such as date of birth,
@@ -200,23 +201,16 @@ public class Person : IFeudEvent
     }
 
     /// <summary>
-    /// Sets family members emotions or all children's if a negative two
-    /// is passed to function.
+    /// Sets family members emotions.
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="emotion"></param>
+    /// <param name="id">Family members id</param>
+    /// <param name="emotion">The emotion they feel</param>
     private void SetFamilyEmotion(int id, Emotion emotion)
     {
-        if (id == -2) ApplicationControl.FamilyEvents.InvokeChildren(this);  
-        else if (id > -1)
-        {
-            Person? person = ApplicationControl.person(id);
-            if (person != null && person.isAvailable)
-            {
-                person.emotion = emotion;
-                person.lookat = lookat;
-            }
-        }
+        if (id == -1) return;
+        Person? person = ApplicationControl.person(id);
+        if (person != null && person.isAvailable)
+            person.emotion = emotion;
     }
 
     /// <summary>
@@ -359,7 +353,9 @@ public class Person : IFeudEvent
         if (isDead)
         {
             float floating = 1 - (float) Math.Abs(m_grave - location.Y) / m_energy;
-            if (floating <= 0) Trash();
+            if (floating < 0) floating = 0;
+
+            if (ghost == 0) Trash();
             else ghost = (int) (255 * floating);
         }
         else OnCollision();
@@ -375,17 +371,18 @@ public class Person : IFeudEvent
     {
         bool hasEmotions = (isEmotional || person.isEmotional) &&
                           !(lookat == spouse && person.lookat == person.spouse);
-        if (person.mother == id || person.father == id || person.gender == gender || hasEmotions) return false;
+        
+        if (mother == person.id || father == person.id ||
+            person.mother == id || person.father == id ||
+            person.gender == gender || hasEmotions) return false;
 
-        if (person.family == family || spouse + person.spouse != -2) {
-            if (spouse == person.id || person.spouse == id)
-            {
-                lookat = -1;
-                person.lookat = -1;
-                return true;
-            }
-            else return false;
+        if (spouse == person.id || person.spouse == id)
+        {
+            lookat = -1;
+            person.lookat = -1;
+            return true;
         }
+        if (person.family == family || spouse + person.spouse != -2) return false;
 
         spouse = person.id;
         person.spouse = id;
@@ -418,6 +415,7 @@ public class Person : IFeudEvent
         if (person.lookat == id) person.lookat = -1;
 
         if (person.isDead || person.isBaby || person.family == family ||
+            mother == person.id || father == person.id ||
             person.mother == id || person.father == id) return;
 
         if (person.gender == gender || isAngry || person.isAngry) {            
@@ -434,14 +432,14 @@ public class Person : IFeudEvent
                 else emotion = Emotion.Injured;
             }
         }
-        else if (!isAngry && !person.isAngry && person.spouse > -1)
+        else if (!isAngry && !person.isAngry && spouse > -1)
         {
-            Person? partner = ApplicationControl.person(person.spouse);
-            if (partner == null) person.spouse = -1;
-            else if (partner.isActive)
+            Person? partner = ApplicationControl.person(spouse);
+            if (partner == null) spouse = -1;
+            else if (partner.isAvailable)
             {
                 partner.emotion = Emotion.Jealous;
-                partner.lookat = id;
+                partner.lookat = person.id;
             }
         }
     }
@@ -508,14 +506,15 @@ public class Person : IFeudEvent
         if (m_age != age)
         {
             m_age = age;
+            bumped = -1;
             if (age % 5 == 0) energy--;
 
-            if (!isDead)
+            if (!isDead && isAvailable) 
             {
-                if (isAvailable) emotion = Emotion.Party;
-                SetFamilyEmotion(spouse, emotion);
-                SetFamilyEmotion(mother, emotion);
-                SetFamilyEmotion(father, emotion);
+                emotion = Emotion.Party;
+                SetFamilyEmotion(spouse, Emotion.Party);
+                SetFamilyEmotion(mother, Emotion.Party);
+                SetFamilyEmotion(father, Emotion.Party);
             }
         }
     }
@@ -551,7 +550,7 @@ public class Person : IFeudEvent
         m_grave = location.Y;
         spouse = -1;
 
-        ApplicationControl.FamilyEvents.Invoke(this);
+        ApplicationControl.FamilyEvents.Invoke(this, bumped == -1 ? Emotion.Sad: Emotion.Angry);
         Unsubscribe();
         return 0;
     }
@@ -677,24 +676,9 @@ public class Person : IFeudEvent
     public void FamilyEvent(FeudEventArgs args)
     {
         if (!isActive || (isAngry && lookat > -1)) return;
-
         Person person = (Person) args.person;
-
-        if (person.isDead)
-        {
-            if (person.bumped == -1) emotion = Emotion.Sad;
-            else
-            {
-                emotion = Emotion.Angry;
-                lookat = person.bumped;
-            }
-        }
-        else if (person.emotion == Emotion.Love)
-        {
-            if (emotion != Emotion.Love && emotion != Emotion.Baby)
-                emotion = Emotion.Happy;
-        }
-        else emotion = Emotion.Party;
+        emotion = args.emotion;
+        if (isAngry) lookat = person.bumped;
     }
 
     /// <summary>
@@ -706,16 +690,7 @@ public class Person : IFeudEvent
     public void ChildEvent(FeudEventArgs args)
     {
         Person person = (Person)args.person;
-
-        if (person.isDead)
-        {
-            if (mother == person.id) mother = -1;
-            if (father == person.id) father = -1;
-        } 
-        else if (isAvailable)
-        {
-            emotion = person.emotion;
-            lookat = person.lookat;
-        }
+        if (mother == person.id) mother = -1;
+        if (father == person.id) father = -1;
     }
 }

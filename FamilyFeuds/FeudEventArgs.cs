@@ -18,11 +18,13 @@ namespace JuicyGrapeApps.FamilyFeuds
     public class FeudEventArgs
     {
         public IFeudEvent person;
+        public Person.Emotion emotion;
         private FamilyEventManager.Flag flags;
 
-        public FeudEventArgs(IFeudEvent person, FamilyEventManager.Flag flags = FamilyEventManager.Flag.None)
+        public FeudEventArgs(IFeudEvent person, Person.Emotion emotion, FamilyEventManager.Flag flags = FamilyEventManager.Flag.None)
         {
             this.person = person;
+            this.emotion = emotion;
             this.flags = flags;
         }
 

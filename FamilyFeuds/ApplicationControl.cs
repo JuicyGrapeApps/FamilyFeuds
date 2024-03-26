@@ -222,6 +222,8 @@ namespace JuicyGrapeApps.FamilyFeuds
         {
             InitializeBots();
             UniqueBotId = 0;
+            NumberOfPeople = 0;
+            family.Clear();
             m_clear = -1;
             fireWorks = false;
         }

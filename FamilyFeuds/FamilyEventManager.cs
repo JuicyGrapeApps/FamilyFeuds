@@ -79,10 +79,10 @@ namespace JuicyGrapeApps.FamilyFeuds
         /// </summary>
         /// <param name="person">The person invoking the event</param>
         /// <param name="flag">Attach a flag to the event</param>
-        public void Invoke(IFeudEvent person, Flag flag = Flag.None)
+        public void Invoke(IFeudEvent person, Person.Emotion emotion, Flag flag = Flag.None)
         {
             if (FamilyEvents.ContainsKey(person.family))
-                FamilyEvents[person.family]?.Invoke(new FeudEventArgs(person, flag));
+                FamilyEvents[person.family]?.Invoke(new FeudEventArgs(person, emotion, flag));
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace JuicyGrapeApps.FamilyFeuds
         public void InvokeChildren(IFeudEvent person, Flag flag = Flag.None)
         {
             if (ChildEvents.ContainsKey(person.id))
-                ChildEvents[person.id]?.Invoke(new FeudEventArgs(person, flag));
+                ChildEvents[person.id]?.Invoke(new FeudEventArgs(person, Person.Emotion.None, flag));
         }
     }
 }
