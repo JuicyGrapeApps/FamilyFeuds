@@ -548,12 +548,13 @@ public class Person : IFeudEvent
         }
         volocity.X = 0;
         m_grave = location.Y;
-        spouse = -1;
 
         Emotion emotions = bumped == -1 ? Emotion.Sad : Emotion.Angry;
-        ApplicationControl.FamilyEvents.Invoke(this, emotions);
-        SetFamilyEmotion(mother, emotions, bumped);
         SetFamilyEmotion(spouse, emotions, bumped);
+        SetFamilyEmotion(mother, emotions, bumped);
+        spouse = -1;
+
+        ApplicationControl.FamilyEvents.Invoke(this, emotions);
         Unsubscribe();
         return 0;
     }
