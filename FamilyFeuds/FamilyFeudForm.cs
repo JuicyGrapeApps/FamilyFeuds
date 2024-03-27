@@ -412,7 +412,7 @@ namespace JuicyGrapeApps.FamilyFeuds
         }
 
         /// <summary>
-        /// Draws the arrow that points to the person who's being looked at.
+        /// Draws the arrow pointing to the person being looked at.
         /// </summary>
         /// <param name="person">Person to look at</param>
         /// <param name="clear">Is arrow being erased or drawn</param>
@@ -504,8 +504,7 @@ namespace JuicyGrapeApps.FamilyFeuds
         }
 
         /// <summary>
-        /// Shows firework display when their is a winning family, families
-        /// win when they are the only ones left on screen.
+        /// Shows firework display when only one family is left.
         /// </summary>
         /// <param name="firework"></param>
         public void DrawFireworks(int firework)
