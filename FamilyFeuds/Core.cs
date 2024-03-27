@@ -18,7 +18,7 @@ using System.Numerics;
 namespace JuicyGrapeApps.Core
 {
     /// <summary>
-    /// Core library functions.
+    /// Core functions library.
     /// </summary>
     public static class Scroll
     {
@@ -114,7 +114,7 @@ namespace JuicyGrapeApps.Core
     #endregion
 
     /// <summary>
-    /// Global expressions
+    /// Global expressions library
     /// </summary>
     public static class Is
     {
@@ -157,14 +157,5 @@ namespace JuicyGrapeApps.Core
         internal static bool Overlap(Point value, Point target, Size size) =>
             !Rectangle.Intersect(new Rectangle(value, size),
                                  new Rectangle(target, size)).IsEmpty;
-
-        /// <summary>
-        /// Returns true if either person is staring at other else false. 
-        /// </summary>
-        /// <param name="person">Person being looked at</param>
-        /// <param name="other">Person being looked at</param>
-        /// <returns></returns>
-        internal static bool LookingAt(Person person, Person other) =>
-            person.lookat == other.id || other.id == person.id;        
     }
 }
