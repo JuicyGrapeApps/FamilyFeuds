@@ -204,12 +204,13 @@ public class Person : IFeudEvent
     /// </summary>
     /// <param name="id">Family members id</param>
     /// <param name="emotion">The emotion they feel</param>
-    private void SetFamilyEmotion(int id, Emotion emotion)
+    private void SetFamilyEmotion(int id, Emotion emotion, int react = -1)
     {
         if (id == -1) return;
         Person? person = ApplicationControl.person(id);
         if (person != null && person.isAvailable)
             person.emotion = emotion;
+        if (isActive && react > -1) lookat = react;
     }
 
     /// <summary>
@@ -549,7 +550,10 @@ public class Person : IFeudEvent
         m_grave = location.Y;
         spouse = -1;
 
-        ApplicationControl.FamilyEvents.Invoke(this, bumped == -1 ? Emotion.Sad: Emotion.Angry);
+        Emotion emotions = bumped == -1 ? Emotion.Sad : Emotion.Angry;
+        ApplicationControl.FamilyEvents.Invoke(this, emotions);
+        SetFamilyEmotion(mother, emotions, bumped);
+        SetFamilyEmotion(spouse, emotions, bumped);
         Unsubscribe();
         return 0;
     }
