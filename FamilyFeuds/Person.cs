@@ -549,6 +549,9 @@ public class Person : IFeudEvent
         volocity.X = 0;
         m_grave = location.Y;
 
+        // Set spouse and mother emotions and reactions indepentantly
+        // from the family event as a marrage or remarrage after losing
+        // a spouse can lead to multiple family ties.
         Emotion emotions = bumped == -1 ? Emotion.Sad : Emotion.Angry;
         SetFamilyEmotion(spouse, emotions, bumped);
         SetFamilyEmotion(mother, emotions, bumped);
