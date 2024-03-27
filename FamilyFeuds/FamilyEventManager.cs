@@ -32,6 +32,11 @@ namespace JuicyGrapeApps.FamilyFeuds
             IncludeUnavailable = 0x00000002,
         }
 
+        /// <summary>
+        /// Subscribe to an existing event or create a new event reference
+        /// if none exist for both family and children events.
+        /// </summary>
+        /// <param name="person">Event interface passed in event</param>
         public void Subscribe(IFeudEvent person)
         {
             if (FamilyEvents.ContainsKey(person.family))
@@ -55,6 +60,11 @@ namespace JuicyGrapeApps.FamilyFeuds
                     ChildEvents.Add(person.father, person.ChildEvent);
             }
         }
+
+        /// <summary>
+        /// Unsubscribe to both the family and children events.
+        /// </summary>
+        /// <param name="person">Event interface passed in event</param>
         public void Unsubscribe(IFeudEvent person)
         {
             if (FamilyEvents.ContainsKey(person.family))

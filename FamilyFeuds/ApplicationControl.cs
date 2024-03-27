@@ -119,7 +119,7 @@ namespace JuicyGrapeApps.FamilyFeuds
 
         /// <summary>
         /// Run in configuration mode allows customization of the FamilyFeud screen saver such as
-        /// having own family and friends appear on the screen.
+        /// having own family and friends appear on screen.
         /// </summary>
         public static void Configure()
         {
@@ -129,7 +129,7 @@ namespace JuicyGrapeApps.FamilyFeuds
 
         /// <summary>
         /// Run in preview mode allows someone to preview FamilyFeuds screen saver before actually 
-        /// changing the windows screen saver.
+        /// changing the Windows screen saver.
         /// </summary>
         public static void Preview(string argument)
         {
@@ -159,7 +159,7 @@ namespace JuicyGrapeApps.FamilyFeuds
         }
 
         /// <summary>
-        /// Main program loop that updates bots and draws them on screen.
+        /// Main application loop that updates bots and draws them on screen.
         /// </summary>
         /// <param name="form"></param>
         public static void RefreshScreenSaver(Form form)
@@ -216,7 +216,7 @@ namespace JuicyGrapeApps.FamilyFeuds
         }
 
         /// <summary>
-        /// Restarts the screen saver after fireworks display is over.
+        /// Restarts the screen saver after fireworks display.
         /// </summary>
         public static void Restart()
         {

@@ -15,5 +15,9 @@
  */
 namespace JuicyGrapeApps.FamilyFeuds
 {
+    /// <summary>
+    /// Method references, signature and return value of event handlers.
+    /// </summary>
+    /// <param name="arg">Arguments passed to handler</param>
     public delegate void FeudEventHandler(FeudEventArgs arg);
 }

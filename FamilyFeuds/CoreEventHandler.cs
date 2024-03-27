@@ -15,5 +15,8 @@
  */
 namespace JuicyGrapeApps.FamilyFeuds
 {
+    /// <summary>
+    /// Method references, signature and return value of event handlers.
+    /// </summary>
     public delegate void CoreEventHandler();
 }

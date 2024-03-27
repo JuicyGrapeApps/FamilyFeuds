@@ -15,5 +15,8 @@
  */
 namespace JuicyGrapeApps.FamilyFeuds
 {
+    /// <summary>
+    /// Method references, signature and return value of event handlers.
+    /// <param name="person">Person passed to handler</param>
     public delegate void PersonEventHandler(Person person);
 }

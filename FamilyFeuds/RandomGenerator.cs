@@ -62,15 +62,15 @@ public static class RandomGenerator
         (rnd.NextDouble() * value + offset) * (unsigned && rnd.Next(2) == 1 ? -1 : 1);
 
     /// <summary>
-    /// Returns a random boolean value.
+    /// Random boolean value.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Boolean</returns>
     internal static bool Bool() => Int(1) == 0;
 
     /// <summary>
-    /// Returns an idea from person 's brain.
+    /// Returns an idea from the person's Brain array.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Ideas</returns>
     internal static Person.Ideas Idea()
     {
         Person.Ideas idea = Person.Brain[Int(2)];
