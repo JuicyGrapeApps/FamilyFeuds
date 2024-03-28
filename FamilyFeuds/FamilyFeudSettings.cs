@@ -139,7 +139,7 @@ namespace JuicyGrapeApps.FamilyFeuds
             }
             if (i == 3 && name.Length > 23)
             {
-                MessageBox.Show($"\"{name}\" is quite a long name, it might be best to preview the screen saver, the name may need shortening to display correctly.",
+                MessageBox.Show($"\"{name}\" is quite a long name, it might be best to preview the screensaver, the name may need shortening to display correctly.",
                     ApplicationControl.messageTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             return !empty;

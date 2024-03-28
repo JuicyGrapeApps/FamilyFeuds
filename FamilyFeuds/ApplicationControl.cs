@@ -83,7 +83,7 @@ namespace JuicyGrapeApps.FamilyFeuds
         }
 
         /// <summary>
-        /// Initialize screen saver the settings are retrieved from the Windows registary
+        /// Initialize screensaver the settings are retrieved from the Windows registary
         /// at path specified by the gobal constants <see cref="=WIN_REG_PATH"/> and also
         /// <see cref="=REG_KEY_NAMES"/> and <seealso cref="=REG_KEY_DEFAULTS"/>
         /// </summary>
@@ -118,7 +118,7 @@ namespace JuicyGrapeApps.FamilyFeuds
         }
 
         /// <summary>
-        /// Run in configuration mode allows customization of the FamilyFeud screen saver such as
+        /// Run in configuration mode allows customization of the FamilyFeud screensaver such as
         /// having own family and friends appear on screen.
         /// </summary>
         public static void Configure()
@@ -128,8 +128,8 @@ namespace JuicyGrapeApps.FamilyFeuds
         }
 
         /// <summary>
-        /// Run in preview mode allows someone to preview FamilyFeuds screen saver before actually 
-        /// changing the Windows screen saver.
+        /// Run in preview mode allows someone to preview FamilyFeuds screensaver before actually 
+        /// changing the Windows screensaver.
         /// </summary>
         public static void Preview(string argument)
         {
@@ -145,8 +145,8 @@ namespace JuicyGrapeApps.FamilyFeuds
         }
 
         /// <summary>
-        /// Run in fullscreen mode the FamilyFeuds screen saver.  This function gets called automatically by 
-        /// Windows when it activates the screen saver.
+        /// Run in fullscreen mode the FamilyFeuds screensaver.  This function gets called automatically by 
+        /// Windows when it activates the screensaver.
         /// </summary>
         public static void Run()
         {
@@ -216,7 +216,7 @@ namespace JuicyGrapeApps.FamilyFeuds
         }
 
         /// <summary>
-        /// Restarts the screen saver after fireworks display.
+        /// Restarts the screensaver after fireworks display.
         /// </summary>
         public static void Restart()
         {
