@@ -496,7 +496,6 @@ namespace JuicyGrapeApps.FamilyFeuds
             if (clear)
             {
                 if (target.isDead) person.emotion = person.isAngry ? Person.Emotion.Sad: Person.Emotion.None;
-                else if (target.isInjured && person.emotion == Person.Emotion.Jealous) person.emotion = Person.Emotion.None;
                 else if (target.family == person.family && person.emotion != Person.Emotion.Love) person.emotion = Person.Emotion.None;
 
                 person.followed = person.lookat;
